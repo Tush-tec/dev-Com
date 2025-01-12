@@ -1,5 +1,7 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Product } from "../models/product.model.js";
+import { Category } from "../models/category.model.js";
+import { getMongoosePaginationOptions } from "../utils/helper.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -74,59 +76,80 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const getAllProduct = asyncHandler(async (req, res) => {
-  // Get Value for query:
-  const { category, brand, price, tags, page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 10 } = req.query;
+  const productAggregate = Product.aggregate([{ $match: {} }]);
 
-  const filters = {
-    ...(category && { category: { name: category } }),
-    ...(brand && { brand: { name: brand } }),
-    ...(price && { price: { $lte: Number(price) } }),
-    ...(tags && { tags: { $in: tags.split(",") } }),
-  };
-
-  // filter out undefined value
-  const cleanedFilters = Object.fromEntries(
-    Object.entries(filters).filter(([_, v]) => v !== undefined)
+  const products = await Product.aggregatePaginate(
+    productAggregate,
+    getMongoosePaginationOptions({
+      page,
+      limit,
+      customLabels: {
+        totalDocs: "totalProducts",
+        docs: "products",
+      },
+    })
   );
 
-  if (Object.keys(cleanedFilters).length === 0) {
-    return res
-      .status(400)
-      .json(
-        new ApiResponse(
-          400,
-          null,
-          "Please provide at least one filter to search products"
-        )
-      );
-  }
-
-  try {
-    const filterProduct = await Product.find(cleanedFilters)
-      .sort({ price: 1 })
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit))
-      .populate("images")
-      .populate("variants")
-      .populate("vendor", "name")
-      .populate("category", "name")
-      .populate("brand", "name")
-      .populate("tags", "name");
-
-    if (!filterProduct || filterProduct.length === 0) {
-      throw new ApiError(404, "No product found");
-    }
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, filterProduct, "Product found successfully"));
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      status: error.statusCode || 500,
-      message: error.message || "Internal Server Error",
-    });
-  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, products, "Products fetched successfully"));
 });
+
+// const getAllProduct = asyncHandler(async (req, res) => {
+//   // Get Value for query:
+//   const { category, brand, price, tags, page = 1, limit = 10 } = req.query;
+
+//   const filters = {
+//     ...(category && { category: { name: category } }),
+//     ...(brand && { brand: { name: brand } }),
+//     ...(price && { price: { $lte: Number(price) } }),
+//     ...(tags && { tags: { $in: tags.split(",") } }),
+//   };
+
+//   // filter out undefined value
+//   const cleanedFilters = Object.fromEntries(
+//     Object.entries(filters).filter(([_, v]) => v !== undefined)
+//   );
+
+//   if (Object.keys(cleanedFilters).length === 0) {
+//     return res
+//       .status(400)
+//       .json(
+//         new ApiResponse(
+//           400,
+//           null,
+//           "Please provide at least one filter to search products"
+//         )
+//       );
+//   }
+
+//   try {
+//     const filterProduct = await Product.find(cleanedFilters)
+//       .sort({ price: 1 })
+//       .skip((page - 1) * limit)
+//       .limit(parseInt(limit))
+//       .populate("images")
+//       .populate("variants")
+//       .populate("vendor", "name")
+//       .populate("category", "name")
+//       .populate("brand", "name")
+//       .populate("tags", "name");
+
+//     if (!filterProduct || filterProduct.length === 0) {
+//       throw new ApiError(404, "No product found");
+//     }
+
+//     return res
+//       .status(200)
+//       .json(new ApiResponse(200, filterProduct, "Product found successfully"));
+//   } catch (error) {
+//     return res.status(error.statusCode || 500).json({
+//       status: error.statusCode || 500,
+//       message: error.message || "Internal Server Error",
+//     });
+//   }
+// });
 
 const getProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -258,6 +281,49 @@ const incrementProductViews = asyncHandler(async (req, res) => {
   )
 });
 
+const getProductsByCategory = asyncHandler(async (req, res) => {
+  const { categoryId } = req.params;
+  const { page = 1, limit = 10 } = req.query;
+
+  const category = await Category.findById(categoryId).select("name _id");
+
+  if (!category) {
+    throw new ApiError(404, "Category does not exist");
+  }
+
+  const productAggregate = Product.aggregate([
+    {
+      // match the products with provided category
+      $match: {
+        category: new mongoose.Types.ObjectId(categoryId),
+      },
+    },
+  ]);
+
+  const products = await Product.aggregatePaginate(
+    productAggregate,
+    getMongoosePaginationOptions({
+      page,
+      limit,
+      customLabels: {
+        totalDocs: "totalProducts",
+        docs: "products",
+      },
+    })
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { ...products, category },
+        "Category products fetched successfully"
+      )
+    );
+});
+
+
 export {
   createProduct,
   getAllProduct,
@@ -266,4 +332,5 @@ export {
   deleteProductById,
   getFeaturedProduct,
   incrementProductViews,
+  getProductsByCategory
 };

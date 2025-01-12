@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import { uploadOnCloudinary } from "../utils/cloudinary";
-import { User } from "../models/user.model";
-import { asyncHandler } from "../utils/AsyncHandler";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { User } from "../models/user.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -139,6 +139,71 @@ const loggedOutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User Logged-Out"));
 });
 
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+  const { fullName } = req.body;
+
+  if (!fullName) {
+    throw new ApiError(400, "Please provide the fullName");
+  }
+
+  const user = await User.findById(req.user?._id);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user?._id,
+    { $set: { fullName } },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedUser, "Full name updated successfully"));
+});
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(404, "We Cannot Fetch Your Avatar Request");
+  }
+
+  const user = await User.findById(req.user?._id);
+  const currentAvatarUrl = user?.path;
+
+  if (currentAvatarUrl) {
+    await cloudinary.uploader.destroy(publicId);
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar.url) {
+    throw ApiError(400, "Error While Uploading avatar On Cloudinary");
+  }
+
+  const updateUser = await User.findByIdAndUpdate(
+    req.user?._id,
+
+    {
+      $set: {
+        avatar: avatar?.url,
+      },
+    },
+    {
+      new: true,
+    }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, user, updateUser, "CoverImage update Successfully.")
+    );
+});
+
 const refereshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
@@ -184,10 +249,43 @@ const refereshAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
+const changeCurrentUserPassword = asyncHandler(async (req, res) => {
+
+  const { oldPassWord, newPassword, confirmPassword } = req.body;
+
+  const user = await User.findById(req.user?._id);
+
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassWord);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(
+      400,
+      "Invalid User Password, Check Your Password and tryAgain!"
+    );
+  }
+
+  user.password = newPassword;
+
+  if (newPassword !== confirmPassword) {
+    throw ApiError(401, "Password Not Match, Please Check and TryAgain!");
+  }
+
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { newPassword }, "Password Change SuccessFully!")
+    );
+});
+
 export {
   generateAccessAndRefreshTokens,
   registerUser,
   loginUser,
   loggedOutUser,
-  refereshAccessToken
+  updateAccountDetails,
+  updateUserAvatar,
+  refereshAccessToken,
+  changeCurrentUserPassword
 };

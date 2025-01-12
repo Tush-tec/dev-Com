@@ -1,5 +1,5 @@
-import { app } from "./app";
-import connectionInstance from "./config/db";
+import { app } from "./app.js";
+import connectionInstance from "./config/db.js";
 
 connectionInstance()
 .then(() => {

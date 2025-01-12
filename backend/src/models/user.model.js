@@ -1,8 +1,9 @@
 import mongoose,{Schema} from "mongoose";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { EcomProfile } from "./profile.model";
-import { Cart } from "./cart.model";
+import { EcomProfile } from "./profile.model.js";
+import { Cart } from "./cart.model.js";
+import { UserRolesEnum,AvailableUserRoles } from "../constant.js";
 
 
 const userSchema =  new Schema(

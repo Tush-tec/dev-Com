@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
   {
@@ -13,13 +13,23 @@ const ProductSchema = new mongoose.Schema(
         type: String
     },
     category: {
-        type: String 
+        type: Schema.Types.ObjectId,
+        ref : 'Category'
+    },
+    name:{
+      type:String,
+      required: true
+    },
+    owner:{
+      type  :Schema.Types.ObjectId,
+      ref :"User"
     },
     brand: { 
         type: String 
     },
     price: { 
-        type: Number 
+        type: Number ,
+        default:0
     },
     salePrice: { 
         type: Number 
@@ -31,7 +41,8 @@ const ProductSchema = new mongoose.Schema(
       },
     },
     totalStock: { 
-        type: Number
+        type: Number,
+        default: 0
     },
     stockStatus: {
       type: String,

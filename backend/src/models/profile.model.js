@@ -10,7 +10,7 @@ const profileSchema =  new Schema(
             type: String,
             required: true
         },
-        lasName:{
+        lastName:{
             type : String
         },
         phoneNumber :{ 

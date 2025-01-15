@@ -21,7 +21,8 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500, "Something went wrong while generating tokens");
+    console.error(error.message || error )
+    // throw new ApiError(500, "Something went wrong while generating tokens");
   }
 };
 
@@ -65,12 +66,18 @@ const registerUser = asyncHandler(async (req, res) => {
   );
 
   if (!checkUserCreatedorNot) {
-    throw new ApiError(500, "Something went wrong during registration");
+    throw new ApiError(500,checkUserCreatedorNot, "Something went wrong during registration");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, createUser, "User Registered Successfully"));
+   return res
+   .status(201)
+   .json(
+    new ApiResponse(
+      201,
+      checkUserCreatedorNot,
+      "User created successfully",
+    )
+   );
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -100,12 +107,19 @@ const loginUser = asyncHandler(async (req, res) => {
     "-password -refreshToken"
   );
 
+  const options = {
+    httpOnly: true,
+    secure: true, 
+  };
+
   return res
     .status(200)
+    .cookie("accessToken", accessToken)
+    .cookie("refreshToken", refreshToken)
     .json(
       new ApiResponse(
         200,
-        { user: loggedInUser, accessToken, refreshToken },
+          loggedInUser, accessToken, refreshToken,
         "User logged in successfully"
       )
     );
@@ -151,7 +165,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 
   if (!user) {
     throw new ApiError(404, "User not found");
-  }
+  } 
 
   const updatedUser = await User.findByIdAndUpdate(
     req.user?._id,
@@ -204,78 +218,84 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     );
 });
 
-const refereshAccessToken = asyncHandler(async (req, res) => {
-  const incomingRefreshToken =
-    req.cookies.refreshToken || req.body.refreshToken;
+// const refereshAccessToken = asyncHandler(async (req, res) => {
+//   const incomingRefreshToken =
+//     req.cookies.refreshToken || req.body.refreshToken;
 
-  if (!incomingRefreshToken) {
-    throw new ApiError("401", "unauthorized Request");
-  }
+//   if (!incomingRefreshToken) {
+//     throw new ApiError(401, "unauthorized Request");
+//   }
 
-  const decodedToken = jwt.verify(
-    incomingRefreshToken,
-    process.env.ACCESS_TOKEN_SECRET
-  );
+//   const decodedToken = jwt.verify(
+//     incomingRefreshToken,
+//     process.env.ACCESS_TOKEN_SECRET
+//   );
 
-  const user = await User.findById(decodedToken?._id);
+//   const user = await User.findById(decodedToken?._id);
 
-  if (!user) {
-    throw new ApiError(401, " invalid Refresh-Token");
-  }
+//   if (!user) {
+//     throw new ApiError(401, "invalid Refresh-Token");
+//   }
 
-  if (incomingRefreshToken !== user?.refreshToken) {
-    throw new ApiError(401, "Refresh Token is expired or used.");
-  }
+//   if (incomingRefreshToken !== user?.refreshToken) {
+//     throw new ApiError(401, "Refresh Token is expired or used.");
+//   }
 
-  const { accessToken, newrefreshToken } = await genrateAccessorRefreshTokens(
-    user._id
-  );
+//   // const { accessToken, newrefreshToken } = await generateAccessAndRefreshTokens(
+//   //  user._id
+//   // );
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
+//   const options = {
+//     httpOnly: true,
+//     secure: true,
+//   };
 
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", newrefreshToken)
-    .json(
-      new ApiResponse(
-        200,
-        { accessToken, refreshToken: newrefreshToken },
-        "AccessToken Refresh Successfully"
-      )
-    );
-});
+//   return res
+//     .status(200)
+//     .cookie("accessToken", accessToken, options)
+//     .cookie("refreshToken", newrefreshToken)
+//     .json(
+//       new ApiResponse(
+//         200,
+//         "AccessToken Refresh Successfully"
+//       )
+//     );
+// });
 
 const changeCurrentUserPassword = asyncHandler(async (req, res) => {
 
-  const { oldPassWord, newPassword, confirmPassword } = req.body;
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+// if(!oldPassword ||  !newPassword || !confirmPassword){
+//   throw new ApiError(
+//     400,
+//     "Please fill all fields to change password"
+//   )
+// }
 
   const user = await User.findById(req.user?._id);
-
-  const isPasswordCorrect = await user.isPasswordCorrect(oldPassWord);
+  if (!user) throw new ApiError(404, "User not found");
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
 
   if (!isPasswordCorrect) {
     throw new ApiError(
       400,
       "Invalid User Password, Check Your Password and tryAgain!"
     );
-  }
+  } 
 
   user.password = newPassword;
 
   if (newPassword !== confirmPassword) {
-    throw ApiError(401, "Password Not Match, Please Check and TryAgain!");
+    throw new  ApiError(401, "Password Not Match, Please Check and TryAgain!");
   }
 
-  await user.save({ validateBeforeSave: false });
+  await user.save();
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, { newPassword }, "Password Change SuccessFully!")
+      new ApiResponse(200,  newPassword , "Password Change SuccessFully!")
     );
 });
 
@@ -286,6 +306,6 @@ export {
   loggedOutUser,
   updateAccountDetails,
   updateUserAvatar,
-  refereshAccessToken,
+  // refereshAccessToken,
   changeCurrentUserPassword
 };

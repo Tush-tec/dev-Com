@@ -52,43 +52,46 @@ const userSchema =  new Schema(
 
 // hash  password
 
-userSchema.pre("save", async function(next){
-    if(!this.isModified("password")) return next()
-    this.password =  await bcrypt.hash(this.password, 10)
-    next()
-})
+userSchema.pre("save", async function(next) {
+    if (!this.isModified("password")) return next();
+    console.log("Password before hashing:", this.password);
+    if (!this.password) throw new Error("Password is undefined before hashing");
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+});
 
-userSchema.pre("save",async function(user,next){
 
-    try {
-        const ecomProfile = await EcomProfile.findOne({owner:user._id})
-        const cart = await Cart.findOne({owner:user._id})
-    
-        if(!ecomProfile){
-            await EcomProfile.create(
-                {
-                    owner:user._id
-                }
-            )
-        }
-    
-        if(!cart){
-            await Cart.create(
-                {
-                    owner:user._id
-                }
-            )
-        }
-        next()
-    } catch (error) {
-     next(error)   
-    }
+// userSchema.pre("save", async function (next) {
+//     try {
+//       const ecomProfile = await EcomProfile.findOne({ owner: this._id });
+//       const cart = await Cart.findOne({ owner: this._id });
+  
+//       if (!ecomProfile) {
+//         await EcomProfile.create({
+//           owner: this._id,
+//         });
+//       }
+  
+//       if (!cart) {
+//         await Cart.create({
+//           owner: this._id,
+//         });
+//       }
+  
+//       next();
+//     } catch (error) {
+//       next(error);
+//     }
+//   });
+  
 
-})
+userSchema.methods.isPasswordCorrect = async function(password) {
+    console.log("Password to compare:", password);
+    console.log("Stored password:", this.password);
+    if (!this.password) throw new Error("Password hash is missing");
+    return await bcrypt.compare(password, this.password);
+};
 
-userSchema.methods.isPasswordCorrect = async function(password){
-    return await bcrypt.compare(password, this.password)
-}
 
 // generate Token,  assign jwt token
 
@@ -102,7 +105,7 @@ userSchema.methods.generateAccessToken =  function(){
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
-            expiresIn: process.ACCESS_TOKEN_EXPIRE
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRE
         }
     )
 }
@@ -115,7 +118,7 @@ userSchema.methods.generateRefreshToken = async function(){
         process.env.REFRESH_TOKEN_SECRET,
 
         {
-            expiresIn: process.REFRESH_TOKEN_EXPIRE
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRE
         }
     )
 }

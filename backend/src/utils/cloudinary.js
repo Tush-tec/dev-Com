@@ -13,11 +13,12 @@ cloudinary.config({
 
 // Upload Function
 const uploadOnCloudinary = async (localFilePath) => {
-  try {
-    if (!localFilePath) {
-      throw new Error("No file path provided.");
-    }
+  if (!localFilePath) {
+    console.error("No file path provided for upload.");
+    return null;
+  }
 
+  try {
     // Upload file to Cloudinary
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto", // Handles images, videos, etc.
@@ -27,16 +28,26 @@ const uploadOnCloudinary = async (localFilePath) => {
 
     // Cleanup local file after successful upload
     if (fs.existsSync(localFilePath)) {
-      fs.unlinkSync(localFilePath);
+      try {
+        fs.unlinkSync(localFilePath);
+        console.log("Local file deleted:", localFilePath);
+      } catch (err) {
+        console.error("Error deleting local file:", err.message || err);
+      }
     }
 
     return response;
   } catch (error) {
     console.error("Cloudinary upload error:", error.message || error);
 
-    // Cleanup local file even if the upload fails
+    // Cleanup local file if the upload fails
     if (fs.existsSync(localFilePath)) {
-      fs.unlinkSync(localFilePath);
+      try {
+        fs.unlinkSync(localFilePath);
+        console.log("Local file deleted after failed upload:", localFilePath);
+      } catch (err) {
+        console.error("Error deleting local file:", err.message || err);
+      }
     }
 
     return null; // Return null on failure
@@ -44,33 +55,3 @@ const uploadOnCloudinary = async (localFilePath) => {
 };
 
 export { uploadOnCloudinary };
-
-// import { v2 as cloudinary } from 'cloudinary';
-// import fs from  "fs"
-
-
-//     cloudinary.config({ 
-//         cloud_name: process.env. CLOUDINARY_CLOUD_NAME, 
-//         api_key: process.env.CLOUDINARY_API_KEY ? "Loaded" : "Missing",
-//         api_secret: process.env.CLOUDINARY_API_SECRET ? "Loaded" : "Missing",
-//     });
-    
-// const uploadOnCloudinary =  async (localFilePath) =>{
-//     try {
-    
-//         if(!localFilePath) return null
-//           const localFieldResponse = await cloudinary.uploader.upload(localFilePath, {
-//             resource_type:'auto'
-//            })
-
-//          console.log("file is  upload on cloudinary",localFieldResponse.url);  
-//          return localFieldResponse;
-
-//     } catch (error) {
-//         console.error("Cloudinary upload error:", error.message || error);
-//        fs.unlinkSync(localFilePath) 
-//     return null   
-//     }
-// }
-
-// export {uploadOnCloudinary}

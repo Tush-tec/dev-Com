@@ -6,150 +6,116 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { v4 as uuidv4 } from 'uuid';
+import { getLocalPath, getStaticFilePath } from "../utils/helper.js";
 
 const createProduct = asyncHandler(async (req, res) => {
-  const {
-    title,
-    description,
-    category,
-    brand,
-    price,
-    salePrice,
-    totalStock,
-    tags,
-    dimensions,
-    weight,
-    vendor,
-    variants,
-  } = req.body;
+  const { name, description, category, price, stock } = req.body;
+  // const sku = req.body.sku || uuidv4(); 
 
-  // Validate required fields
-  if (!title || !price || !totalStock) {
-    throw new ApiError(400, "Title, Price, and Total Stock are required");
+  // const findCategory = await Category.find(category);
+  // console.log(findCategory)
+  const categoryToBeAdded = await Category.findById(category);
+
+  if (!categoryToBeAdded) {
+    throw new ApiError(404, "Category does not exist");
   }
 
-  if (salePrice && salePrice >= price) {
-    throw new ApiError(400, "Sale price must be less than the original price");
+  // Check if user has uploaded a main image
+  if (!req.files?.mainImage || !req.files?.mainImage.length) {
+    throw new ApiError(400, "Main image is required");
   }
 
-  // Validate and upload images
-  const imagesLocalPaths = req.files?.image?.map((file) => file.path);
-  if (!imagesLocalPaths || imagesLocalPaths.length === 0) {
-    throw new ApiError(400, "At least one product image is required");
+  const mainImageUrl =  req.files?.mainImage[0]?.filename
+  const mainImageLocalPath = req.files?.mainImage[0]?.filename
+
+  // Check if user has uploaded any subImages if yes then extract the file path
+ 
+  // const subImages =
+  //   req.files.subImages && req.files.subImages?.length
+  //     ? req.files.subImages.map((image) => {
+  //         const imageUrl = getStaticFilePath(req, image.filename);
+  //         const imageLocalPath = getLocalPath(image.filename);
+  //         return { url: imageUrl, localPath: imageLocalPath };
+  //       })
+  //     : [];
+
+  // const owner = req.user?._id;
+  // console.log(owner)
+  let product
+  try {
+    const product = await Product.create({
+      name,
+      description,
+      stock,
+      price,
+      owner: req.user?._id,
+      mainImage: {
+        url: mainImageUrl,
+        localPath: mainImageLocalPath,
+      },
+      category,
+      // sku,  // Use the generated SKU or the provided SKU/
+    });
+
+    
+    if (!product) {
+      throw new ApiError(400, "Failed to create product");
+    }
+  
+    return res.status(201).json(new ApiResponse(201, product, "Product created successfully"));
+  } catch (error) {
+    console.error("Error creating product:", error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Duplicate key error" });
+    }
+    return res.status(500).json({ message: "Internal Server Error", error });
   }
-
-  const uploadedImages = await Promise.all(
-    imagesLocalPaths.map((path) => uploadOnCloudinary(path))
-  );
-
-  if (!uploadedImages || uploadedImages.some((img) => !img)) {
-    throw new ApiError(
-      400,
-      "Failed to upload one or more images to Cloudinary"
-    );
-  }
-
-  // Create product
-  const newProduct = await Product.create({
-    title,
-    description,
-    category,
-    brand,
-    price,
-    salePrice,
-    totalStock,
-    tags,
-    dimensions,
-    weight,
-    vendor,
-    variants,
-    images: uploadedImages.map((img) => img.url),
-  });
-
-  if (!newProduct) {
-    throw new ApiError(500, "Failed to create product");
-  }
-
+  
   return res
     .status(201)
-    .json(new ApiResponse(201, newProduct, "Product created successfully"));
+    .json(new ApiResponse(201, product, "Product created successfully"));
 });
+
 
 const getAllProduct = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
-  const productAggregate = Product.aggregate([{ $match: {} }]);
 
-  const products = await Product.aggregatePaginate(
-    productAggregate,
-    getMongoosePaginationOptions({
-      page,
-      limit,
-      customLabels: {
-        totalDocs: "totalProducts",
-        docs: "products",
-      },
-    })
-  );
+  // Convert to numbers to ensure proper pagination
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
+
+  // Get products with pagination
+  const products = await Product.find()
+    .skip((pageNumber - 1) * limitNumber) 
+    .limit(limitNumber); 
+
+  const totalProducts = await Product.countDocuments();
+
+  if (!products || products.length === 0) {
+    throw new ApiError(404, "Products not found");
+  }
+
+  // console.log({totalProducts,
+  //   products,
+  //   totalPages: Math.ceil(totalProducts / limitNumber), 
+  //   currentPage: pageNumber})
 
   return res
-    .status(200)
-    .json(new ApiResponse(200, products, "Products fetched successfully"));
+  .status(201)
+  .json(
+    new ApiResponse(
+      201,
+     { totalProducts,
+      products,
+      totalPages: Math.ceil(totalProducts / limitNumber), 
+      currentPage: pageNumber},
+      "product fetched successfully"
+
+    )
+  )
 });
 
-// const getAllProduct = asyncHandler(async (req, res) => {
-//   // Get Value for query:
-//   const { category, brand, price, tags, page = 1, limit = 10 } = req.query;
-
-//   const filters = {
-//     ...(category && { category: { name: category } }),
-//     ...(brand && { brand: { name: brand } }),
-//     ...(price && { price: { $lte: Number(price) } }),
-//     ...(tags && { tags: { $in: tags.split(",") } }),
-//   };
-
-//   // filter out undefined value
-//   const cleanedFilters = Object.fromEntries(
-//     Object.entries(filters).filter(([_, v]) => v !== undefined)
-//   );
-
-//   if (Object.keys(cleanedFilters).length === 0) {
-//     return res
-//       .status(400)
-//       .json(
-//         new ApiResponse(
-//           400,
-//           null,
-//           "Please provide at least one filter to search products"
-//         )
-//       );
-//   }
-
-//   try {
-//     const filterProduct = await Product.find(cleanedFilters)
-//       .sort({ price: 1 })
-//       .skip((page - 1) * limit)
-//       .limit(parseInt(limit))
-//       .populate("images")
-//       .populate("variants")
-//       .populate("vendor", "name")
-//       .populate("category", "name")
-//       .populate("brand", "name")
-//       .populate("tags", "name");
-
-//     if (!filterProduct || filterProduct.length === 0) {
-//       throw new ApiError(404, "No product found");
-//     }
-
-//     return res
-//       .status(200)
-//       .json(new ApiResponse(200, filterProduct, "Product found successfully"));
-//   } catch (error) {
-//     return res.status(error.statusCode || 500).json({
-//       status: error.statusCode || 500,
-//       message: error.message || "Internal Server Error",
-//     });
-//   }
-// });
 
 const getProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -235,18 +201,18 @@ const deleteProductById = asyncHandler(async (req, res) => {
     );
 });
 
-const getFeaturedProduct = asyncHandler(async (req, res) => {
-  const product = await Product.find({ isFeatured: true }).limit(10);
+// const getFeaturedProduct = asyncHandler(async (req, res) => {
+//   const product = await Product.find({ isFeatured: true }).limit(10);
 
-  if (!product) {
-    throw new ApiError(404, "Product not found in Get Featured Product");
-  }
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, product, "Product found in Get Featured Product")
-    );
-});
+//   if (!product) {
+//     throw new ApiError(404, "Product not found in Get Featured Product");
+//   }
+//   return res
+//     .status(200)
+//     .json(
+//       new ApiResponse(200, product, "Product found in Get Featured Product")
+//     );
+// });
 
 const incrementProductViews = asyncHandler(async (req, res) => {
   const { id } = req.params;

@@ -9,27 +9,23 @@ import { verifyPermission } from "../middleware/auth.js";
 
 const router = Router()
 
-router
-.route('/product/product-creation')
-.get(getAllProduct)
-.post(
+// .get(getAllProduct)
+router.route('/product-creation').post(
     authMiddleware,
-    verifyPermission([UserRolesEnum.ADMIN]),
     upload.fields([
         {
-          name: "Image",
+          name: "mainImage",
           maxCount: 1,
         },
     ]),
-    
-    createProductValidator(),
-    validate,
     createProduct
 )
 
-router
-.route('/product/update/:productId')
-.get(mongoIdPathVariableValidator("productId"), validate, getProductById)
+router.route("/product/all-product").get(
+    authMiddleware,
+    getAllProduct
+)
+router.route('/product/update/:productId').get(getProductById)
 .patch(
     authMiddleware,
     verifyPermission([UserRolesEnum.ADMIN]),

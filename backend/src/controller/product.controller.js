@@ -1,5 +1,6 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Product } from "../models/product.model.js";
+import { v2 as cloudinary } from "cloudinary";
 import { Category } from "../models/category.model.js";
 import { getMongoosePaginationOptions } from "../utils/helper.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -8,6 +9,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v4 as uuidv4 } from 'uuid';
 import { getLocalPath, getStaticFilePath } from "../utils/helper.js";
+import path from "path";
 
 const createProduct = asyncHandler(async (req, res) => {
   const { name, description, category, price, stock } = req.body;
@@ -114,7 +116,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
 });
 
 
-
 const getProductById = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   if (!isValidObjectId(productId)) {
@@ -127,9 +128,13 @@ const getProductById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product not found");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, product, "Product found successfully"));
+  const categories =  await Category.findById(product.category);
+
+   res.render("productEdit", { product, categories });
+
+  // return res
+  //   .status(200)
+  //   .json(new ApiResponse(200, product, "Product found successfully"));
 });
 
 // Update Product
@@ -145,34 +150,47 @@ const updateProductById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product not found");
   }
 
-  let imageUrl;
-  if (req.file) {
-    if (product.image) {
-      try {
-        const publicId = product.image.split("/").pop().split(".")[0];
-        await cloudinary.uploader.destroy(publicId);
-      } catch (error) {
-        throw new ApiError(500, "Error deleting old image from Cloudinary");
+  //  Check if a new image is provided in the request
+  const productImagePath =  req.file?.path
+  let newImageUrl = product.mainImage
+
+  if (productImagePath) {
+    
+    if (product.mainImage) {
+      const publicId = product.mainImage.split("/").pop().split(".")[0]; 
+      const deleteResult = await cloudinary.uploader.destroy(publicId);
+      if (deleteResult.result !== "ok") {
+        throw new ApiError(500, "Failed to upload new image on  Cloudinary");
       }
     }
 
-    try {
-      const uploadedImage = await uploadOnCloudinary(req.file.path);
-      imageUrl = uploadedImage?.url;
-    } catch (error) {
-      throw new ApiError(500, "Error uploading image to Cloudinary");
+   
+    const uploadedImage = await uploadOnCloudinary(productImagePath);
+    if (!uploadedImage?.url) {
+      throw new ApiError(500, "Failed to upload the new image to Cloudinary");
     }
+    newImageUrl = uploadedImage.url;
   }
+ 
 
   const updatedProduct = await Product.findByIdAndUpdate(
     id,
-    { $set: { ...req.body, image: imageUrl || product.image } },
+    {
+      $set: {
+        ...req.body, 
+        mainImage: newImageUrl
+      } 
+    },
     { new: true }
   );
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, updatedProduct, "Product updated successfully"));
+  if (!updatedProduct) {
+    throw new ApiError(500, "Failed to update the product");
+  }
+
+  res.redirect('/api/v1/products/products');
+
+
 });
 
 const deleteProductById = asyncHandler(async (req, res) => {

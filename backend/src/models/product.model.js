@@ -8,11 +8,8 @@
         required: true,
       },
       mainImage: {
-        // required: true,
-        type: {
-          url: String,
-          localPath: String,
-        },
+        type: String,
+        required: true,
       },
       name: {
         type: String,
@@ -28,23 +25,12 @@
       stock: {
         type: Number, 
       },
-      // sku: { 
-      //   type: String, 
-      //   unique: true, 
-      //   sparse: true, // Allow duplicate null values
-      // },
       category: {
         type: Schema.Types.ObjectId,
         ref: "Category",
       },
       subImages: {
-        type: [
-          {
-            url: String,
-            localPath: String,
-          },
-        ],
-        default: [],
+        type: String
       },
     },
     { timestamps: true }

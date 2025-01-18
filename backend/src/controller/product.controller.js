@@ -26,9 +26,17 @@ const createProduct = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Main image is required");
   }
 
-  const mainImageUrl =  req.files?.mainImage[0]?.filename
-  const mainImageLocalPath = req.files?.mainImage[0]?.filename
+  const mainImageUrl =  req.files?.mainImage[0]?.path
 
+  if(!mainImageUrl){
+    throw new ApiError(400, "Main image is required")
+  }
+
+  const uploadToCloudinary = await uploadOnCloudinary(mainImageUrl);
+
+  if(!uploadToCloudinary){
+    throw new ApiError(400, "Failed to upload image to cloudinary")
+  }
   // Check if user has uploaded any subImages if yes then extract the file path
  
   // const subImages =
@@ -50,10 +58,7 @@ const createProduct = asyncHandler(async (req, res) => {
       stock,
       price,
       owner: req.user?._id,
-      mainImage: {
-        url: mainImageUrl,
-        localPath: mainImageLocalPath,
-      },
+      mainImage: uploadToCloudinary.url,
       category,
       // sku,  // Use the generated SKU or the provided SKU/
     });
@@ -62,8 +67,9 @@ const createProduct = asyncHandler(async (req, res) => {
     if (!product) {
       throw new ApiError(400, "Failed to create product");
     }
-  
-    return res.status(201).json(new ApiResponse(201, product, "Product created successfully"));
+
+     
+    res.redirect('/api/v1/products/products');
   } catch (error) {
     console.error("Error creating product:", error);
     if (error.code === 11000) {
@@ -71,60 +77,51 @@ const createProduct = asyncHandler(async (req, res) => {
     }
     return res.status(500).json({ message: "Internal Server Error", error });
   }
-  
-  return res
-    .status(201)
-    .json(new ApiResponse(201, product, "Product created successfully"));
 });
 
 
 const getAllProduct = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
-  // Convert to numbers to ensure proper pagination
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);
 
-  // Get products with pagination
-  const products = await Product.find()
-    .skip((pageNumber - 1) * limitNumber) 
-    .limit(limitNumber); 
+     const products = await Product.find()
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber)
+      .populate('category'); 
 
-  const totalProducts = await Product.countDocuments();
+     console.log(products)   
+    const totalProducts = await Product.countDocuments();
 
-  if (!products || products.length === 0) {
-    throw new ApiError(404, "Products not found");
-  }
+    if (!products || products.length === 0) {
+      throw new ApiError(404, "Products not found");
+    }
 
-  // console.log({totalProducts,
-  //   products,
-  //   totalPages: Math.ceil(totalProducts / limitNumber), 
-  //   currentPage: pageNumber})
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          totalProducts,
+          products,
+          totalPages: Math.ceil(totalProducts / limitNumber),
+          currentPage: pageNumber,
+        },
+        "Products fetched successfully"
+      )
+    );
 
-  return res
-  .status(201)
-  .json(
-    new ApiResponse(
-      201,
-     { totalProducts,
-      products,
-      totalPages: Math.ceil(totalProducts / limitNumber), 
-      currentPage: pageNumber},
-      "product fetched successfully"
-
-    )
-  )
 });
 
 
-const getProductById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
 
-  if (!isValidObjectId(id)) {
+const getProductById = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  if (!isValidObjectId(productId)) {
     throw new ApiError(400, "Invalid product id");
   }
 
-  const product = await Product.findById(id);
+  const product = await Product.findById(productId);
 
   if (!product) {
     throw new ApiError(404, "Product not found");
@@ -135,6 +132,7 @@ const getProductById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, product, "Product found successfully"));
 });
 
+// Update Product
 const updateProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -178,13 +176,13 @@ const updateProductById = asyncHandler(async (req, res) => {
 });
 
 const deleteProductById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { productId } = req.params;
 
-  if (!isValidObjectId(id)) {
+  if (!isValidObjectId(productId)) {
     throw new ApiError(400, "Invalid product id, in Delete Product by Id");
   }
 
-  const product = await Product.findByIdAndDelete(id);
+  const product = await Product.findByIdAndDelete(productId);
 
   if (!product) {
     throw new ApiError(404, "Product not found in Delete Product by Id");
@@ -201,18 +199,18 @@ const deleteProductById = asyncHandler(async (req, res) => {
     );
 });
 
-// const getFeaturedProduct = asyncHandler(async (req, res) => {
-//   const product = await Product.find({ isFeatured: true }).limit(10);
+const getFeaturedProduct = asyncHandler(async (req, res) => {
+  const product = await Product.find({ isFeatured: true }).limit(10);
 
-//   if (!product) {
-//     throw new ApiError(404, "Product not found in Get Featured Product");
-//   }
-//   return res
-//     .status(200)
-//     .json(
-//       new ApiResponse(200, product, "Product found in Get Featured Product")
-//     );
-// });
+  if (!product) {
+    throw new ApiError(404, "Product not found in Get Featured Product");
+  }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, product, "Product found in Get Featured Product")
+    );
+});
 
 const incrementProductViews = asyncHandler(async (req, res) => {
   const { id } = req.params;

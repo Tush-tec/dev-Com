@@ -7,24 +7,32 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 const addToCart = asyncHandler(async (req, res) => {
-    const { productId, quantity } = req.body;
+    const { productId } = req.params;
+    const { quantity } = req.body;
 
-    if (!productId || !quantity) {
-        throw new ApiError(400, "Please provide product id and quantity");
+
+    if (!isValidObjectId(productId)) {
+        throw new ApiError(400, "Invalid product ID");
     }
+
+    if (!quantity || quantity < 1) {
+        throw new ApiError(400, "Quantity must be at least 1");
+    }
+
 
     const product = await Product.findById(productId);
     if (!product) {
-        throw new ApiError(404, "Product not found to add in cart");
+        throw new ApiError(404, "Product not found to add to cart");
     }
 
-    const user = req.user?._id;
-    let cart = await Cart.findOne({ user: user, isActive: true });
+    if (product.stock < quantity) {
+        throw new ApiError(400, "Insufficient stock for the product");
+    }
 
+    let cart = await Cart.findOne({ owner: req.user?._id });
     if (!cart) {
-        // Create a new cart if none exists for the user
         cart = await Cart.create({
-            user: user,
+            owner: req.user?._id,
             items: [],
         });
     }
@@ -35,27 +43,36 @@ const addToCart = asyncHandler(async (req, res) => {
 
     if (existingItem) {
         existingItem.quantity += quantity;
-        existingItem.price = product.price;
+        existingItem.price = product.price; 
+        existingItem.stock = product.stock; 
     } else {
+        
         cart.items.push({
-            product: productId,
+            productId,
             quantity,
             price: product.price,
+            stock: product.stock,
             name: product.title,
             image: product.image,
         });
     }
 
-    // Save the updated cart
-    const savedCart = await cart.save({validateBeforeSave: true});
+    // Recalculate the total price of the cart
+    cart.totalPrice = cart.items.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+    );
+
+    const savedCart = await cart.save({ validateBeforeSave: true });
     if (!savedCart) {
-        throw new ApiError(500, "Failed to save in cart");
+        throw new ApiError(500, "Failed to save the cart");
     }
 
     return res.status(200).json(
-        new ApiResponse(200, savedCart, "Product added to cart")
+        new ApiResponse(200, savedCart, "Product added to cart successfully")
     );
 });
+
 
 const getCart = asyncHandler(async (req, res) => {
     const user = req.user?._id;

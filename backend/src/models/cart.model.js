@@ -3,10 +3,10 @@ import mongoose,{Schema} from "mongoose";
 
 const cartSchema = new Schema(
     {
-    userId:{
+    owner:{
             type:Schema.Types.ObjectId,
             ref:"User",
-            required:true
+            // required:true
         },
         items:[
             {
@@ -53,16 +53,16 @@ const cartSchema = new Schema(
 
 // Calculate the total price before saving
 
-cartSchema.pre("save", function(next){
-    this.totalPrice = this.items.reduce(
-        (acc, items) => {
-            acc + items.price * items.quantity,
-            0
-        }
-    )
-    next((error)=>{
-        console.error("CartSchema Failed to calculate the result",error.message ||error())
-    })
-})
+// cartSchema.pre("save", function(next){
+//     this.totalPrice = this.items.reduce(
+//         (acc, items) => {
+//             acc + items.price * items.quantity,
+//             0
+//         }
+//     )
+//     next((error)=>{
+//         console.error("CartSchema Failed to calculate the result",error.message ||error())
+//     })
+// })
 
 export const Cart = mongoose.model("Cart",cartSchema)

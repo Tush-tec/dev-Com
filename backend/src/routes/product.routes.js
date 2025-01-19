@@ -83,13 +83,16 @@ router.route("/product/all-product").get(
 
   )
 
-  .delete(
-    authMiddleware,
-    verifyPermission([UserRolesEnum.USER]),
-    mongoIdPathVariableValidator("productId"),
-    validate,
+  
+
+  router.route('/delete/:id').post(
+    // authMiddleware,
+    // verifyPermission([UserRolesEnum.USER]),
+    // mongoIdPathVariableValidator("productId"),
+    // validate,
     deleteProductById
   );
+
 
 router .route("/category/:categoryId").get(mongoIdPathVariableValidator("categoryId"), validate, getProductsByCategory);
 

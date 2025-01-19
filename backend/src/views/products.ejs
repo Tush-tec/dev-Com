@@ -30,13 +30,63 @@
     .table-striped tbody tr:nth-child(odd) {
       background-color: #f2f2f2;
     }
-  </style>
+  /* Ensure the table fills its container */
+  .table {
+    width: 100%;
+    /* table-layout: fixed; Prevent column resizing */
+  }
+
+  /* Limit the description width and enable text wrapping */
+  .description-cell {
+    max-width: 200px;
+    white-space: nowrap; /* Use this for truncation */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Make product images larger and centered */
+  .product-image {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+
+  /* Flexbox for action buttons */
+  .action-buttons {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Alternate row colors */
+  .bg-light {
+    background-color: #f9f9f9;
+  }
+
+  .bg-white {
+    background-color: #ffffff;
+  }
+
+  /* Adjust header text alignment */
+  th {
+    text-align: center;
+  }
+
+  /* Align cells properly */
+  td {
+    text-align: center;
+    vertical-align: middle;
+  }
+</style>
+
 </head>
 <body>
   <div class="container">
     <!-- Form to Add Product -->
     <div class="form-container mb-5">
-      <h2>Add New Product</h2>
+      <h2 class="text-center">Add New Product</h2>
       <form action="/api/v1/products/product-creation" method="POST" enctype="multipart/form-data">
         <div class="mb-3">
           <label for="name" class="form-label">Product Name</label>
@@ -56,7 +106,7 @@
         </div>
         <div class="mb-3">
           <label for="price" class="form-label">Price</label>
-          <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+          <input type="number" class="form-control" id="price" name="price" step="1" required>
         </div>
         <div class="mb-3">
           <label for="stock" class="form-label">Stock</label>
@@ -71,8 +121,8 @@
     </div>
 
     <!-- Table to Display Products -->
-    <div class="table-container">
-      <h2>Product List</h2>
+    <div class="table-container mt-2">
+      <h2 class="text-center">Product List</h2>
       <table class="table table-bordered table-hover">
         <thead class="table-dark">
           <tr>
@@ -89,21 +139,27 @@
         <tbody>
           <% if (products.length > 0) { %>
             <% products.forEach((product, index) => { %>
-              <tr>
+              <tr class="<%= index % 2 === 0 ? 'bg-light' : 'bg-white' %>">
                 <td><%= index + 1 %></td>
                 <td><%= product.name %></td>
-                <td><%= product.description %></td>
+                <td class="description-cell"><%= product.description %></td>
                 <td><%= product.category %></td>
                 <td>&#8377;<%= product.price.toFixed(2) %></td>
                 <td><%= product.stock %></td>
                 <td>
-                  <img src="<%= product.mainImage %> %>" alt="Product Image" style="width: 100px; height: 50px; object-fit: cover;">
+                  <img
+                    src="<%= product.mainImage %>"
+                    alt="Product Image"
+                    class="product-image"
+                  />
                 </td>
                 <td>
-                  <a href="/products/<%= product._id %>" class="btn btn-sm btn-warning">Edit</a>
-                  <form action="/products/<%= product._id %>?_method=DELETE" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                  </form>
+                  <div class="action-buttons">
+                    <a href="/products/<%= product._id %>" class="btn btn-sm btn-warning">Edit</a>
+                    <form action="/api/v1/products/delete/<%= product._id %>" method="POST" style="display:inline;">
+                      <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             <% }); %>
@@ -115,6 +171,7 @@
         </tbody>
       </table>
     </div>
+      
   </div>
 
   <!-- Bootstrap JS -->

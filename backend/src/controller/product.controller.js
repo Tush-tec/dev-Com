@@ -150,6 +150,12 @@ const updateProductById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product not found");
   }
 
+  const { category: categoryId } = req.body;
+
+  const category = await Category.findById(categoryId);
+  if (!category) {
+    throw new ApiError(404, "Category not found");
+  }
   //  Check if a new image is provided in the request
   const productImagePath =  req.file?.path
   let newImageUrl = product.mainImage
@@ -194,17 +200,21 @@ const updateProductById = asyncHandler(async (req, res) => {
 });
 
 const deleteProductById = asyncHandler(async (req, res) => {
-  const { productId } = req.params;
+  const { id } = req.params;
 
-  if (!isValidObjectId(productId)) {
+  if (!isValidObjectId(id)) {
     throw new ApiError(400, "Invalid product id, in Delete Product by Id");
   }
 
-  const product = await Product.findByIdAndDelete(productId);
+  const product = await Product.findByIdAndDelete(id);
 
   if (!product) {
     throw new ApiError(404, "Product not found in Delete Product by Id");
   }
+
+  // const categories =  await Category.findById(product.category);
+
+  res.render("products", { product});
 
   return res
     .status(200)

@@ -2,11 +2,34 @@ import { Router } from "express";
 import upload from "../middleware/multer.middleware.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { registerUser,loginUser,loggedOutUser,updateAccountDetails,updateUserAvatar,changeCurrentUserPassword } from "../controller/user.controller.js";
+import passport from "passport";
+import { asyncHandler } from "../utils/asyncHandler.js"; 
+import { googleCallBack } from "../middleware/authGoggle.middleware.js";
 
 
 const router = Router()
 
 
+// ------------------------------------------User login Via Google --------------------------------------------------------------
+
+router.route("/auth/google").get(
+    passport.authenticate("google", 
+        {
+            scope:[
+                "profile",
+                "email"
+            ]
+        }
+    )
+)
+
+router.route("/auth/google").get(
+    asyncHandler(googleCallBack)
+)
+
+// ------------------------------------------User login Via Google --------------------------------------------------------------
+
+// ----------------------------------------User With Jwt ---------------------------------------------------------------
 router.route('/auth/register').post(
     upload.fields(
         [

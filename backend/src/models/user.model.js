@@ -8,6 +8,11 @@ import { UserRolesEnum,AvailableUserRoles } from "../constant.js";
 
 const userSchema =  new Schema(
     {
+        googleId: { 
+            type: String, 
+            required: true, 
+            unique: true 
+        },
         username:{
             type: String,
             unique: true,
@@ -40,6 +45,7 @@ const userSchema =  new Schema(
         password:{
             type:String,
             required:true,
+            // function() { return !this.isGoogleUser; } 
         },
         refreshToken:{
             type:String

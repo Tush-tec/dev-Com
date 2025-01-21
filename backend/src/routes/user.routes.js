@@ -12,7 +12,7 @@ const router = Router()
 
 // ------------------------------------------User login Via Google --------------------------------------------------------------
 
-router.route("/auth/google").get(
+router.route("/api/v1/users/auth/google").get(
     passport.authenticate("google", 
         {
             scope:[
@@ -23,7 +23,7 @@ router.route("/auth/google").get(
     )
 )
 
-router.route("/auth/google").get(
+router.route("/auth/google/").get(
     asyncHandler(googleCallBack)
 )
 

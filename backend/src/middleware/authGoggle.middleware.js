@@ -11,10 +11,11 @@ import { error } from "console";
 passport.use(
     new GoogleStrategy(
         {
-            clientID: process.env.CLIENT_ID,
-            clientSecret: process.env.CLIENT_SECRET,
+            clientID: "734270361244-d8kq2dvgfpd033j9i693gns30gi1kcs1.apps.googleusercontent.com",
+            // 734270361244-d8kq2dvgfpd033j9i693gns30gi1kcs1.apps.googleusercontent.com
+            clientSecret: "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",
             callbackURL: "http://localhost:8080/api/v1/users/auth/google",
-            // scope: ['profile', 'email'], 
+            scope: ['profile', 'email'], 
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
@@ -50,6 +51,7 @@ passport.use(
 
                 // Attach token to user
                 user.token = token;
+                console.log(token)
 
                 return done(null, user);
             } catch (error) {
@@ -88,7 +90,9 @@ export const googleCallBack = asyncHandler(async (req, res, next) => {
                 user: user,
                 accessToken: accessToken,
             });
+            // console.log(res)
     })(req, res, next);
 });
 
 // http://localhost:8080/api/v1/users/auth/google
+// http://localhost:8080/api/v1/users/auth/google   

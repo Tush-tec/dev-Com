@@ -212,9 +212,9 @@ const deleteProductById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product not found in Delete Product by Id");
   }
 
-  // const categories =  await Category.findById(product.category);
+  const categories =  await Category.findById(product.category);
 
-  res.render("products", { product});
+  //res.render("productDelete", { product, categories});
 
   return res
     .status(200)

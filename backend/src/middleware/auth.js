@@ -52,5 +52,5 @@ const verifyPermission = (roles = []) =>
             throw new ApiError(403, "You do not have permission to perform this action.");
         }
     });
-
+    
 export { authMiddleware, verifyPermission };

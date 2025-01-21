@@ -95,5 +95,4 @@
         })(req, res, next);
     });
 
-    // http://localhost:8080/api/v1/users/auth/google
-    // http://localhost:8080/api/v1/users/auth/google   
+  

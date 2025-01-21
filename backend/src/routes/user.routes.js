@@ -45,6 +45,7 @@ router.route('/auth/register').post(
 router.route('/auth/login').post(loginUser)
 router.route('/auth/logout').post(
     authMiddleware,
+    
     loggedOutUser
 )
 

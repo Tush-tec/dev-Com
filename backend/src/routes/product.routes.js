@@ -22,6 +22,7 @@ router.route('/product-creation').post(
           maxCount: 1,
         },
     ]),
+    // verifyPermission([UserRolesEnum.ADMIN]),
     createProduct
 )
 
@@ -63,7 +64,7 @@ router.get('/:id', async (req, res, next) => {
 
 
 router.route("/product/all-product").get(
-    authMiddleware,
+    // authMiddleware,
     getAllProduct,
 )
 
@@ -73,10 +74,9 @@ router.route("/product/all-product").get(
 // router.route('/:productId').get(getProductById)
 
   router.route('/product/:id').post(
-      // authMiddleware,
+      authMiddleware,
       // verifyPermission([UserRolesEnum.ADMIN]),
       upload.single("mainImage"),
-      // mongoIdPathVariableValidator("productId"),
       // updateProductValidator(),
       // validate,
       updateProductById
@@ -86,9 +86,8 @@ router.route("/product/all-product").get(
   
 
   router.route('/delete/:id').post(
-    // authMiddleware,
-    // verifyPermission([UserRolesEnum.USER]),
-    // mongoIdPathVariableValidator("productId"),
+    authMiddleware,
+    // verifyPermission([UserRolesEnum.ADMIN]),
     // validate,
     deleteProductById
   );

@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { AvailableUserRoles } from "../constant.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   
@@ -300,6 +301,38 @@ const changeCurrentUserPassword = asyncHandler(async (req, res) => {
     );
 });
 
+const updateUserRole = asyncHandler(async(req,res) => {
+  const {userId, role } = req.body
+
+  if(!AvailableUserRoles.includes(role)){
+    throw new ApiError(
+      404,
+      "Role is not found for User"
+    )
+  }
+
+  const user = await User.findById(userId)
+
+  if(!user){
+    throw new ApiError(
+      404,
+      "User Not Found"
+    )
+  }
+
+  user.role = role
+
+  await user.save()
+
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(200, user, "User Role is Successfully Assign!")
+  );
+  
+
+})
+
 export {
   generateAccessAndRefreshTokens,
   registerUser,
@@ -308,5 +341,6 @@ export {
   updateAccountDetails,
   updateUserAvatar,
   // refereshAccessToken,
-  changeCurrentUserPassword
+  changeCurrentUserPassword,
+  updateUserRole
 };

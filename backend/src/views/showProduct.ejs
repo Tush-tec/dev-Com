@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Page</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Styles -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f1f0ff;
+      }
+
+
+      .product-card {
+        flex: 1 1 calc(33.333% - 1rem); /* 3 cards per row */
+        max-width: calc(33% - 10rem);
+        display: flex;
+        flex-direction: column;
+        gap: 5;
+        margin: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+      }
+
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(79, 79, 79, 0.579);
+      }
+
+      .card-img-top {
+        object-fit: cover;
+        height: 180px;
+        width: 100%;
+      }
+
+      .card-body {
+        flex-grow: 1;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .card-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+
+      .card-text {
+        font-size: 14px;
+        color: #555;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        margin-bottom: 2rem;
+      }
+
+      .card-buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: auto;
+      }
+
+      .btnc {
+        padding: 0.4rem 0.8rem;
+        background-color: #ff6e40;
+        color: white;
+        border: none;
+        font-size: 14px;
+        border-radius: 4px;
+        text-decoration: none;
+      }
+
+      .product-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        height: 500px;
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        border: none;
+        border-radius: 10px;
+        z-index: 1000;
+        text-align: center;
+        overflow: hidden;
+      }
+
+      .modal img {
+        max-width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+
+      .modal-content {
+        margin-top: 10px;
+        text-align: left;
+        max-height: calc(100% - 230px);
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+
+      .modal-content h5 {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .modal-content p {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.5;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #999;
+        font-weight: bold;
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+
+      .description {
+        font-weight: bold;
+      }
+
+      #warning {
+        background-color: #ffc107;
+      }
+
+      #pos-con{
+        position: relative;
+        bottom: 62px;
+      }
+      #pos-tex{
+        position: relative;
+        top: -50px;
+      }
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm position-static" id="container-fluid">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">Devcom</a>
+        <ul class="navbar-nav ms-3">
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-bell"></i></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-cart"></i></a>
+          </li>
+          <li class="nav-item">
+            <button class="btn" style="background-color: #ff6e40; color: white; text-decoration: none;" >
+             <a class="text-decoration-none text-white" href="http://localhost:8080/api/v1/products/products/">Add product</a>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    
+     <!-- Search Bar -->
+     <div class="container mt-3 mb-5" id="pos-con">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <!-- Search Input using Bootstrap -->
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search for products..."
+              id="searchBar"
+            />
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="text-center" id="pos-tex">Here's Your Product List</h1>
+    <div class="container ">
+     
+      <!-- Product List -->
+      <div class="product-list" id="productList">
+        <% if (products.length > 0) { %>
+        <% products.forEach(product => { %>
+        <div class="product-card" data-name="<%= product.name.toLowerCase() %>">
+          <img
+            src="<%= product.mainImage %>"
+            class="card-img-top"
+            alt="<%= product.name %>"
+          />
+          <div class="card-body">
+            <h5 class="card-title"><%= product.name %></h5>
+            <p class="card-text">
+              <span class="description">Description:</span> <%= product.description %>
+            </p>
+            <div class="card-buttons">
+              <button
+                class="btnc view-details"
+                data-img="<%= product.mainImage %>"
+                data-name="<%= product.name %>"
+                data-name="<%= product.price %>"
+                data-desc="<%= product.description %>"
+              >
+                View Details
+              </button>
+              <a href="/api/v1/products/<%= product._id %>" class="btnc" id="warning">Edit Details</a>
+            </div>
+          </div>
+        </div>
+        <% }); %>
+        <% } else { %>
+        <p>No products found.</p>
+        <% } %>
+      </div>
+
+      <div class="overlay"></div>
+      <div class="modal" id="productModal">
+        <button class="modal-close">X</button>
+        <img id="modalImg" src="" alt="Product Image" />
+        <div class="modal-content">
+          <h5 id="modalName"></h5>
+          <p id="modalDesc"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+
+    <script>
+      $(document).ready(function () {
+        // Search Functionality
+        $("#searchBar").on("input", function () {
+          const searchValue = $(this).val().toLowerCase();
+          $(".product-card").each(function () {
+            const productName = $(this).data("name");
+            if (productName.includes(searchValue)) {
+              $(this).fadeIn();
+            } else {
+              $(this).fadeOut();
+            }
+          });
+        });
+
+        // Modal Functionality
+        $(".view-details").on("click", function () {
+          const imgSrc = $(this).data("img");
+          const name = $(this).data("name");
+          const price = $(this).data("price")
+          const desc = $(this).data("desc");
+
+          // Set Modal Content
+          $("#modalImg").attr("src", imgSrc);
+          $("#modalName").text(name);
+          $("#modalDesc").text(price);
+          $("#modalDesc").text(desc);
+
+          // Show Modal and Overlay
+          $(".overlay").fadeIn();
+          $("#productModal").fadeIn();
+        });
+
+        // Close Modal
+        $(".modal-close, .overlay").on("click", function () {
+          $(".overlay").fadeOut();
+          $("#productModal").fadeOut();
+        });
+      });
+    </script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -100,24 +100,22 @@ const getAllProduct = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Products not found");
     }
 
-    return res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          totalProducts,
-          products,
-          totalPages: Math.ceil(totalProducts / limitNumber),
-          currentPage: pageNumber,
-        },
-        "Products fetched successfully"
-      )
-    );
+    // res.render("dashboard")
+
+    res.render("showProduct", {
+      products,           // Pass products to the template
+      totalProducts,      // Pass total product count
+      totalPages: Math.ceil(totalProducts / limitNumber),
+      currentPage: pageNumber,
+      pageTitle: "All Products"
+    });
 
 });
 
 
 const getProductById = asyncHandler(async (req, res) => {
   const { productId } = req.params;
+
   if (!isValidObjectId(productId)) {
     throw new ApiError(400, "Invalid product id");
   }

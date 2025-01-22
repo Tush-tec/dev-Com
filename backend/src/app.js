@@ -12,7 +12,7 @@ dotenv.config()
 
 const app = express()
 
-
+app.locals.cache = false;
 
 
 app.use(express.json())
@@ -52,11 +52,12 @@ const __dirname = path.dirname(__filename);
 
 app.set('view engine', 'ejs')
 
-app.set('views', path.join(__dirname, 'views' ))
+app.set('views', path.join(__dirname,   'views' ))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/',(req,res) => {
-    res.send("hello  your server is started.")
+    res.render("dashboard")
+    // res.send("hello  your server is started.")
 })
 
 import userRouter from "./routes/user.routes.js"

@@ -13,10 +13,7 @@ import path from "path";
 
 const createProduct = asyncHandler(async (req, res) => {
   const { name, description, category, price, stock } = req.body;
-  // const sku = req.body.sku || uuidv4(); 
 
-  // const findCategory = await Category.find(category);
-  // console.log(findCategory)
   const categoryToBeAdded = await Category.findById(category);
 
   if (!categoryToBeAdded) {
@@ -39,19 +36,7 @@ const createProduct = asyncHandler(async (req, res) => {
   if(!uploadToCloudinary){
     throw new ApiError(400, "Failed to upload image to cloudinary")
   }
-  // Check if user has uploaded any subImages if yes then extract the file path
- 
-  // const subImages =
-  //   req.files.subImages && req.files.subImages?.length
-  //     ? req.files.subImages.map((image) => {
-  //         const imageUrl = getStaticFilePath(req, image.filename);
-  //         const imageLocalPath = getLocalPath(image.filename);
-  //         return { url: imageUrl, localPath: imageLocalPath };
-  //       })
-  //     : [];
-
-  // const owner = req.user?._id;
-  // console.log(owner)
+  
   let product
   try {
     const product = await Product.create({
@@ -61,8 +46,6 @@ const createProduct = asyncHandler(async (req, res) => {
       price,
       owner: req.user?._id,
       mainImage: uploadToCloudinary.url,
-      category,
-      // sku,  // Use the generated SKU or the provided SKU/
     });
 
     
@@ -83,7 +66,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
 
 const getAllProduct = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 50} = req.query;
 
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);

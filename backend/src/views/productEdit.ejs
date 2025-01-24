@@ -82,7 +82,7 @@
             <label for="category" class="form-label">Category</label>
             <select class="form-select" id="category" name="category" disabled>
               <% categories.forEach(category => { %>
-                <option value="<%= category._id %>" <%= category._id.toString() === product.category.toString() ? 'selected' : '' %>>
+                <option value="<%= category._id %>" <%= category._id   === product.category ? 'selected' : '' %>>
                   <%= category.categoryName %>
                 </option>
               <% }); %>

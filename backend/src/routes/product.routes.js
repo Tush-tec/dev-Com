@@ -71,6 +71,7 @@ router.route("/product/all-product").get(
 
 
 
+
 // router.route('/:productId').get(getProductById)
 
   router.route('/product/:id').post(

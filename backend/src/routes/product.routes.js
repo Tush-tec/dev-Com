@@ -64,10 +64,9 @@ router.get('/:id', async (req, res, next) => {
 
 
 router.route("/product/all-product").get(
-    // authMiddleware,
+    authMiddleware,
     getAllProduct,
 )
-
 
 
 

@@ -42,7 +42,7 @@
   </head>
   <body>
     <!-- Header -->
-    <nav class="navbar navbar-expand-lg navbar-light shadow-sm" id="container-fluid">
+    <!-- <nav class="navbar navbar-expand-lg navbar-light shadow-sm" id="container-fluid">
       <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="#">Devcom</a>
         <form class="d-flex ms-auto">
@@ -63,7 +63,7 @@
           </li>
           <li class="nav-item">
             <button class="btn" style="background-color: #ff6e40; color: white; text-decoration: none;" >
-             <a class="text-decoration-none text-white" href="http://localhost:8080/api/v1/products/products/">Add product</a>
+             <a class="text-decoration-none text-white" href="http://localhost:8080/api/v1/products/products">Add product</a>
             </button>
             <button class="btn" style="background-color: #ff6e40; color: white; text-decoration: none;" >
               <a class="text-decoration-none text-white " href="http://localhost:8080/api/v1/admin/auth/logout">Log out</a>
@@ -71,7 +71,8 @@
           </li>
         </ul>
       </div>
-    </nav>
+    </nav> -->
+    <%- include ('includes/header.ejs') -%>
 
     <!-- Main Content -->
     <div class="container-fluid">
@@ -84,7 +85,7 @@
             <a
               class="nav-link"
               href="#"
-              data-bs-toggle="collapse"
+              data-bs-toggle="collapse" 
               data-bs-target="#productsSubmenu"
               aria-expanded="false"
               aria-controls="productsSubmenu"
@@ -93,8 +94,8 @@
             </a>
             <div class="collapse" id="productsSubmenu">
               <ul class="nav flex-column ms-3">
-                <li onclick="window.location.href='products.ejs'"><a class="nav-link"   href="/api/v1/products/products/">Add Product</a></li>
-                <li><a class="nav-link" href="api/v1/products/product/all-product">Get Product (Individual)</a></li>
+                <li><a class="nav-link" href="/api/v1/products/products/">Add Product</a></li>
+                <li><a class="nav-link" href="/api/v1/products/product/all-product">Get Product (Individual)</a></li>
               </ul>
             </div>
             <a class="nav-link" href="#">Invoices</a>

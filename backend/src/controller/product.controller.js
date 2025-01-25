@@ -20,7 +20,6 @@ const createProduct = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Category does not exist");
   }
 
-  // Check if user has uploaded a main image
   if (!req.files?.mainImage || !req.files?.mainImage.length) {
     throw new ApiError(400, "Main image is required");
   }
@@ -83,11 +82,9 @@ const getAllProduct = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Products not found");
     }
 
-    // res.render("dashboard")
-
     res.render("showProduct", {
-      products,           // Pass products to the template
-      totalProducts,      // Pass total product count
+      products,           
+      totalProducts,     
       totalPages: Math.ceil(totalProducts / limitNumber),
       currentPage: pageNumber,
       pageTitle: "All Products"
@@ -113,12 +110,9 @@ const getProductById = asyncHandler(async (req, res) => {
 
    res.render("productEdit", { product, categories });
 
-  // return res
-  //   .status(200)
-  //   .json(new ApiResponse(200, product, "Product found successfully"));
 });
 
-// Update Product
+
 const updateProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 

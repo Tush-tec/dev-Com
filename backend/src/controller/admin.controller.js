@@ -71,16 +71,17 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500,checkUserCreatedorNot, "Something went wrong during registration");
   }
 
+  res.redirect('/api/v1/admin/auth/login')
   
-   return res
-   .status(201)
-   .json(
-    new ApiResponse(
-      201,
-      checkUserCreatedorNot,
-      "User created successfully",
-    )
-   );
+//    return res
+//    .status(201)
+//    .json(
+//     new ApiResponse(
+//       201,
+//       checkUserCreatedorNot,
+//       "User created successfully",
+//     )
+//    );
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -115,17 +116,23 @@ const loginUser = asyncHandler(async (req, res) => {
     secure: true, 
   };
 
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken)
-    .cookie("refreshToken", refreshToken)
-    .json(
-      new ApiResponse(
-        200,
-          loggedInUser, accessToken, refreshToken,
-        "User logged in successfully"
-      )
-    );
+  res.cookie("accessToken", accessToken, options);
+  res.cookie("refreshToken", refreshToken, options);
+
+  return res.status(200).redirect('/dashboard');
+  // res.redirect(`/api/v1/dashboard?user=${loggedInUser.username}`);
+
+  // return res
+  //   .status(200)
+  //   .cookie("accessToken", accessToken)
+  //   .cookie("refreshToken", refreshToken)
+  //   .json(
+  //     new ApiResponse(
+  //       200,
+  //         loggedInUser, accessToken, refreshToken,
+  //       "User logged in successfully"
+  //     )
+  //   );
 });
 
 const loggedOutUser = asyncHandler(async (req, res) => {
@@ -148,6 +155,10 @@ const loggedOutUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   };
+
+  // res.clearCookie("accessToken", options)
+  // res.clearCookie("refreshToken", options)
+  // res.redirect('/login');
 
   return res
     .status(200)

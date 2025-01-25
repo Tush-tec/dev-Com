@@ -39,14 +39,14 @@ router
     }
 );
 
-router.route('/auth/login').get((req, res) => {
-  res.render('login');
-}).post(
-  asyncHandler(loginUser),
-  (req,res) =>{
-    res.redirect('/api/v1/admin/auth/login');
-  }
-)
+
+
+router
+  .route('/auth/login')
+  .get((req, res) => {
+    res.render('login');
+  })
+  .post(asyncHandler(loginUser));
 
 router.route("/dashboard").get(authMiddleware, (req, res) => {
   res.render("dashboard");

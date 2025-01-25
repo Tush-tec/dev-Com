@@ -116,23 +116,18 @@ const loginUser = asyncHandler(async (req, res) => {
     secure: true, 
   };
 
-  res.cookie("accessToken", accessToken, options);
-  res.cookie("refreshToken", refreshToken, options);
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies only in production
+    sameSite: 'strict',
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  };
 
-  return res.status(200).redirect('/dashboard');
-  // res.redirect(`/api/v1/dashboard?user=${loggedInUser.username}`);
-
-  // return res
-  //   .status(200)
-  //   .cookie("accessToken", accessToken)
-  //   .cookie("refreshToken", refreshToken)
-  //   .json(
-  //     new ApiResponse(
-  //       200,
-  //         loggedInUser, accessToken, refreshToken,
-  //       "User logged in successfully"
-  //     )
-  //   );
+  // Set cookies and redirect to the dashboard
+  res
+    .cookie('accessToken', accessToken, cookieOptions)
+    .cookie('refreshToken', refreshToken, cookieOptions)
+    .redirect('/api/v1/admin/dashboard');
 });
 
 const loggedOutUser = asyncHandler(async (req, res) => {

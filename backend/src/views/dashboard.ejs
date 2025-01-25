@@ -65,6 +65,9 @@
             <button class="btn" style="background-color: #ff6e40; color: white; text-decoration: none;" >
              <a class="text-decoration-none text-white" href="http://localhost:8080/api/v1/products/products/">Add product</a>
             </button>
+            <button class="btn" style="background-color: #ff6e40; color: white; text-decoration: none;" >
+              <a class="text-decoration-none text-white " href="http://localhost:8080/api/v1/admin/auth/logout">Log out</a>
+            </button>
           </li>
         </ul>
       </div>
@@ -90,7 +93,7 @@
             </a>
             <div class="collapse" id="productsSubmenu">
               <ul class="nav flex-column ms-3">
-                <li><a class="nav-link" href="/api/v1/products/products/">Add Product</a></li>
+                <li onclick="window.location.href='products.ejs'"><a class="nav-link"   href="/api/v1/products/products/">Add Product</a></li>
                 <li><a class="nav-link" href="api/v1/products/product/all-product">Get Product (Individual)</a></li>
               </ul>
             </div>

@@ -116,9 +116,9 @@
             <div class="col-md-6 right-panel" style="background-color: #f5f4fe;">
                 <h2>Login</h2>
                 <div class="error-message" id="error-message"></div>
-                <form id="login-form" action="/api/v1/admin/auth/login" method="POST" class="w-75" enctype="multipart/form-data">
+                <form id="login-form" action="/api/v1/admin/auth/login" method="POST" class="w-75" enctype="application/x-www-form-urlencoded">
                     <div class="mb-3 form-field">
-                        <input type="username" name="username" class="form-control" placeholder="username...." required>
+                        <input type="text" name="username" class="form-control" placeholder="username...." required>
                     </div>
                     <div class="mb-3 form-field">
                         <input type="password" name="password" class="form-control" placeholder="Password" required>

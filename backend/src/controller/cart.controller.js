@@ -57,7 +57,6 @@ const addToCart = asyncHandler(async (req, res) => {
         });
     }
 
-    // Recalculate the total price of the cart
     cart.totalPrice = cart.items.reduce(
         (total, item) => total + item.price * item.quantity,
         0
@@ -72,7 +71,6 @@ const addToCart = asyncHandler(async (req, res) => {
         new ApiResponse(200, savedCart, "Product added to cart successfully")
     );
 });
-
 
 const getCart = asyncHandler(async (req, res) => {
     const user = req.user?._id;
@@ -93,14 +91,14 @@ const getCart = asyncHandler(async (req, res) => {
         },
         {
             $lookup: {
-                from: "products", // Ensure this matches the exact collection name
+                from: "products", 
                 localField: "items.product",
                 foreignField: "_id",
                 as: "productDetails"
             }
         },
         {
-            $unwind: "$productDetails" // Unwind to get the details for each product
+            $unwind: "$productDetails" 
         },
         {
             $addFields: {

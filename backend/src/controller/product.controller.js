@@ -7,11 +7,11 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { v4 as uuidv4 } from 'uuid';
-import { getLocalPath, getStaticFilePath } from "../utils/helper.js";
-import path from "path";
+
+
 
 const createProduct = asyncHandler(async (req, res) => {
+
   const { name, description, category, price, stock } = req.body;
 
   const categoryToBeAdded = await Category.findById(category);
@@ -21,6 +21,7 @@ const createProduct = asyncHandler(async (req, res) => {
   }
 
   if (!req.files?.mainImage || !req.files?.mainImage.length) {
+
     throw new ApiError(400, "Main image is required");
   }
 
@@ -39,13 +40,15 @@ const createProduct = asyncHandler(async (req, res) => {
   let product
   try {
     const product = await Product.create({
+
       name,
       description,
       stock,
-      price: price.toLocaleString('en-in'),
+      price,
       category,
       owner: req.user?._id,
       mainImage: uploadToCloudinary.url,
+
     });
 
     
@@ -55,17 +58,17 @@ const createProduct = asyncHandler(async (req, res) => {
 
      
     res.redirect('/api/v1/products/products');
+
   } catch (error) {
+
     console.error("Error creating product:", error);
-    if (error.code === 11000) {
-      return res.status(400).json({ message: "Duplicate key error" });
-    }
     return res.status(500).json({ message: "Internal Server Error", error });
+
   }
 });
 
-
 const getAllProduct = asyncHandler(async (req, res) => {
+
   const { page = 1, limit = 50} = req.query;
 
   const pageNumber = parseInt(page, 10);
@@ -76,19 +79,21 @@ const getAllProduct = asyncHandler(async (req, res) => {
       .limit(limitNumber)
       .populate('category'); 
 
-     console.log(products)   
-    const totalProducts = await Product.countDocuments();
+
+      const totalProducts = await Product.countDocuments();
 
     if (!products || products.length === 0) {
       throw new ApiError(404, "Products not found");
     }
 
     res.render("showProduct", {
+
       products,           
       totalProducts,     
       totalPages: Math.ceil(totalProducts / limitNumber),
       currentPage: pageNumber,
       pageTitle: "All Products"
+
     });
 
 });
@@ -115,6 +120,7 @@ const getProductById = asyncHandler(async (req, res) => {
 
 
 const updateProductById = asyncHandler(async (req, res) => {
+
   const { id } = req.params;
 
   if (!isValidObjectId(id)) {
@@ -122,6 +128,7 @@ const updateProductById = asyncHandler(async (req, res) => {
   }
 
   const product = await Product.findById(id);
+
   if (!product) {
     throw new ApiError(404, "Product not found");
   }
@@ -129,29 +136,36 @@ const updateProductById = asyncHandler(async (req, res) => {
   const { category: categoryId } = req.body;
 
   const category = await Category.findById(categoryId);
+
   if (!category) {
     throw new ApiError(404, "Category not found");
   }
-  //  Check if a new image is provided in the request
+
   const productImagePath =  req.file?.path
   let newImageUrl = product.mainImage
 
   if (productImagePath) {
     
     if (product.mainImage) {
+
       const publicId = product.mainImage.split("/").pop().split(".")[0]; 
       const deleteResult = await cloudinary.uploader.destroy(publicId);
+
       if (deleteResult.result !== "ok") {
+
         throw new ApiError(500, "Failed to upload new image on  Cloudinary");
       }
     }
 
    
     const uploadedImage = await uploadOnCloudinary(productImagePath);
+
     if (!uploadedImage?.url) {
       throw new ApiError(500, "Failed to upload the new image to Cloudinary");
     }
+
     newImageUrl = uploadedImage.url;
+
   }
  
 
@@ -190,7 +204,7 @@ const deleteProductById = asyncHandler(async (req, res) => {
 
   const categories =  await Category.findById(product.category);
 
-  //res.render("productDelete", { product, categories});
+
 
   return res
     .status(200)
@@ -261,7 +275,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
 
   const productAggregate = Product.aggregate([
     {
-      // match the products with provided category
+
       $match: {
         category: new mongoose.Types.ObjectId(categoryId),
       },

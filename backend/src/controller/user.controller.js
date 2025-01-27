@@ -24,7 +24,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
     return { accessToken, refreshToken };
   } catch (error) {
     console.error(error.message || error )
-    // throw new ApiError(500, "Something went wrong while generating tokens");
+   
   }
 };
 
@@ -129,8 +129,8 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const loggedOutUser = asyncHandler(async (req, res) => {
-  // console.log(req.user?._id);
 
+  
   await User.findByIdAndUpdate(
     req.user?._id,
 

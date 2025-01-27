@@ -73,15 +73,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
   res.redirect('/api/v1/admin/auth/login')
   
-//    return res
-//    .status(201)
-//    .json(
-//     new ApiResponse(
-//       201,
-//       checkUserCreatedorNot,
-//       "User created successfully",
-//     )
-//    );
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -121,7 +112,6 @@ const loginUser = asyncHandler(async (req, res) => {
     secure: true, 
   };
 
-  // Set cookies and redirect to the dashboard
    return res
     .cookie('accessToken', accessToken, cookieOptions)
     .cookie('refreshToken', refreshToken, cookieOptions)
@@ -129,8 +119,8 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const loggedOutUser = asyncHandler(async (req, res) => {
-  // console.log(req.user?._id);
 
+  
   await User.findByIdAndUpdate(
     req.user?._id,
 

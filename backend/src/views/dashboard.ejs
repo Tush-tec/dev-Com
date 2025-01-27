@@ -73,37 +73,12 @@
       </div>
     </nav> -->
     <%- include ('includes/header.ejs') -%>
-
+    <%- include ('includes/sidebar.ejs') -%>
     <!-- Main Content -->
     <div class="container-fluid">
       <div class="row">
         <!-- Sidebar -->
-        <div class="col-md-2 sidebar p-3">
-          <nav class="nav flex-column">
-            <a class="nav-link active" href="#">Dashboard</a>
-            <a class="nav-link" href="#">Orders</a>
-            <a
-              class="nav-link"
-              href="#"
-              data-bs-toggle="collapse" 
-              data-bs-target="#productsSubmenu"
-              aria-expanded="false"
-              aria-controls="productsSubmenu"
-            >
-              Products
-            </a>
-            <div class="collapse" id="productsSubmenu">
-              <ul class="nav flex-column ms-3">
-                <li><a class="nav-link" href="/api/v1/products/products/">Add Product</a></li>
-                <li><a class="nav-link" href="/api/v1/products/product/all-product">Get Product (Individual)</a></li>
-              </ul>
-            </div>
-            <a class="nav-link" href="#">Invoices</a>
-            <h6 class="mt-4 text-uppercase text-muted">Apps</h6>
-            <a class="nav-link" href="#">Chats</a>
-            <a class="nav-link" href="#">Email</a>
-            <a class="nav-link" href="#">Todo App</a>
-          </nav>
+        <div class="col-md-2">
         </div>
 
         <!-- Dashboard Content -->

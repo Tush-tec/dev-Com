@@ -151,15 +151,10 @@ const loggedOutUser = asyncHandler(async (req, res) => {
     secure: true,
   };
 
-  // res.clearCookie("accessToken", options)
-  // res.clearCookie("refreshToken", options)
-  // res.redirect('/login');
-
-  return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User Logged-Out"));
+  res
+    .cookie('accessToken', accessToken, cookieOptions)
+    .cookie('refreshToken', refreshToken, cookieOptions)
+    .redirect('/api/v1/admin/auth/login');
 });
 
 

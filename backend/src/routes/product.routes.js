@@ -13,16 +13,14 @@ import { ApiError } from "../utils/ApiError.js";
 
 const router = Router()
 
-// .get(getAllProduct)
 router.route('/product-creation').post(
-    // authMiddleware,
+    authMiddleware,
     upload.fields([
         {
           name: "mainImage",
           maxCount: 1,
         },
     ]),
-    // verifyPermission([UserRolesEnum.ADMIN]),
     createProduct
 )
 
@@ -69,13 +67,8 @@ router.route("/product/all-product").get(
 )
 
 
-
-
-// router.route('/:productId').get(getProductById)
-
   router.route('/product/:id').post(
       authMiddleware,
-      // verifyPermission([UserRolesEnum.ADMIN]),
       upload.single("mainImage"),
       // updateProductValidator(),
       // validate,

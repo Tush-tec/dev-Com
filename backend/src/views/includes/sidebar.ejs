@@ -3,51 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Styled Sidebar</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
+    body {
+      margin: 0;
+      padding:0 ;
+      font-family: Arial, sans-serif;
+    }
+
     .sidebar {
-        /* height: 100vh; */
-        background-color: #f5f4fe;
-        /* box-shadow: 0 4px  8px rgba(0, 0, 0, 0.1); */
-      }
-      .sidebar .nav-link {
-        color: #333;
-      }
-      .sidebar .nav-link:hover {
-        background-color: #ff6e40;
-      }
-      #container-fluid{
-        background-color: #f5f4fe;
-      }
+      height: 100vh;
+      width: 250px;
+      background-color:   #3b4651;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      position: fixed;
+     
+    }
+
+    .sidebar h6 {
+      color: #9ca3af;
+      font-size: 0.75rem;
+      margin-top: 2rem;
+      text-transform: uppercase;
+    }
+
+    .sidebar .nav-link {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1rem;
+      /* margin: 0.5rem 0; */
+      display: flex;
+      align-items: center;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .sidebar .nav-link i {
+      margin-right: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .sidebar .nav-link:hover {
+      background-color: #ff6e40;
+      color: #ffffff;
+    }
+
+    /* .sidebar .collapse .nav-link {
+      font-size: 0.9rem;
+      padding-left: 2rem;
+    } */
+
+
+    .sidebar .active {
+      background-color: #4c5564;
+    }
+
+    #container-fluid {
+      background-color: #f5f4fe;
+      margin-left: 250px;
+      padding: 1rem;
+    }
   </style>
 </head>
 <body>
-  <div class="col-md-2 sidebar p-3">
+  <div class="sidebar">
+    <h5 class="mb-4 ">Larkon</h5>
     <nav class="nav flex-column">
-      <a class="nav-link active" href="#">Dashboard</a>
-      <a class="nav-link" href="#">Orders</a>
-      <a
-        class="nav-link"
-        href="#"
-        data-bs-toggle="collapse" 
-        data-bs-target="#productsSubmenu"
-        aria-expanded="false"
-        aria-controls="productsSubmenu"
-      >
-        Products
+      <a class="nav-link active" href="/api/v1/admin/dashboard" target="_top"><i class="fas fa-tachometer-alt" ></i> Dashboard</a>
+      <a class="nav-link" href="#"><i class="fas fa-box"></i> Orders</a>
+      <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#productsSubmenu" aria-expanded="false" aria-controls="productsSubmenu">
+        <i class="fas fa-shopping-bag"></i> Products
       </a>
       <div class="collapse" id="productsSubmenu">
-        <ul class="nav flex-column ms-3">
+        <ul class="nav flex-column">
           <li><a class="nav-link" href="/api/v1/products/products/">Add Product</a></li>
-          <li><a class="nav-link" href="/api/v1/products/product/all-product">Get Product (Individual)</a></li>
+          <li><a class="nav-link" href="/api/v1/products/product/all-product">Get Product</a></li>
+          <li><a class="nav-link" href="/api/v1/products/product/all-product">Update Product</a></li>
+
         </ul>
       </div>
-      <a class="nav-link" href="#">Invoices</a>
-      <h6 class="mt-4 text-uppercase text-muted">Apps</h6>
-      <a class="nav-link" href="#">Chats</a>
-      <a class="nav-link" href="#">Email</a>
-      <a class="nav-link" href="#">Todo App</a>
+      <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#productsSubmenuItem" aria-expanded="false" aria-controls="productsSubmenuItem">
+        <i class="fas fa-shopping-bag"></i> Category 
+      </a>
+      <div class="collapse dropdown" id="productsSubmenuItem">
+        <ul class="nav flex-column">
+          <li><a class="nav-link" href="/api/v1/categories/create-category">Add Category</a></li>
+          <li><a class="nav-link" href="/api/v1/categories/get-categaory">Get Category</a></li>
+          <li><a class="nav-link" href="/api/v1/categories/create-category ">Update Category</a></li>
+        </ul>
+      </div>
+      <a class="nav-link" href="#"><i class="fas fa-file-invoice"></i> Invoices</a>
+      <h6 class="text-uppercase text-muted">Apps</h6>
+      <a class="nav-link" href="#"><i class="fas fa-comments"></i> Chats</a>
+      <a class="nav-link" href="#"><i class="fas fa-envelope"></i> Email</a>
+      <a class="nav-link" href="#"><i class="fas fa-list-check"></i> Todo App</a>
     </nav>
   </div>
+  <!-- <div id="container-fluid">
+    <h1>Content Area</h1>
+    <p>This is where your main content will go.</p>
+  </div> -->
 </body>
 </html>

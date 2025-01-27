@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-light shadow-sm" id="container-fluid">
+<nav class="navbar navbar-expand-lg navgar-light  shadow-sm fixed-top" style="height: 70px; background: #F5F4FE;">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="#">Devcom</a>
+    <a class="navbar-brand fw-bold " href="#" >Devcom</a>
     <form class="d-flex ms-auto">
       <input
         class="form-control me-2"
@@ -22,9 +22,15 @@
          <a class="text-decoration-none text-white" href="http://localhost:8080/api/v1/products/products">Add product</a>
         </button>
         <button class="btn" style="background-color: #ff6e40; color: white; text-decoration: none;" >
-          <a class="text-decoration-none text-white " href="http://localhost:8080/api/v1/admin/auth/logout">Log out</a>
+          <a class="text-decoration-none text-white " href="/api/v1/admin/auth/logout
+          ">Log out</a>
         </button>
       </li>
     </ul>
   </div>
 </nav>
+
+<!-- Add padding-top to offset the fixed navbar -->
+<div class="container" style="padding-top: 70px;">
+  <!-- Your content here -->
+</div>

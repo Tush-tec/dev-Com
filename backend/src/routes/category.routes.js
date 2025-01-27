@@ -5,7 +5,7 @@ import { authMiddleware } from '../middleware/auth.js';
 const router = express.Router();
 
 // Route to create a category
-router.route('/create-category').post(authMiddleware, createCategory); 
+router.route('/create-category').post(authMiddleware, createCategory);
 
 // Route to get all categories with pagination
 router.route('/get-categaory').get(getCategory); 

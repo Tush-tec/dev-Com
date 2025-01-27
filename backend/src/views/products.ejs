@@ -13,23 +13,20 @@
       background-color: #f8f9fa;
       font-family: Arial, sans-serif;
     }
-    .container-fluid {
-      display: flex;
-      min-height: 100vh;
-      padding: 0;
-      background-color: #efeefd;
+
+    .container-fluid{
+      position: relative;
+
     }
     .main-content {
-      flex-grow: 1;
+      /* flex-grow: 1; */
       padding: 20px;
       background-color: #f5f4fe;
+      position: absolute;
+      left: 250px;
+      
     }
-    .sidebar {
-      width: 250px;
-      background-color: #343a40;
-      color: white;
-      padding: 20px;
-    }
+    
     .form-container, .table-container {
       background: white;
       padding: 20px;
@@ -76,45 +73,7 @@
       text-align: center;
       vertical-align: middle;
     }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      display: block;
-      padding: 10px 0;
-      font-size: 16px;
-    }
-    .sidebar a:hover {
-      background-color: #495057;
-    }
     
-    /* Adjusting Navbar height */
-    .navbar {
-      padding: 0.5rem 1rem;
-    }
-    .navbar-brand {
-      font-size: 1.25rem;
-    }
-    .navbar .d-flex {
-      align-items: center;
-    }
-    .form-control {
-      height: 30px;
-      font-size: 0.875rem;
-    }
-    .navbar .btn {
-      font-size: 0.875rem;
-      padding: 5px 10px;
-    }
-    .navbar-nav .nav-item .nav-link {
-      padding: 8px 10px;
-    }
-    .navbar-nav .nav-item button {
-      padding: 5px 15px;
-    }
-
-    .custom-file-input {
-    display: none;
-  }
 
   .custom-file-input + label {
     display: inline-block;
@@ -159,15 +118,16 @@
   
 </head>
 <body>
-  <div class="adjustheight">
+  <%- include ('includes/header.ejs') -%>
 
+
+  <div class="col-md-2">
+    <%- include ('includes/sidebar.ejs') -%>
+  </div>
   <div class="container-fluid">
-    <div class="sidebar">
-      <%- include ('includes/sidebar.ejs') -%> <!-- Include your sidebar content here -->
-    </div>
 
-    <div class="main-content">
-      <div class="form-container mb-5">
+    <div class="main-content  col-md-10  ">
+      <div class="form-container              ">
         <h2 class="text-center">Add New Product</h2>
         <form action="/api/v1/products/product-creation" method="POST" enctype="multipart/form-data">
           
@@ -207,7 +167,7 @@
             <!-- Stock and Price inline -->
             <div class="col-md-6">
               <label for="price" class="form-label">Price</label>
-              <input type="number" class="form-control" id="price" name="price" step="1" required>
+              <input type="number" class="form-control" id="price" name="price" required>
             </div>
             <div class="col-md-6">
               <label for="stock" class="form-label">Stock</label>
@@ -265,7 +225,7 @@
                             <td><%= product.name %></td>
                             <td class="description-cell"><%= product.description %></td>
                             <td><%= product.category %></td>  
-                            <td>&#8377;<%= product.price.toFixed(2) %></td>
+                            <td>&#8377;<%= Number(product.price.toFixed(2)).toLocaleString('en-IN') %></td>
                             <td><%= product.stock %></td>
                             <td>
                                 <img

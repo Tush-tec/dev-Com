@@ -59,9 +59,10 @@ router.route("/dashboard").get(authMiddleware, (req, res) => {
 
 router
   .route("/auth/logout")
-  .post(authMiddleware, asyncHandler(loggedOutUser), (req, res) => {
-    res.render("login");
-  });
+  .get((req, res) => {
+    res.render('login');
+  })
+  .post(authMiddleware, asyncHandler(loggedOutUser));
 
 router
   .route("/update-account-details")

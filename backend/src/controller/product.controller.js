@@ -42,7 +42,8 @@ const createProduct = asyncHandler(async (req, res) => {
       name,
       description,
       stock,
-      price,
+      price: price.toLocaleString('en-in'),
+      category,
       owner: req.user?._id,
       mainImage: uploadToCloudinary.url,
     });

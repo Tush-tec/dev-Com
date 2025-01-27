@@ -57,6 +57,10 @@ app.set('views', path.join(__dirname,   'views' ))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
+app.get("/", (req, res) =>{
+    res.redirect("/api/v1/admin/auth/login")
+})
+
 
 
 import userRouter from "./routes/user.routes.js"

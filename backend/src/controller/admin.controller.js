@@ -118,12 +118,11 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', 
-    sameSite: 'strict',
+    secure: true, 
   };
 
   // Set cookies and redirect to the dashboard
-  res
+   return res
     .cookie('accessToken', accessToken, cookieOptions)
     .cookie('refreshToken', refreshToken, cookieOptions)
     .redirect('/api/v1/admin/dashboard');
@@ -150,10 +149,10 @@ const loggedOutUser = asyncHandler(async (req, res) => {
     secure: true,
   };
 
-  res
-    .cookie('accessToken', accessToken, cookieOptions)
-    .cookie('refreshToken', refreshToken, cookieOptions)
-    .redirect('/api/v1/admin/auth/login');
+  res.clearCookie('accessToken',  options )
+  res.clearCookie('refreshToken', options )
+
+  return  res.redirect('/api/v1/admin/auth/login');
 });
 
 

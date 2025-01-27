@@ -217,8 +217,8 @@
                 </tr>
             </thead>
             <tbody id="productTableBody">
-                <!-- Dynamically render products -->
-                <% if (products.length > 0) { %>
+
+              <% if (products.length > 0) { %>
                     <% products.forEach((product, index) => { %>
                         <tr class="<%= index % 2 === 0 ? 'bg-light' : 'bg-white' %>">
                             <td><%= index + 1 %></td>

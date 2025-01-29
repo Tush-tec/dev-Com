@@ -104,15 +104,15 @@ const HeaderPage = () => {
             <a href="to='/'"><img src="https://readymadeui.com/readymadeui-white.svg" alt="logo" className='w-36' />
             </a>
           </li>
-          <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/'
+          <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/home'
             className='hover:text-yellow-300 text-yellow-300 text-[15px] font-medium block'>Home</Link></li>
-          <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/'
+          <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/about'
             className='hover:text-yellow-300 text-white text-[15px] font-medium block'>About</Link></li>
-          <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/'
+          <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/contact'
             className='hover:text-yellow-300 text-white text-[15px] font-medium block'>Contact</Link></li>
-          <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/'
+          <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/service'
             className='hover:text-yellow-300 text-white text-[15px] font-medium block'>Service</Link></li>
-          <li className='max-lg:border-b max-lg:py-3 px-3'><a to='/'
+          <li className='max-lg:border-b max-lg:py-3 px-3'><a to='/product'
             className='hover:text-yellow-300 text-white text-[15px] font-medium block'>Product</a></li>
         </ul>
       </div>

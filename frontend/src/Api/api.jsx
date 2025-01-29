@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const apiClient = axios.create({
-    baseURL: import.meta.env.BASE_URL,
+    baseURL:" http://localhost:8080/api/v1/"  ,    //import.meta.env.BASE_URL,
     withCredentials:true,
     timeout:120000
 })
@@ -31,6 +31,7 @@ const registerUser = (data) =>{
 }
 
 const loginUser = (data)=>{
+    // console.log(data)
     return apiClient.post('/users/auth/login',data)
 }
 

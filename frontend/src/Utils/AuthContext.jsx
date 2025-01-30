@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { LocalStorage, requestHandler } from "./app";
 import { loginUser, logOutUser, registerUser } from "../Api/api";
 import Loader from "../Components/Loader";
+import axios from "axios"
+
+
 
 const AuthContext = createContext({
     user: null,
@@ -20,7 +23,7 @@ const AuthProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const register = async (data) => {
         setIsLoading(true);

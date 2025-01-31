@@ -1,7 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { LocalStorage } from "../Utils/app";
+import cookie from "js-cookie"
+import { useAuth } from "../Utils/AuthContext";
 
 const HeaderPage = () => {
+
+  const  [ isLoggin, setLoggin ] = useState(false)
+
+  useEffect( () => {
+    const token  = LocalStorage.get("Token") || cookie.get("	accessToken")
+
+    if(token) {
+      setLoggin(true)
+    }
+  },[])
+
+  const {logout} = useAuth()
+  const handleLogout = () => {
+    logout()
+    setLoggin(false)
+  }
+
+
+
+
+  
+
   return (
   <header className='shadow-lg font-[sans-serif] tracking-wide relative z-50'>
       <section
@@ -55,7 +80,13 @@ const HeaderPage = () => {
                     </span>
                 </span>
               </li>
-              <li className="flex items-center text-[15px] max-lg:py-2 px-4 hover:text-[#007bff]">
+              {
+                isLoggin ? (
+                  <li>
+                    <button onClick={handleLogout}  className="bg-orange-500 px-2 py-1 text-white rounded hover:bg-red-700" > Logout</button>
+                  </li>
+                ) : (
+                  <li className="flex items-center text-[15px] max-lg:py-2 px-4 hover:text-[#007bff]">
                   <Link
                     to="/login"
                     className="px-2 py-2 text-sm font-semibold text-gray-800 transition hover:text-[#007bff]"
@@ -70,6 +101,9 @@ const HeaderPage = () => {
                     Register
                   </Link>
                 </li>
+                )
+              }
+              
 
               <li id="toggleOpen" className='lg:hidden'>
                 <button>

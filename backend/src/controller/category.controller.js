@@ -31,15 +31,17 @@ const createCategory = asyncHandler(async(req,res)=>{
         )
     }
 
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            category,
-            'Category created successfully',
-        )
-    )
+    res.redirect("/api/v1/categories/category" )
+
+    // return res
+    // .status(200)
+    // .json(
+    //     new ApiResponse(
+    //         200,
+    //         category,
+    //         'Category created successfully',
+    //     )
+    // )
 })
 
 const getCategory = asyncHandler(async(req,res)=>{
@@ -78,6 +80,9 @@ const getCategory = asyncHandler(async(req,res)=>{
             'Category not found',
         )
     }
+
+    // res.render("category", categoryName
+    // )
 
     return res
     .status(200)

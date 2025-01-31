@@ -63,6 +63,20 @@
 //   return order;
 // };
 
+app.post('/create-order',async (req,res)=>{
+  const Razorpay = require('razorpay');
+  var instance = new Razorpay({ key_id: '', key_secret: '' })
+
+  var options = {
+    amount: req.body.amount,  // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    currency: "INR",
+    receipt: uuid.v4()
+  };
+  instance.orders.create(options, function(err, order) {
+    return res.status(200).json(order)
+  });
+
+})
 
 let razorpayInstance;
 

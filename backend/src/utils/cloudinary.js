@@ -2,16 +2,16 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
 
-dotenv.config(); // Load .env variables
+dotenv.config(); 
 
-// Configure Cloudinary
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Upload Function
+
 const uploadOnCloudinary = async (localFilePath) => {
   if (!localFilePath) {
     console.error("No file path provided for upload.");
@@ -19,9 +19,9 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 
   try {
-    // Upload file to Cloudinary
+
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto", // Handles images, videos, etc.
+      resource_type: "image", 
     });
 
     console.log("File uploaded to Cloudinary:", response.url);
@@ -40,7 +40,7 @@ const uploadOnCloudinary = async (localFilePath) => {
   } catch (error) {
     console.error("Cloudinary upload error:", error.message || error);
 
-    // Cleanup local file if the upload fails
+
     if (fs.existsSync(localFilePath)) {
       try {
         fs.unlinkSync(localFilePath);
@@ -50,7 +50,8 @@ const uploadOnCloudinary = async (localFilePath) => {
       }
     }
 
-    return null; // Return null on failure
+    return null; 
+    
   }
 };
 

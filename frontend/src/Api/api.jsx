@@ -7,15 +7,11 @@ const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use(
-    // Add Logic in a function that will use  before sending the request to the server, set token in the localstorage, set headers or  modifying request
+   
 
     function(config){
 
-        // Retrieve user token from local storage
         const token = localStorage.getItem("token")
-
-        // Set authorization header with bearer token
-
         config.headers.Authorization = `Bearer ${token}`
 
         return config
@@ -31,7 +27,6 @@ const registerUser = (data) =>{
 }
 
 const loginUser = (data)=>{
-    // console.log(data)
     return apiClient.post('/users/auth/login',data)
 }
 

@@ -108,7 +108,7 @@ const RegisterForm = () => {
                 </Button>
 
                 {/* Login link */}
-                <small className="text-zinc-300">
+                <small className="text-blue-700">
                     Already have an account?{" "}
                     <a className="text-primary hover:underline" href="/login">
                         Login

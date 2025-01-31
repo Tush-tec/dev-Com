@@ -2,47 +2,48 @@ const isBrowser = typeof window !== "undefined"; // Move this outside the class
 
 const requestHandler = async (api, setLoading, onSuccess, onError) => {
   try {
- 
-    
+
+    if (typeof api !== 'function') {
+      throw new Error('API function is not defined');
+    }
+
     setLoading && setLoading(true);
 
-    const { data } = await api(); 
-    console.log(`response from API: ${data}`);
+    const { data } = await api();
 
-    // Ensure data exists and has success field
     if (data?.success) {
-      onSuccess(data); // Success callback
+      onSuccess(data);
     } else {
-      // If the success flag is false, handle it as an error
       onError('Something went wrong with the API response');
     }
   } catch (error) {
-    // Handle error cases gracefully
     let errorMessage = 'Something went wrong.';
 
-    // Check if error response structure matches your API's format
     if (error?.response?.data?.message) {
       errorMessage = error.response.data.message;
     } else if (error?.message) {
-      errorMessage = error.message; // Fallback to the error message
+      errorMessage = error.message;
     }
 
     onError(errorMessage);
 
-    // Handle specific status codes (401, 403)
+
+    console.error('API Error:', error);
+
     if (error?.response?.data?.statusCode && [401, 403].includes(error.response.data.statusCode)) {
       localStorage.clear();
-      
-      // Check if it's running in the browser environment
+
+
       if (typeof window !== 'undefined') {
-        window.location.href = "/login"; // Redirection in a browser environment
+        window.location.href = "/login";
       }
     }
   } finally {
-    // Hide loading state if setLoading function is provided
     setLoading && setLoading(false);
   }
 };
+
+
 
 const getMetaDataOfChatObject = (chat, loggedinUser) => {
   const { lastMessage, participants,  isGroupChat, name } = chat; // Destructuring

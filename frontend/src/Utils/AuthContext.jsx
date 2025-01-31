@@ -3,9 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { LocalStorage, requestHandler } from "./app";
 import { loginUser, logOutUser, registerUser } from "../Api/api";
 import Loader from "../Components/Loader";
-import axios from "axios"
-
-
 
 const AuthContext = createContext({
     user: null,
@@ -20,10 +17,11 @@ const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
+    const navigate = useNavigate();
+
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
-    // const navigate = useNavigate();
 
     const register = async (data) => {
         setIsLoading(true);
@@ -38,30 +36,43 @@ const AuthProvider = ({ children }) => {
     };
 
     const login = async (data) => {
-        console.log("Received data in login:", data);
         setIsLoading(true);
-        
         try {
             await requestHandler(
                 async () => await loginUser(data),
+                console.log(loginUser(data)),
                 (res) => {
-                    const { data } = res;
-                    setUser(data.user);
-                    setToken(data.accessToken);
-                    LocalStorage.set("User", data.user);
-                    LocalStorage.set("Token", data.accessToken);
-                    navigate("/");
+                    if (res.statusCode === 200 && res.success === 200) {
+                        const user = res.data.loggedInUser;
+                        const accessToken = res.data.accessToken;
+                        const refreshToken = res.data.refreshToken;
+                        
+                        if (user && accessToken) {
+                            setUser(user.username);
+                            setToken(accessToken);
+                            LocalStorage.set("User", user);
+                            LocalStorage.set("Token", accessToken);
+                            LocalStorage.set("RefreshToken", refreshToken);
+                            
+                            navigate('/');
+                        } else {
+                            console.error("User or token is missing");
+                        }
+                    } else {
+                        console.error("Unexpected response format", res);
+                    }
                 },
                 (error) => {
-                    console.error("Login Failed, Please check login with valid credentials!", error.message || error);
+                    console.error("Login error:", error.message || error);
                 }
             );
         } catch (error) {
             console.error("Login error:", error.message || error);
         } finally {
-            setIsLoading(false); // Ensure loading is reset
+            setIsLoading(false);
         }
     };
+    
 
     const logout = async () => {
         setIsLoading(true);

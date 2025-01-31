@@ -37,10 +37,13 @@ const AuthProvider = ({ children }) => {
 
     const login = async (data) => {
         setIsLoading(true);
+        const response = await loginUser(data);
+        console.log("Login Response:", response);
         try {
             await requestHandler(
+
                 async () => await loginUser(data),
-                console.log(loginUser(data)),
+                setIsLoading,
                 (res) => {
                     if (res.statusCode === 200 && res.success === 200) {
                         const user = res.data.loggedInUser;
@@ -79,6 +82,7 @@ const AuthProvider = ({ children }) => {
         try {
             await requestHandler(
                 async () => await logOutUser(),
+                setIsLoading,
                 () => {
                     setUser(null);
                     setToken(null);

@@ -26,14 +26,14 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center flex-col h-screen w-screen">
+    <div className="flex justify-center items-center flex-col h-screen w-screen ">
       <h1 className="text-3xl font-bold">Login Devcom</h1>
-      <div className="max-w-5xl w-1/2 p-8 flex justify-center items-center gap-5 flex-col bg-dark shadow-md rounded-2xl my-16 border-secondary border-[1px]">
-        <h1 className="inline-flex items-center text-2xl mb-4 flex-col">
-          <LockClosedIcon className="h-8 w-8 mb-2" /> Login
+      <div className="max-w-5xl w-1/2 p-8 flex justify-center items-center gap-5 flex-col back shadow-md rounded-2xl my-16 border-secondary border-[1px]"  style={{backgroundColor:" #162130"}}>
+        <h1 className="inline-flex items-center text-2xl mb-4 flex-col text-white">
+          <LockClosedIcon className="h-8 w-8 mb-2 text-white" /> Login
         </h1>
         
-        <form onSubmit={handleOnSubmit} className="flex flex-col gap-4 w-full">
+        <form onSubmit={handleOnSubmit} className="flex flex-col gap-4 w-full  text-white">
           <Input
             placeholder="Enter your username..."
             name="username"
@@ -58,7 +58,7 @@ const LoginForm = () => {
           </Button>
         </form>
 
-        <small className="text-zinc-900">
+        <small className=" text-white">
           Don&apos;t have an account? {" "}
           <a className="text-blue-700 hover:underline" href="/register">
             Register

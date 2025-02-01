@@ -58,13 +58,13 @@ const RegisterForm = () => {
     return (
         <div className="flex justify-center items-center flex-col h-screen w-screen">
             <h1 className="text-3xl font-bold">Register to Devcom</h1>
-            <div className="max-w-5xl w-1/2 p-8 flex justify-center items-center gap-5 flex-col bg-dark shadow-md rounded-2xl my-16 border-secondary border-[1px]">
-                <h1 className="inline-flex items-center text-2xl mb-4 flex-col">
-                    <LockClosedIcon className="h-8 w-8 mb-2" /> Register
+            <div className="max-w-5xl w-1/2 p-8 flex justify-center items-center gap-5 flex-col  bg-dark shadow-md rounded-2xl my-16 border-secondary border-[1px]" style={{backgroundColor:" #162130"}}>
+                <h1 className="inline-flex items-center text-2xl mb-4 flex-col text-white">
+                    <LockClosedIcon className="h-8 w-8 mb-2 text-white" /> Register
                 </h1>
 
                 {error && <p className="text-red-500">{error}</p>}
-
+                <form action="" className='text-white flex flex-col gap-4 w-full'>
                 <Input
                     placeholder="Enter the email..."
                     type="email"
@@ -98,6 +98,7 @@ const RegisterForm = () => {
                     className="text-sm text-gray-500"
                     name="avatar"
                 />
+                </form>
 
                 {/* Register button */}
                 <Button

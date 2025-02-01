@@ -35,8 +35,13 @@ const logOutUser = (data) => {
 }
 
 
+
+
+
+
+
 export {
     registerUser,
     loginUser,
     logOutUser
-}
+}   

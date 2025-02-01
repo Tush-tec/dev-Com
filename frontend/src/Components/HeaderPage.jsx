@@ -7,6 +7,7 @@ import { useAuth } from "../Utils/AuthContext";
 const HeaderPage = () => {
 
   const  [ isLoggin, setLoggin ] = useState(false)
+  const [dropDown, setDropDown] = useState(false)
 
   useEffect( () => {
     const token  = LocalStorage.get("Token") || cookie.get("	accessToken")
@@ -17,6 +18,7 @@ const HeaderPage = () => {
   },[])
 
   const {logout} = useAuth()
+
   const handleLogout = () => {
     logout()
     setLoggin(false)
@@ -28,19 +30,17 @@ const HeaderPage = () => {
   
 
   return (
-  <header className='shadow-lg font-[sans-serif] tracking-wide relative z-50'>
+  <header className='shadow-lg font-[sans-serif]  tracking-wide relative z-50'>
       <section
-        className='flex items-center relative py-3 lg:px-10 px-4 border-gray-200 border-b bg-white lg:min-h-[70px] max-lg:min-h-[60px]'>
-        <a to="/" className="shrink-0 max-sm:hidden"><img
-          src="https://readymadeui.com/readymadeui.svg" alt="logo" className='sm:w-[150px] w-32' />
-        </a>
+        className='flex items-center relative py-3 lg:px-10 px-4 border-gray-200 border-b bg-blue-100 lg:min-h-[70px] max-lg:min-h-[60px]'>
+      
         <a to="/" className="hidden max-sm:block"><img src="https://readymadeui.com/readymadeui-short.svg" alt="logo" className='w-9' />
         </a>
 
-        <div className='flex flex-wrap w-full items-center'>
-          <input type='text' placeholder='Search something...'
-            className='xl:w-80 max-lg:hidden lg:ml-10 max-md:mt-4 max-lg:ml-4 bg-gray-100 border focus:bg-transparent px-4 rounded h-10 outline-none text-sm transition-all' />
-          <div className="ml-auto">
+        <div className='flex flex-wrap w-full items-center '>
+          {/* <input type='text' placeholder='Search something...'
+            className='xl:w-80 max-lg:hidden lg:ml-10 max-md:mt-4 max-lg:ml-4 bg-gray-100 border focus:bg-transparent px-4 rounded h-10 outline-none text-sm transition-all' /> */}
+          <div className="ml-auto ">
 
             <ul className='flex items-center'>
               <li className='max-md:hidden flex items-center text-[15px] max-lg:py-2 px-4 font-medium text-gray-800 cursor-pointer'>
@@ -133,23 +133,51 @@ const HeaderPage = () => {
         </button>
 
         <ul
-          className='lg:flex lg:flex-wrap lg:items-center lg:justify-center px-10 py-3 bg-[#333] min-h-[46px] gap-4 max-lg:space-y-4 max-lg:fixed max-lg:w-1/2 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-lg max-lg:overflow-auto z-50'>
+          className='lg:flex lg:flex-wrap lg:items-center lg:justify-center px-10 py-3 bg-blue-300 min-h-[46px] gap-4 max-lg:space-y-4 max-lg:fixed max-lg:w-1/2 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-lg max-lg:overflow-auto z-50'>
           <li className='mb-6 hidden max-lg:block'>
             <a href="to='/'"><img src="https://readymadeui.com/readymadeui-white.svg" alt="logo" className='w-36' />
             </a>
           </li>
           <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/home'
-            className='hover:text-yellow-300 text-yellow-300 text-[15px] font-medium block'>Home</Link></li>
+            className='hover:text-yellow-300  text-[15px]  font-medium block'>Home</Link></li>
           <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/about'
-            className='hover:text-yellow-300 text-white text-[15px] font-medium block'>About</Link></li>
+            className='hover:text-yellow-300  text-[15px] font-medium block'>About</Link></li>
           <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/contact'
-            className='hover:text-yellow-300 text-white text-[15px] font-medium block'>Contact</Link></li>
+            className='hover:text-yellow-300 text-[15px] font-medium block'>Contact</Link></li>
           <li className='max-lg:border-b max-lg:py-3 px-3'><Link to='/service'
-            className='hover:text-yellow-300 text-white text-[15px] font-medium block'>Service</Link></li>
-          <li className='max-lg:border-b max-lg:py-3 px-3'><a to='/product'
-            className='hover:text-yellow-300 text-white text-[15px] font-medium block'>Product</a></li>
+            className='hover:text-yellow-300  text-[15px] font-medium block'>Service</Link></li>
+
+<li 
+            className="relative"
+            onMouseEnter={() => setDropDown(true)}
+            onMouseLeave={() => setDropDown(false)}
+          >
+            <Link to="/products" className="hover:text-yellow-300  text-[15px] font-medium block">
+              Products
+            </Link>
+            {dropDown && (
+              <ul className="absolute left-0 mt-2 w-40 bg-white text-black shadow-lg rounded-md">
+                <li className="px-4 py-2 hover:bg-gray-200">
+                  <Link to="/products/tables">Tables</Link>
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-200">
+                  <Link to="/products/electronics">Electronics</Link>
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-200">
+                  <Link to="/products/chairs">Chairs</Link>
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-200">
+                  <Link to="/products/lights">Lights</Link>
+                </li>
+              </ul>
+            )}
+          </li>
         </ul>
       </div>
+
+      <a to="/" className="shrink-0 max-sm:hidden"><img
+          src="https://images.unsplash.com/photo-1615915468538-0fbd857888ca?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bG9nbyUyMGZvciUyMGUlMjBjb21tZXJjZXxlbnwwfHwwfHx8MA%3D%3D" alt="logo" className='sm:w-[150px] w-32' />
+        </a>
     </header>
   );
 };

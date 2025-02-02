@@ -34,6 +34,10 @@ const logOutUser = (data) => {
     return apiClient.post('/users/auth/logout', data)
 }
 
+const fetchProducts = () => {
+    return apiClient.get('/products/product/all-product')
+}
+
 
 
 
@@ -43,5 +47,6 @@ const logOutUser = (data) => {
 export {
     registerUser,
     loginUser,
-    logOutUser
+    logOutUser,
+    fetchProducts,
 }   

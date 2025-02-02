@@ -2,6 +2,7 @@ import React from 'react';
 import Carausel from './Carausel';
 import HeaderPage from './HeaderPage';
 import Footer from './Footer';
+import Products from './Products';
 
 const LandingPage = () => {
   return (
@@ -9,6 +10,7 @@ const LandingPage = () => {
     <HeaderPage/>
     <br />
     <Carausel/>
+    <Products/>
     <br />
     <Footer/>
     </>

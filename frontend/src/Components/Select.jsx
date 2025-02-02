@@ -12,7 +12,7 @@ const Select = ({ options, value, placeholder, onChange }) => {
   const classNames = (...classes) => {
     return classes.filter(Boolean).join(' ');
   };
-
+  // replace('/upload/','/upload/w_400,h_200,c_fill/')
   return (
     <Combobox
       className={"w-full"}

@@ -175,9 +175,7 @@ const HeaderPage = () => {
         </ul>
       </div>
 
-      <a to="/" className="shrink-0 max-sm:hidden"><img
-          src="https://images.unsplash.com/photo-1615915468538-0fbd857888ca?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bG9nbyUyMGZvciUyMGUlMjBjb21tZXJjZXxlbnwwfHwwfHx8MA%3D%3D" alt="logo" className='sm:w-[150px] w-32' />
-        </a>
+     
     </header>
   );
 };

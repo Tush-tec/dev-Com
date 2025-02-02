@@ -24,6 +24,7 @@ router.route('/product-creation').post(
     createProduct
 )
 
+
 // --------------------------------------------------------------Render the EJS template with data---------------------------------------
 
 //    # Get all products
@@ -65,6 +66,7 @@ router.route("/product/all-product").get(
     authMiddleware,
     getAllProduct,
 )
+
 
 
   router.route('/product/:id').post(

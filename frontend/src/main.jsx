@@ -4,12 +4,15 @@ import './index.css';
 import App from './App.jsx';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthContext, AuthProvider } from './Utils/AuthContext.jsx'; // Only import AuthProvider
+import { ProductContext, ProductProvider } from './Utils/ProductContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   // <StrictMode>
-    <BrowserRouter value= {AuthContext}>
-      <AuthProvider>  {/* No need to pass value here */}
+    <BrowserRouter >
+      <AuthProvider value= {AuthContext}> 
+        <ProductProvider value={ProductContext}>
         <App />
+        </ProductProvider>
       </AuthProvider>
     </BrowserRouter>
   // </StrictMode>

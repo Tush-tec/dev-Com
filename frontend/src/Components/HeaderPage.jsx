@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LocalStorage } from "../Utils/app";
 import cookie from "js-cookie"
 import { useAuth } from "../Utils/AuthContext";
@@ -9,12 +9,26 @@ const HeaderPage = () => {
   const  [ isLoggin, setLoggin ] = useState(false)
   const [dropDown, setDropDown] = useState(false)
 
+  const navigate =  useNavigate()
+
   useEffect( () => {
-    const token  = LocalStorage.get("Token") || cookie.get("	accessToken")
+
+    const token  =  cookie.get("accessToken")
 
     if(token) {
       setLoggin(true)
-    }
+    } 
+
+    const checkCookieIsStore = setInterval(
+      () => {
+        if(!cookie.get("accessToken")){
+          LocalStorage.clear()
+          setLoggin(false)
+          clearInterval(checkCookieIsStore)
+        }
+      },1000
+    )
+
   },[])
 
   const {logout} = useAuth()
@@ -22,6 +36,7 @@ const HeaderPage = () => {
   const handleLogout = () => {
     logout()
     setLoggin(false)
+
   }
 
 
@@ -69,6 +84,7 @@ const HeaderPage = () => {
               </li>
               <li className='max-lg:py-2 px-4 cursor-pointer'>
                 <span className="relative">
+                  {/* Cart Icon */}
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 inline" viewBox="0 0 512 512">
                     <path
                       d="M164.96 300.004h.024c.02 0 .04-.004.059-.004H437a15.003 15.003 0 0 0 14.422-10.879l60-210a15.003 15.003 0 0 0-2.445-13.152A15.006 15.006 0 0 0 497 60H130.367l-10.722-48.254A15.003 15.003 0 0 0 105 0H15C6.715 0 0 6.715 0 15s6.715 15 15 15h77.969c1.898 8.55 51.312 230.918 54.156 243.71C131.184 280.64 120 296.536 120 315c0 24.812 20.188 45 45 45h272c8.285 0 15-6.715 15-15s-6.715-15-15-15H165c-8.27 0-15-6.73-15-15 0-8.258 6.707-14.977 14.96-14.996zM477.114 90l-51.43 180H177.032l-40-180zM150 405c0 24.813 20.188 45 45 45s45-20.188 45-45-20.188-45-45-45-45 20.188-45 45zm45-15c8.27 0 15 6.73 15 15s-6.73 15-15 15-15-6.73-15-15 6.73-15 15-15zm167 15c0 24.813 20.188 45 45 45s45-20.188 45-45-20.188-45-45-45-45 20.188-45 45zm45-15c8.27 0 15 6.73 15 15s-6.73 15-15 15-15-6.73-15-15 6.73-15 15-15zm0 0"
@@ -119,8 +135,8 @@ const HeaderPage = () => {
         </div>
       </section>
 
-      <div id="collapseMenu"
-        className='max-lg:hidden lg:!block max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-50 max-lg:before:inset-0 max-lg:before:z-50'>
+      <div id="collapseMenu "
+        className='max-lg:hidden  lg:!block max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-50 max-lg:before:inset-0 max-lg:before:z-50'>
         <button id="toggleClose" className='lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white w-9 h-9 flex items-center justify-center border'>
           <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 fill-black" viewBox="0 0 320.591 320.591">
             <path
@@ -133,8 +149,8 @@ const HeaderPage = () => {
         </button>
 
         <ul
-          className='lg:flex lg:flex-wrap lg:items-center lg:justify-center px-10 py-3 bg-blue-300 min-h-[46px] gap-4 max-lg:space-y-4 max-lg:fixed max-lg:w-1/2 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-lg max-lg:overflow-auto z-50'>
-          <li className='mb-6 hidden max-lg:block'>
+          className='lg:flex lg:flex-wrap lg:items-center  lg:justify-center px-10 py-3 bg-blue-300 min-h-[46px] gap-4 max-lg:space-y-4 max-lg:fixed max-lg:w-1/2 max-lg:min-w-[300px] max-lg:top-0 max-lg:left-0 max-lg:p-6 max-lg:h-full max-lg:shadow-lg max-lg:overflow-auto z-50 '>
+          <li className='mb-6 hidden max-lg:block '>
             <a href="to='/'"><img src="https://readymadeui.com/readymadeui-white.svg" alt="logo" className='w-36' />
             </a>
           </li>

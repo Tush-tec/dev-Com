@@ -1,11 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useProducts } from '../Utils/ProductContext';
 import Loader from './Loader';
-import { ShoppingCartIcon } from '@heroicons/react/24/outline';  // Heroicons v2
+import { ShoppingCartIcon } from '@heroicons/react/24/outline'; // Heroicons v2
+import { addToProductinCart } from '../Utils/SliceStore/CartSlice';
 
 const Products = () => {
   const { products, getAllProducts, loading, error } = useProducts();
-  const [count, setCount] = useState(0);
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart.productCart); // Access cart state from Redux
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
@@ -15,7 +18,7 @@ const Products = () => {
   }, [page]);
 
   const loadMoreProducts = useCallback(() => {
-    if (loading || !hasMore) return;  // Prevent duplicate requests or when no more products are available
+    if (loading || !hasMore) return; // Prevent duplicate requests or when no more products are available
     setPage((prevPage) => prevPage + 1);
   }, [loading, hasMore]);
 
@@ -26,12 +29,17 @@ const Products = () => {
   };
 
   useEffect(() => {
-    
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [handleScroll]);
+
+  const handleAddToCart = (product) => {
+    const existingProduct = cart.find((item) => item._id === product._id);
+    const quantity = existingProduct ? existingProduct.quantity + 1 : 1; 
+    dispatch(addToProductinCart({ productId: product._id, quantity }));
+  };
 
   return (
     <div>
@@ -42,28 +50,35 @@ const Products = () => {
 
       {products.length !== 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div key={product._id} className="max-w-[290px] h-[350px] bg-white rounded-lg shadow-md overflow-hidden">
-              <img
-                src={product.mainImage.replace('/upload/','/upload/w_400,h_200,c_fill/')}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-t-lg"
-              />
-              <div className="p-4">
-                <h3 className="text-lg font-semibold">{product.name}</h3>
-                <p className="text-xl font-bold mt-2">${product.price}</p>
+          {products.map((product) => {
+            const existingProduct = cart.find((item) => item._id === product._id);
+            
+            const count = existingProduct ? existingProduct.quantity : 0;
+
+            return (
+              <div key={product._id} className="max-w-[290px] h-[350px] bg-white rounded-lg shadow-md overflow-hidden">
+                <img
+                  src={product.mainImage.replace('/upload/', '/upload/w_400,h_200,c_fill/')}
+                  alt={product.name}
+                  className="w-full h-48 object-cover rounded-t-lg"
+                />
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold">{product.name}</h3>
+                  <p className="text-xl font-bold mt-2">${product.price}</p>
+                </div>
+                <div className="flex items-center justify-between p-4">
+                  <button
+                    onClick={() => handleAddToCart(product)} // Dispatch add to cart action
+                    className="bg-blue-500 text-white p-2 rounded-full flex items-center space-x-2"
+                  >
+                    <ShoppingCartIcon className="w-5 h-5" />
+                    <span>Add to Cart</span>
+                  </button>
+                  {count > 0 && <span className="text-sm text-gray-600">In Cart: {count}</span>}
+                </div>
               </div>
-              <div className="flex items-center justify-between p-4">
-                <button
-                  onClick={() => setCount(count + 1)}
-                  className="bg-blue-500 text-white p-2 rounded-full flex items-center space-x-2"
-                >
-                  <ShoppingCartIcon className="w-5 h-5" />
-                  <span>Add to Cart</span>
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <p>No products found</p>

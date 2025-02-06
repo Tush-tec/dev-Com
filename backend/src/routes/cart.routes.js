@@ -1,10 +1,15 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth.js";
-import { addToCart, getCart, removeFromCart, updateCartItems, clearCart } from "../controller/cart.controller.js";
+import { addToCart, getCart, removeFromCart, updateCartItems, clearCart, addMultipleToCart } from "../controller/cart.controller.js";
 
 
 
 const router = Router()
+
+router.route("/add-multiple-product").post(
+    authMiddleware,
+    addMultipleToCart
+)
 
 router.route('/add-to-cart/:productId').post(
     authMiddleware,
@@ -13,8 +18,7 @@ router.route('/add-to-cart/:productId').post(
 )
 
 
-
-router.post('/add-to-cart', authMiddleware, addToCart)
+router.post('/add-to-cart', addToCart)
 router.get('/get-cart', authMiddleware, getCart)
 router.post('/remove-from-cart', authMiddleware, removeFromCart)
 router.post('/clear-cart', authMiddleware, clearCart)

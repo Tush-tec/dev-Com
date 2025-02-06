@@ -6,19 +6,96 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 
-const addToCart = asyncHandler(async (req, res) => {
-    const { productId } = req.params;
-    const { quantity } = req.body;
+const addMultipleToCart = async (req, res) => {
 
+        const { user } = req
+        const { products } = req.body
+
+        if (!products || products.length === 0) {
+           throw ApiError(
+            403,
+            "Invalid request",
+           )
+        }
+
+
+        let cart = await Cart.findOne({ owner: req.user?._id })
+
+        if (!cart) {
+            cart = new Cart({ owner: req.user?._id, items: [] })
+        }
+
+
+        for (let product of products) {
+            const { productId, quantity } = product;
+
+
+            const foundProduct = await Product.findById(productId);
+
+            if (!foundProduct) {
+                throw new ApiError(
+                    404,
+                    "Product not found."
+                )
+            }
+
+
+            const existingProductIndex = cart.items.findIndex(item => item.productId.toString() === productId)
+
+            if (existingProductIndex !== -1) {
+
+                cart.items[existingProductIndex].quantity += quantity;
+            } else {
+
+                cart.items.push({
+                    productId,
+                    quantity,
+                    price: foundProduct.price,
+                    name: foundProduct.name,
+                    image: foundProduct.mainImage,
+                    stock: foundProduct.stock
+                })
+            }
+        }
+
+
+        
+        cart.totalPrice = cart.items.reduce((total, item) => total + item.price * item.quantity, 0)
+
+
+       const  cartSave =  await cart.save()
+       if(!cartSave){
+        throw new ApiError(
+            500,
+            'Failed to save cart',
+        )
+       }
+
+        return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                cart,
+                "item added to cart successFully"
+            )
+        )
+   
+}
+
+
+
+const addToCart = asyncHandler(async (req, res) => {
+    const { productId } = req.body
+    const { quantity } = req.body
 
     if (!isValidObjectId(productId)) {
         throw new ApiError(400, "Invalid product ID");
     }
 
-    if (!quantity || quantity < 1) {
-        throw new ApiError(400, "Quantity must be at least 1");
+    if (typeof quantity !== 'number' || quantity <= 0) {
+        throw new ApiError(400, "Quantity must be a positive number greater than 0");
     }
-
 
     const product = await Product.findById(productId);
     if (!product) {
@@ -42,18 +119,19 @@ const addToCart = asyncHandler(async (req, res) => {
     );
 
     if (existingItem) {
+        if (existingItem.quantity + quantity > product.stock) {
+            throw new ApiError(400, "Insufficient stock for the updated quantity");
+        }
         existingItem.quantity += quantity;
-        existingItem.price = product.price; 
-        existingItem.stock = product.stock; 
+        existingItem.price = product.price;
+        existingItem.stock = product.stock;
     } else {
-        
         cart.items.push({
             productId,
             quantity,
             price: product.price,
             stock: product.stock,
-            name: product.title,
-            image: product.image,
+            image: product.mainImage,
         });
     }
 
@@ -72,8 +150,11 @@ const addToCart = asyncHandler(async (req, res) => {
     );
 });
 
+
 const getCart = asyncHandler(async (req, res) => {
     const user = req.user?._id;
+    console.log(user);
+    
 
     if (!user) {
         throw new ApiError(401, "Unauthorized to access cart because we couldn't find any user");
@@ -82,7 +163,7 @@ const getCart = asyncHandler(async (req, res) => {
     const cart = await Cart.aggregate([
         {
             $match: {
-                user,
+                owner: user,  
                 isActive: true
             },
         },
@@ -92,7 +173,7 @@ const getCart = asyncHandler(async (req, res) => {
         {
             $lookup: {
                 from: "products", 
-                localField: "items.product",
+                localField: "items.productId",  
                 foreignField: "_id",
                 as: "productDetails"
             }
@@ -110,14 +191,16 @@ const getCart = asyncHandler(async (req, res) => {
         {
             $group: {
                 _id: "$_id",
-                user: { $first: "$user" },
+                owner: { $first: "$owner" },  
                 items: { $push: "$items" },
                 isActive: { $first: "$isActive" }
             }
         }
     ]);
 
-    if (!cart || cart.length === 0) {
+
+
+    if (!cart) {
         throw new ApiError(404, "Cart not found");
     }
 
@@ -291,6 +374,7 @@ const clearCart = asyncHandler(async(req,res) =>{
 });
 
 export {
+    addMultipleToCart,
     addToCart,
     getCart,
     removeFromCart,

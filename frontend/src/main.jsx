@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthContext, AuthProvider } from './Utils/AuthContext.jsx'; // Only import AuthProvider
 import { ProductContext, ProductProvider } from './Utils/ProductContext.jsx';
 import { Provider } from 'react-redux';
-import store from './Utils/SliceStore/store.jsx';
+import { store } from './Utils/Store/CartSlice.jsx';
 
 createRoot(document.getElementById('root')).render(
   // <StrictMode>

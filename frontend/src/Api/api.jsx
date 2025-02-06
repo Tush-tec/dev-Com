@@ -39,6 +39,13 @@ const fetchProducts = () => {
 }
 
 
+const getItemFromCart = () => {
+    return apiClient.get('/cart/get-cart')
+}
+
+
+
+
 
 
 
@@ -49,4 +56,5 @@ export {
     loginUser,
     logOutUser,
     fetchProducts,
+    getItemFromCart
 }   

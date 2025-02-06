@@ -4,6 +4,7 @@ import { Product } from "../models/product.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { log } from "console";
 
 
 const addMultipleToCart = async (req, res) => {
@@ -209,64 +210,58 @@ const getCart = asyncHandler(async (req, res) => {
     );
 });
 
-const removeFromCart = asyncHandler(async(req, res) =>{
-    const {productId} = req.params
-    const user =  req.user?._id
-
-    if(!productId){
-        throw new ApiError(
-            400, "Product ID is required, to add in the cart."
-        )
+const removeFromCart = asyncHandler(async (req, res) => {
+    const { productId } = req.params;
+    console.log(productId);
+    
+    // Check if productId is provided
+    if (!productId) {
+        throw new ApiError(400, "Product ID is required to remove from the cart.");
     }
 
-    if(!user){
-        throw new ApiError(
-            400, "User is not authenticated, we cannot remove item from cart"
-        )
+    const productObjectId = new mongoose.Types.ObjectId(productId);
+
+
+    // Find the cart using the productId
+    const cart = await Cart.findOne({ 
+        owner: req.user._id, 
+        isActive: true 
+    });
+
+    if (!cart) {
+        throw new ApiError(404, "Cart not found.");
     }
 
-    const removeCart =  await Cart.findOne(
-        {
-            user,
-            isActive:true
-        }
-    )
+    // Remove the product by filtering out the item
+    const updatedItems = cart.items.filter(item => item.productId.toString() !== productObjectId.toString());
+    // console.log("updateItms",updatedItems);
+    console.log("cart",cart.items);    
+    console.log("cart",cart.items.length);
+    
+    
 
-    if(!removeCart){
-        throw new ApiError(404, "Active cart not found for the user. ")
+    // If the filtered items length is the same as the original, the product wasn't found
+    if (updatedItems.length === cart.items.length) {
+        throw new ApiError(404, "Product not found in the cart.");
     }
 
-    const ProductExistsInTheCart = removeCart.items.findIndex(
-        (item) => item.productId.toString() === productId.toString()
-    )
+    // Update the cart items and recalculate the total price
+    cart.items = updatedItems;
+    cart.totalPrice = cart.items.reduce(
+        (acc, item) => acc + (item.price * item.quantity),
+        0
+    );
 
-    if(ProductExistsInTheCart=== -1){
-        throw new ApiError(
-            404, "Product not found in the cart."
-        )
-    }
+    // Save the updated cart
+    await cart.save();
 
-    removeCart.items.splice(ProductExistsInTheCart, 1)
-
-    removeCart.totalPrice = removeCart.items.reduce(
-        (acc, item) => acc + item.price * item.quantity, 0
-    )
-
-   const updatedCart = await removeCart.save({validateBeforeSave: true})
+    // Return a success response
+    return res.status(200).json(
+        new ApiResponse(200, cart, "Product removed from cart successfully")
+    );
+});
 
 
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            updatedCart,
-            "Product removed from cart successfully",
-          
-        )
-    )
-
-})  
 
 const updateCartItems = asyncHandler(async(req,res) =>{
     const {productId,  quantity = 1} = req.body

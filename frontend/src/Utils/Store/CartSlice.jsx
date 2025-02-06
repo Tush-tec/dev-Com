@@ -1,38 +1,39 @@
 import { configureStore, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-
 axios.defaults.baseURL = "http://localhost:8080";
 axios.defaults.withCredentials = true;
 
 const initialState = {
     cartItems: [],
     isLoading: false,
-    error: null
+    error: null,
 };
-
 
 export const addToCart = createAsyncThunk(
     "cart/addToCart",
     async ({ userId, productId, quantity }) => {
-        const res = await axios.post("/api/v1/cart/add-to-cart/" + productId, { userId, productId, quantity });
-        return res.data;
+        // Ensure productId is passed as a string (if necessary)
+        const res = await axios.post(`/api/v1/cart/add-to-cart/${productId}`, { userId, productId, quantity });
+        return res.data;  // Ensure the response is in the expected format (with items)
     }
 );
 
 export const fetchCartItem = createAsyncThunk(
     "cart/fetchCartItem",
-    async (userId) => {
+    async () => {
         const res = await axios.get(`/api/v1/cart/get-cart`);
-        return res.data;
+        return res.data.data.items;  // Ensure correct path to items
     }
-);  
+);
 
 export const removeCartItem = createAsyncThunk(
     "cart/removeCartItem",
-    async ({ userId, productId }) => {
-        const res = await axios.delete(`URL/${userId}/${productId}`);
-        return res.data;
+    async (productId) => {
+        const res = await axios.delete(`/api/v1/cart/remove-from-cart/${productId}`, { productId});
+        console.log(res);
+        
+        return res.data
     }
 );
 
@@ -46,21 +47,21 @@ const cartSlice = createSlice({
                 state.isLoading = true;
             })
             .addCase(addToCart.fulfilled, (state, action) => {
-                console.log("Fetched cart items:", action.payload);
                 state.isLoading = false;
-                const newProduct = action.payload; // This is the new product with updated quantity
+                const newProduct = action.payload;
+                const existingProductIndex = state.cartItems.findIndex(item => item.productId === newProduct.productId);
 
-                // Check if the product already exists in the cart
-                const existingProductIndex = state.cartItems.findIndex(item => item._id === newProduct._id);
-            
-            
-                    // Product does not exist, add it to the cart
+                if (existingProductIndex !== -1) {
+                    // Update quantity if product already exists in the cart
+                    state.cartItems[existingProductIndex].quantity += newProduct.quantity;
+                } else {
+                    // Add new product to the cart
                     state.cartItems.push(newProduct);
-                
-        })
+                }
+            })
             .addCase(addToCart.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.error;
+                state.error = action.error.message || 'Failed to add to cart';
             })
             .addCase(fetchCartItem.pending, (state) => {
                 state.isLoading = true;
@@ -71,7 +72,7 @@ const cartSlice = createSlice({
             })
             .addCase(fetchCartItem.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.error;
+                state.error = action.error.message || 'Failed to fetch cart items';
             })
             .addCase(removeCartItem.pending, (state) => {
                 state.isLoading = true;
@@ -82,10 +83,9 @@ const cartSlice = createSlice({
             })
             .addCase(removeCartItem.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.error;
+                state.error = action.error.message || 'Failed to remove from cart';
             });
     }
 });
 
-
-export const store = configureStore({reducer:{cart:cartSlice.reducer}})
+export const store = configureStore({ reducer: { cart: cartSlice.reducer } });

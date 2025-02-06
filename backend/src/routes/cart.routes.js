@@ -20,7 +20,7 @@ router.route('/add-to-cart/:productId').post(
 
 router.post('/add-to-cart', addToCart)
 router.get('/get-cart', authMiddleware, getCart)
-router.post('/remove-from-cart', authMiddleware, removeFromCart)
+router.delete('/remove-from-cart/:productId', authMiddleware, removeFromCart)
 router.post('/clear-cart', authMiddleware, clearCart)
 router.post('/update-cart', authMiddleware, updateCartItems)
 

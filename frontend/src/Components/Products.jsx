@@ -13,6 +13,7 @@ const Products = () => {
   const cart = useSelector((state) => state.cart.cartItems);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [selectedQuantities, setSelectedQuantities] = useState({});
 
   useEffect(() => {
     getAllProducts(page);
@@ -41,28 +42,33 @@ const Products = () => {
 
   const token = LocalStorage.get("Token");
 
-  const handleAddToCart = (product) => {
-    const existingProduct = cart.find((item) => item.productId === product._id);
-    const updatedQuantity = existingProduct ? existingProduct.quantity + 1 :1 ;
+  const handleIncreaseQuantity = (productId) => {
+    setSelectedQuantities((prev) => ({
+      ...prev,
+      [productId]: (prev[productId] || 0) + 1,
+    }));
+  };
 
+  const handleDecreaseQuantity = (productId) => {
+    setSelectedQuantities((prev) => {
+      if (!prev[productId] || prev[productId] <= 1) return prev;
+      return {
+        ...prev,
+        [productId]: prev[productId] - 1,
+      };
+    });
+  };
+
+  const handleAddToCart = (product) => {
+    const quantity = selectedQuantities[product._id] || 1; // Default 1 if not set
     dispatch(
       addToCart({
         owner: token,
         productId: product._id,
-        quantity: updatedQuantity,
+        quantity,
       })
     );
-  };
-
-  const handleRemoveFromCart = (product) => {
-    const existingProduct = cart.find((item) => item.productId.toString() === product._id.toString());
-    if (existingProduct && existingProduct.quantity > 0) {
-      dispatch(
-        removeCartItem({
-          productId: product._id.toString(),
-        })
-      );
-    }
+    setSelectedQuantities((prev) => ({ ...prev, [product._id]: 0 }));
   };
 
   return (
@@ -76,8 +82,7 @@ const Products = () => {
         {products.length !== 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => {
-              const existingProduct = cart.find((item) => item.productId === product._id);
-              const count = existingProduct ? existingProduct.quantity : 0;
+              const count = selectedQuantities[product._id] || 0;
 
               return (
                 <div
@@ -107,14 +112,15 @@ const Products = () => {
                   </div>
                   <div className="flex items-center justify-center space-x-4 mt-2">
                     <button
-                      onClick={() => handleRemoveFromCart(product)}
+                      onClick={() => handleDecreaseQuantity(product._id)}
                       className="bg-red-500 text-white px-3 py-1 rounded-full"
+                      disabled={count <= 0}
                     >
                       -
                     </button>
                     <span className="text-xl font-bold">{count}</span>
                     <button
-                      onClick={() => handleAddToCart(product)}
+                      onClick={() => handleIncreaseQuantity(product._id)}
                       className="bg-green-500 text-white px-3 py-1 rounded-full"
                     >
                       +

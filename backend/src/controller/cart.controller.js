@@ -129,10 +129,12 @@ const addToCart = asyncHandler(async (req, res) => {
     } else {
         cart.items.push({
             productId,
+            name:product.name,
             quantity,
             price: product.price,
             stock: product.stock,
             image: product.mainImage,
+            
         });
     }
 

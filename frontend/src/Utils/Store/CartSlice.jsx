@@ -29,13 +29,13 @@ export const fetchCartItem = createAsyncThunk(
 
 export const removeCartItem = createAsyncThunk(
     "cart/removeCartItem",
-    async (productId) => {
-        const res = await axios.delete(`/api/v1/cart/remove-from-cart/${productId}`, { productId});
-        console.log(res);
-        
-        return res.data
+    async ({ productId }) => {
+        console.log("Removing from cart:", productId);  
+        const res = await axios.delete(`/api/v1/cart/remove-from-cart/${productId}`);
+        return res.data;
     }
 );
+
 
 const cartSlice = createSlice({
     name: "cart",
@@ -48,7 +48,10 @@ const cartSlice = createSlice({
             })
             .addCase(addToCart.fulfilled, (state, action) => {
                 state.isLoading = false;
+                
                 const newProduct = action.payload;
+                console.log(newProduct);
+                
                 const existingProductIndex = state.cartItems.findIndex(item => item.productId === newProduct.productId);
 
                 if (existingProductIndex !== -1) {

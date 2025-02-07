@@ -43,7 +43,9 @@ const Cart = () => {
             
             <li key={index} className="p-4 bg-white shadow-md rounded-lg flex flex-col">
               <h4 className="font-medium text-gray-800">{item.name ?? "Unknown Product"}</h4>
-              <p className="text-gray-600 text-sm">Price: ${item.price ?? "N/A"}</p>
+              <p className="text-gray-600 text-sm">Price:&#8377;{(item.price ?? 0).toLocaleString("en-IN")}
+
+              </p>
               <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center space-x-2">
                   <button

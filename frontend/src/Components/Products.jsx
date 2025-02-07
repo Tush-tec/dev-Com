@@ -99,7 +99,7 @@ const Products = () => {
                   />
                   <div className="p-4">
                     <h3 className="text-lg font-semibold">{product.name}</h3>
-                    <p className="text-xl font-bold mt-2">&#8377;{product.price}</p>
+                    <p className="text-xl font-bold mt-2">&#8377;{product.price.toLocaleString('en-IN') }</p>
                   </div>
                   <div className="flex items-center justify-between p-4">
                     <button

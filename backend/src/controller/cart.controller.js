@@ -212,57 +212,44 @@ const getCart = asyncHandler(async (req, res) => {
     );
 });
 
+
+
 const removeFromCart = asyncHandler(async (req, res) => {
-    const { productId } = req.params;
-    console.log(productId);
-    
-    // Check if productId is provided
-    if (!productId) {
-        throw new ApiError(400, "Product ID is required to remove from the cart.");
+
+    const { productId } = req.params; 
+
+    if (!isValidObjectId(productId)) {
+        throw new ApiError(400, "Invalid Product ID.");
     }
 
-    const productObjectId = new mongoose.Types.ObjectId(productId);
-
-
-    // Find the cart using the productId
-    const cart = await Cart.findOne({ 
-        owner: req.user._id, 
-        isActive: true 
-    });
+    const cart = await Cart.findOne({ owner: req.user._id, isActive: true });
 
     if (!cart) {
         throw new ApiError(404, "Cart not found.");
     }
 
-    // Remove the product by filtering out the item
-    const updatedItems = cart.items.filter(item => item.productId.toString() !== productObjectId.toString());
-    // console.log("updateItms",updatedItems);
-    console.log("cart",cart.items);    
-    console.log("cart",cart.items.length);
-    
-    
+    console.log("Cart items before removal:", cart.items.map(item => item.productId.toString()));
 
-    // If the filtered items length is the same as the original, the product wasn't found
-    if (updatedItems.length === cart.items.length) {
+
+    const itemIndex = cart.items.findIndex(item => item._id.toString() === productId);
+
+    if (itemIndex === -1) {
         throw new ApiError(404, "Product not found in the cart.");
     }
 
-    // Update the cart items and recalculate the total price
-    cart.items = updatedItems;
-    cart.totalPrice = cart.items.reduce(
-        (acc, item) => acc + (item.price * item.quantity),
-        0
-    );
 
-    // Save the updated cart
+    cart.items.splice(itemIndex, 1);
+
+    console.log("Cart items after removal:", cart.items.map(item => item.productId.toString()));
+
+
+    cart.totalPrice = cart.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+
     await cart.save();
 
-    // Return a success response
-    return res.status(200).json(
-        new ApiResponse(200, cart, "Product removed from cart successfully")
-    );
+    return res.status(200).json(new ApiResponse(200, cart, "Product removed from cart successfully"));
 });
-
 
 
 const updateCartItems = asyncHandler(async(req,res) =>{

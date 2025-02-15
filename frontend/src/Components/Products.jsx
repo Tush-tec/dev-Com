@@ -6,6 +6,7 @@ import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { LocalStorage } from "../Utils/app";
 import { addToCart, removeCartItem } from "../Utils/Store/CartSlice";
 import Cart from "./Cart";
+import { Link, useNavigate } from "react-router-dom";
 
 const Products = () => {
   const { products, getAllProducts, loading, error } = useProducts();
@@ -14,6 +15,8 @@ const Products = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [selectedQuantities, setSelectedQuantities] = useState({});
+
+  const navigate =  useNavigate()
 
   useEffect(() => {
     getAllProducts(page);
@@ -60,7 +63,7 @@ const Products = () => {
   };
 
   const handleAddToCart = (product) => {
-    const quantity = selectedQuantities[product._id] || 1; // Default 1 if not set
+    const quantity = selectedQuantities[product._id] || 1; 
     dispatch(
       addToCart({
         owner: token,
@@ -81,7 +84,7 @@ const Products = () => {
 
         {products.length !== 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => {
+            {products.map(( product) => {
               const count = selectedQuantities[product._id] || 0;
 
               return (
@@ -140,6 +143,14 @@ const Products = () => {
 
       <div className="w-80 p-4 bg-gray-100 border-l border-gray-300 shadow-lg">
         <Cart />
+        {cart.length > 0 && (
+          <button
+           className="mt-4 w-full bg-yellow-500 text-white py-2 rounded-md text-lg font-semibold" >
+            <Link
+             to="/checkout">Proceed to Checkout  </Link>
+
+         </button>
+        )}
       </div>
     </div>
   );

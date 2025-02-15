@@ -11,11 +11,7 @@ const addressSchema =  new Schema (
                     required : true,
                     trim : true
                 },
-                AssetNumber:{
-                    type: String,
-                    required: true,
-                    trim : true
-                },                             
+                                     
                 district:{
                     type : String,
                     required : true,
@@ -45,9 +41,14 @@ const addressSchema =  new Schema (
             type:String,
             required:true
         },
+        phoneNumber :{
+            type:Number,
+            required:true
+        },
         owner :{
             type :Schema.Types.ObjectId,
             ref: "User",
+            required: true
         }
     },
     {
@@ -57,5 +58,4 @@ const addressSchema =  new Schema (
 
 addressSchema.plugin(mongooseAggregatePaginate);
 
-export const Address = mongoose.model("Adress", addressSchema)
-
+export const Address = mongoose.model("Address", addressSchema);

@@ -13,24 +13,26 @@ const initialState = {
 export const addToCart = createAsyncThunk(
     "cart/addToCart",
     async ({ userId, productId, quantity }) => {
-        // Ensure productId is passed as a string (if necessary)
+
         const res = await axios.post(`/api/v1/cart/add-to-cart/${productId}`, { userId, productId, quantity });
-        return res.data;  // Ensure the response is in the expected format (with items)
+        return res.data;  
     }
 );
 
 export const fetchCartItem = createAsyncThunk(
     "cart/fetchCartItem",
     async () => {
+
         const res = await axios.get(`/api/v1/cart/get-cart`);
-        return res.data.data.items;  // Ensure correct path to items
+        return res.data.data.items;  
     }
 );
 
 export const removeCartItem = createAsyncThunk(
     "cart/removeCartItem",
     async ({ productId }) => {
-        console.log("Removing from cart:", productId);  
+
+        // console.log("Removing from cart:", productId);  
         const res = await axios.delete(`/api/v1/cart/remove-from-cart/${productId}`);
         return res.data;
     }
@@ -48,19 +50,8 @@ const cartSlice = createSlice({
             })
             .addCase(addToCart.fulfilled, (state, action) => {
                 state.isLoading = false;
-                
-                const newProduct = action.payload;
-                console.log(newProduct);
-                
-                const existingProductIndex = state.cartItems.findIndex(item => item.productId === newProduct.productId);
+                state.cartItems = action.payload; // Directly update cart state
 
-                if (existingProductIndex !== -1) {
-                    // Update quantity if product already exists in the cart
-                    state.cartItems[existingProductIndex].quantity += newProduct.quantity;
-                } else {
-                    // Add new product to the cart
-                    state.cartItems.push(newProduct);
-                }
             })
             .addCase(addToCart.rejected, (state, action) => {
                 state.isLoading = false;
@@ -71,7 +62,8 @@ const cartSlice = createSlice({
             })
             .addCase(fetchCartItem.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.cartItems = Array.isArray(action.payload) ? action.payload : [];
+             state.cartItems = action.payload;
+
             })
             .addCase(fetchCartItem.rejected, (state, action) => {
                 state.isLoading = false;

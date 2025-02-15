@@ -188,7 +188,7 @@ const getCart = asyncHandler(async (req, res) => {
             $addFields: {
                 "items.title": "$productDetails.title",
                 "items.price": "$productDetails.price",
-                "items.image": "$productDetails.image"
+                "items.image": "$productDetails.mainImage"
             }
         },
         {

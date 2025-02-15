@@ -6,10 +6,14 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createAddress =  asyncHandler(async(req,res) =>{
 
-    const {addressLine, state} = req.body
-    const owner  = req.user?.Id
+    const {addressLine, state, phoneNumber} = req.body
+    const owner  = req.user?._id
+    console.log(owner);
+        
+    
 
-    if(!addressLine, state){
+    if(!addressLine || !state || !phoneNumber) 
+        {
         throw  new ApiError(
             400,
             "Please provide address line and state",
@@ -25,9 +29,10 @@ const createAddress =  asyncHandler(async(req,res) =>{
 
 
     const address = await Address.create(
-        addressLine,
+       { addressLine,
         state,
-        owner
+        phoneNumber,
+        owner}
     )
 
     if(!address){
@@ -197,3 +202,10 @@ const deleteAddressById = asyncHandler(async(req,res) =>{
         )    
     )
 })
+
+export{
+    createAddress,
+    getAddressById,
+    updateAddress,
+    deleteAddressById
+}

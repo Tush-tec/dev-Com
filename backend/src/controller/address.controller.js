@@ -4,54 +4,55 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-const createAddress =  asyncHandler(async(req,res) =>{
+const createAddress = asyncHandler(async (req, res) => {
+    const { addressLine, state, phoneNumber } = req.body;
+    console.log("Received Request Body:", req.body);
 
-    const {addressLine, state, phoneNumber} = req.body
-    const owner  = req.user?._id
+    const owner = req.user?._id;
     console.log(owner);
-        
-    
 
-    if(!addressLine || !state || !phoneNumber) 
-        {
-        throw  new ApiError(
-            400,
-            "Please provide address line and state",
-        )
+    // Ensure addressLine exists before destructuring
+    if (!addressLine) {
+        throw new ApiError(400, "Address details are required.");
     }
 
-    if(!owner){
-        throw new ApiError(
-            401,
-            "You are not logged in",
-        )
+    // Destructure addressLine properly
+    const { street, houseNumber, apartmentNumber, locality, district, city, pincode } = addressLine;
+
+    // Validate required fields
+    if (!street || !houseNumber || !locality || !district || !city || !pincode || !state || !phoneNumber) {
+        throw new ApiError(400, "Please provide all required address fields.");
     }
 
+    if (!owner) {
+        throw new ApiError(401, "You are not logged in");
+    }
 
-    const address = await Address.create(
-       { addressLine,
+    // Corrected: Remove extra array brackets
+    const address = await Address.create({
+        addressLine: {
+            street,
+            houseNumber,
+            apartmentNumber,
+            locality,
+            district,
+            city,
+            pincode
+        },
         state,
         phoneNumber,
-        owner}
-    )
+        owner
+    });
 
-    if(!address){
-        throw new ApiError(
-            500,
-            "Failed to create address",
-        )    
+    if (!address) {
+        throw new ApiError(500, "Failed to create address");
     }
 
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            address,
-            "Address created successfully",
-        )
-    )
-})
+    return res.status(200).json(
+        new ApiResponse(200, address, "Address created successfully")
+    );
+});
+
 
 const getAllAddress = asyncHandler(async(req,res) =>{
 

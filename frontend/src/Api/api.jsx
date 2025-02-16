@@ -44,6 +44,10 @@ const getItemFromCart = () => {
 }
 
 
+const createAddress = (address) => {
+    return apiClient.post('/address/create-address', address)
+}
+
 
 
 
@@ -56,5 +60,6 @@ export {
     loginUser,
     logOutUser,
     fetchProducts,
-    getItemFromCart
+    getItemFromCart,
+    createAddress
 }   

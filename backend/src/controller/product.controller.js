@@ -68,9 +68,7 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const getAllProduct = asyncHandler(async (req, res) => {
-
   const { page = 1, limit = 20 } = req.query;
-
 
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);
@@ -79,7 +77,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid page or limit values.");
   }
 
-
   const products = await Product.find()
     .skip((pageNumber - 1) * limitNumber) 
     .limit(limitNumber) 
@@ -87,9 +84,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
   const totalProducts = await Product.countDocuments();
 
-  if (!products || products.length === 0) {
-    throw new ApiError(404, "Products not found");
-  }
+  console.log(`Page: ${pageNumber}, Limit: ${limitNumber}, Products Fetched: ${products.length}`);
 
   return res.status(200).json(
     new ApiResponse(
@@ -104,6 +99,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
     )
   );
 });
+
 
 
 

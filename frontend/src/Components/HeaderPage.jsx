@@ -54,7 +54,7 @@ const HeaderPage = () => {
   return (
     <header className="shadow-lg font-[sans-serif]  tracking-wide relative z-50">
       <section
-        className="flex items-center relative py-3 
+        className="flex items-center relative py-5 
         lg:px-10 px-4 border-gray-200 border-b bg-blue-100 lg:min-h-[70px] max-lg:min-h-[60px]"
       >
         <a to="/" className="hidden max-sm:block">
@@ -189,9 +189,7 @@ const HeaderPage = () => {
         </button>
 
         <ul
-      className="navbar sticky top-0 left-0 w-full z-50 bg-blue-300 min-h-[46px] 
-      gap-4 transition-all duration-300 ease-in-out 
-      lg:flex lg:flex-wrap lg:items-center lg:justify-center px-15 py-5"
+      className="navbar bg-blue-300 gap-4 lg:flex lg:flex-wrap lg:items-center lg:justify-center px-15 py-5 "
     >
           
           <li className="max-lg:border-b max-lg:py-5

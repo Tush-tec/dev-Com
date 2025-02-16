@@ -17,8 +17,8 @@ const Cart = () => {
     dispatch(fetchCartItem());
   }, [dispatch]);
 
-  // console.log("Cart Items from Redux:", cartItems); 
 
+  
   const handleRemove = (id) => {
     dispatch(removeCartItem({ userId, productId: id }));
   };
@@ -33,7 +33,7 @@ const Cart = () => {
   if (error) return <p className="text-red-500">{error.message}</p>;
 
   return (
-    <div className="w-80 h-screen bg-gray-100 p-4 shadow-lg right-0 top-0 overflow-y-auto">
+    <div className="w-80 max-h-800 bg-gray-100 p-4 shadow-lg right-0 top-0 overflow-auto">
       <h2 className="text-lg font-semibold mb-4 text-center text-gray-700">Your Cart</h2>
 
       {cartItems.length === 0 ? (

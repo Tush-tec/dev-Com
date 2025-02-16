@@ -63,7 +63,7 @@ const OrderSummary = ({ cartItems, subtotal, totalQuantity, handleProceedToPayme
 
     <div className="mt-5 border-t pt-4">
       <div className="flex justify-between text-lg font-sans mb-5 ">
-        <span>Total Quantity:</span>
+        <span>Total Quantity of Product:</span>
         <span>{totalQuantity}</span>
       </div>
       <div className="flex justify-between text-xl font-serif mt-2 border-b  ">
@@ -131,12 +131,15 @@ const CheckOut = () => {
   return (
     <>
       <HeaderPage />
-      <div className="max-w-10xl mx-auto p-10 bg-gray-100 min-h-screen my-8">
+      <div className="">
+        <br />
+      <div className="max-w-10xl mx-auto p-20 bg-gray-100 min-h-screen my-8">
         {isLoading && <p className="text-center">Loading cart items...</p>}
         <div className="grid md:grid-cols-2 gap-8">
           <AddressForm address={address} handleChange={handleChange} handleSubmit={handleSubmit} errors={errors} />
           <OrderSummary cartItems={cartItems} subtotal={subtotal} totalQuantity={totalQuantity} handleProceedToPayment={handleProceedToPayment} />
         </div>
+      </div>
       </div>
       <Footer />
     </>

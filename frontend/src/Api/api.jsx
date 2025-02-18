@@ -35,7 +35,7 @@ const logOutUser = (data) => {
 }
 
 const fetchProducts = () => {
-    return apiClient.get('/products/product/all-product')
+    return apiClient.get(`/products/product/all-product`)
 }
 
 
@@ -48,12 +48,9 @@ const createAddress = (address) => {
     return apiClient.post('/address/create-address', address)
 }
 
-
-
-
-
-
-
+const createOrder =(data) => {
+    return apiClient.post('/order/create-order', address)
+}
 
 export {
     registerUser,
@@ -61,5 +58,6 @@ export {
     logOutUser,
     fetchProducts,
     getItemFromCart,
-    createAddress
+    createAddress,
+    createOrder
 }   

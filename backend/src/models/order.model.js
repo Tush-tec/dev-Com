@@ -1,63 +1,48 @@
-import mongoose,{Schema} from "mongoose";
-import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+  import mongoose,{Schema} from "mongoose";
+  import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
-const orderSchema = new Schema(
-  {
-    orderPrice:{
-      type:Number,
-      required:true
-    },
-    discountPrice :{
-      type:Number,  
-      required:true
-    },
-    customer :{
+
+  const orderSchema = new mongoose.Schema(
+    {
+      owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      cartItems: {
+        type : Schema.Types.ObjectId,
+        ref:"Cart"
+      },
+      address: {
       type : Schema.Types.ObjectId,
-      ref:"User"
+      ref: "Address"
+      },
+      paymentMethod: {
+        type: String,
+        enum: ["UPI", "Razorpay"],
+        required: true,
+      },
+      transactionId: {
+        type: String,
+        required: function () {
+          return this.paymentMethod === "UPI";
+        },
+      },
+      razorpayPaymentId: String,
+      totalAmount: {
+        type: Number,
+        required: true,
+      },
+      status: {
+        type: String,
+        enum: ['Pending', 'Paid', 'Shipped', 'Delivered', 'Cancelled'],
+        default: 'Pending',
+      },
     },
-    items:{
-      type: [
-        {
-          ProductId:{
-            type: Schema.Types.ObjectId,
-            ref: "Product"  
-          },
-          quantity:{
-            type:Number,
-            required:true,
-            min: [1, "Quantity can not be less then 1."],
-            default: 1
-          }
-        }
-      ],
-      default:[]
-    },
-    address:{
-      type:Schema.Types.ObjectId,
-      ref:"Address"
-    },
-    status:{
-      type:String,
-      enum:["pending","shipped","delivered"],
-      default:"pending"
-    },
-    paymentProvider :{
-      type:String,
-      enum: AvailablePaymentProviders,
-    },
-    paymentId:{
-      type:String,
-    },
-    isPaymentDone:{
-      type:Boolean,
-      default:false
-    }
-  },
-  {
-    timestamps: true
-  }
-)
+    { timestamps: true }
+  );
 
-orderSchema.plugin(mongooseAggregatePaginate)
 
-export const Order = mongoose.model("Order", orderSchema)
+  orderSchema.plugin(mongooseAggregatePaginate)
+
+  export const Order = mongoose.model("Order", orderSchema)

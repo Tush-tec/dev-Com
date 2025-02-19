@@ -121,61 +121,49 @@
     };
 
     const handleProceedToPayment = async () => {
-
-      // console.log("click");/
-      
-      if (!address.street || !address.pincode || !address.phoneNumber) {
-        setErrors("Please fill in all required address fields.");
+      if (!address._id) {
+        setErrors("Address is not saved. Please submit the address first.");
         return;
       }
-
-      console.log(address._id);
-      
-
-      setErrors("");  
-      setIsProcessing(true); 
-
+    
+      setIsProcessing(true);
+    
       try {
-
-        const { data } = await axios.post("http://localhost:8080/api/v1/orders/create-order",  {
-        
-          addressId: address._id,  
+        const {data} = await axios.post("http://localhost:8080/api/v1/orders/create-order", {
+          
+          addressId: address._id,
           paymentMethod: "Online",
-        }, {withCredentials: true});
+        }, { withCredentials: true });
+        console.log("data",data.data);
         
-        console.log(data);
-        
-        if (!data.success) {
-          throw new Error(data.message || "Order creation failed!");
+    
+        if (!data || !data.success) {
+          throw new Error(response.data?.message || "Failed to create order");
         }
-
-        const { id: razorpayOrderId, amount } = data.data;  
-
-        // Step 2: Initialize Razorpay Payment
-
+    
+        const {  razorpayPaymentId, totalAmount } = data.data;
+        if (!razorpayPaymentId || !totalAmount) {
+          throw new Error("Invalid Razorpay order details received");
+        }
+    
         const options = {
-          key:import.meta.env.RAZORPAY_API_KEY ,  
-          amount,  
-          currency: "INR",  
-          name: "DevCom",  
-          description: "Secure Payment", 
-          order_id: razorpayOrderId,  
+          key: import.meta.env.VITE_RAZORPAY_API_KEY,
+          totalAmount,
+          currency: "INR",
+          name: "DevCom",
+          description: "Secure Payment",
+          order_id: razorpayPaymentId,
           handler: async function (paymentResponse) {
-
             try {
-              // Step 3: Verify Payment with Backend
-
               const verifyRes = await axios.post("http://localhost:8080/api/v1/orders/verify-payment", {
-
                 razorpay_order_id: paymentResponse.razorpay_order_id,
                 razorpay_payment_id: paymentResponse.razorpay_payment_id,
                 razorpay_signature: paymentResponse.razorpay_signature,
-
               });
-
+    
               if (verifyRes.data.success) {
                 alert("Payment Successful! 🎉");
-                navigate("/order-success");  
+                navigate("/order-success");
               } else {
                 throw new Error("Payment verification failed. Please contact support.");
               }
@@ -185,36 +173,28 @@
             }
           },
           prefill: {
-            name: "Customer Name",  
-            email: "customer@example.com",  
-            contact: address.phoneNumber,  
+            name: "Customer Name",
+            email: "customer@example.com",
+            contact: address.phoneNumber,
           },
-          theme: { color: "#3399cc" },  
+          theme: { color: "#3399cc" },
         };
-
-        // Open the Razorpay payment gateway
+    
         const rzp = new window.Razorpay(options);
         rzp.open();
-
-        rzp.on('payment.failed', function (response){
-          alert(response.error.code);
+    
+        rzp.on('payment.failed', function (response) {
           alert(response.error.description);
-          alert(response.error.source);
-          alert(response.error.step);
-          alert(response.error.reason);
-          alert(response.error.metadata.order_id);
-          alert(response.error.metadata.payment_id);
-  });
-
+        });
+    
       } catch (error) {
-
-        console.error("Error processing payment:",  error.response.data.message);
-        // alert(error.message || "Something went wrong. Please try again.");
-
+        console.error("Error processing payment:", error.message);
+        setErrors(error.message || "Something went wrong. Please try again.");
       } finally {
-        setIsProcessing(false); 
+        setIsProcessing(false);
       }
     };
+    
 
     const subtotal = cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
     const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);

@@ -1,4 +1,5 @@
 import Razorpay from 'razorpay';
+import { nanoid } from 'nanoid'
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -6,128 +7,165 @@ import crypto from "crypto"
 import { Order } from '../models/order.model.js';
 import { Address } from '../models/address.model.js';
 import { Cart } from '../models/cart.model.js';
+import { error } from 'console';
+import { Product } from '../models/product.model.js';
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-const orderFulfillmentHelper = async (orderPaymentId, req) => {
-  const order = await Order.findOneAndUpdate(
+// console.log(process.env.RAZORPAY_KEY_ID);
 
-    { 
+
+const orderFulfillmentHelper = async (orderPaymentId, req) => {
+
+  const order = await Order.findOneAndUpdate(
+    {
       razorpayPaymentId: orderPaymentId 
     },
-    { $set:
-       { status: "Paid" } 
-    },
     { 
-      new: true
-    }
+      $set:{ status: "Paid" } 
+    },
+    { new: true }
   );
 
   if (!order) {
     throw new ApiError(404, "Order does not exist");
   }
 
-  // Reduce stock after order placement
-  const cart = await Cart.findById(order.cartItems).populate("items.product");
+
+  const cartAggregation = await Cart.aggregate([
+    { $match: { _id: order.cartItems } },  
+    {
+      $lookup: {
+        from: "products", // Collection name in MongoDB
+        localField: "items.productId", // Field in Cart collection
+        foreignField: "_id", // Matching field in Product collection
+        as: "cartItemsDetails", // The name of the merged data
+      },
+    },
+  ]);
+
+  const cart = cartAggregation[0]; // Extract the cart object
 
   if (!cart) {
     throw new ApiError(404, "Cart not found");
   }
 
+  // Prepare bulk updates for reducing stock
   const bulkStockUpdates = cart.items.map((item) => ({
     updateOne: {
-      filter: { _id: cartItems._id },
-      update: { $inc: { stock: -item.quantity } },
+      filter: { _id: item.productId }, // Find product by ID
+      update: { $inc: { stock: -item.quantity } }, // Reduce stock
     },
   }));
 
   await Product.bulkWrite(bulkStockUpdates, { skipValidation: true });
-  cart.items = [];
-  await cart.save({ validateBeforeSave: false });
+
+  // Clear cart after purchase
+  await Cart.updateOne({ _id: cart._id }, { $set: { items: [] } });
 
   return order;
 };
 
-const generateRazorpayOrder = asyncHandler(async (req, res) => {
 
+const generateRazorpayOrder = asyncHandler(async (req, res) => {
   const { addressId, paymentMethod } = req.body;
   console.log(addressId);
-  
+  console.log(paymentMethod);
 
   if (!razorpayInstance) {
     throw new ApiError(500, "Razorpay instance not initialized");
   }
 
-  const address = await Address.findOne(
-    { 
-      _id: addressId,
-       owner: req.user._id 
-    }
-  );
+  // Fetch the address
+  const address = await Address.findOne({ _id: addressId, owner: req.user._id });
 
   if (!address) throw new ApiError(404, "Address not found");
 
-  const cart = await Cart.findOne(
+  // Fetch cart and join cartItems with product details using aggregation
+  const cartAggregation = await Cart.aggregate([
+    { $match: { owner: req.user._id } },
     {
-       owner: req.user._id 
-    }
-  ).populate("cartItems");
+      $lookup: {
+        from: "products", // Name of the referenced collection
+        localField: "items.productId", // Field in Cart collection
+        foreignField: "_id", // Corresponding field in Product collection
+        as: "cartItemsDetails",
+      },
+    },
+  ]);
+
+  const cart = cartAggregation[0]; 
+  // console.log("cart", cartAggregation[0]);
+  // console.log("Cart items Details", cart.cartItemsDetails);
+  
+  
 
   if (!cart || !cart.items.length) throw new ApiError(400, "User cart is empty");
+//   console.log("cartItems", cart.items);
+// console.log("cartItems with quantity", cart.items[0].quantity);
+// console.log("cartItems with productDetails", cart);
 
-  const totalAmount = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  // Calculate total amount
+  const totalAmount = cart.items.reduce((sum, item) => {
+    
+    const product = cart.cartItemsDetails.find(p => p._id.toString() === item.productId.toString());
 
+    return sum + (product ? product.price * item.quantity : 0);
+  }, 0);
+
+  console.log(totalAmount * 100);
+
+  const validPaymentMethods = {
+    Online: "Razorpay", // Convert "Online" to "Razorpay"
+    UPI: "UPI",
+    Razorpay: "Razorpay",
+  };
+
+  const formattedPaymentMethod = validPaymentMethods[paymentMethod];
+
+  if (!formattedPaymentMethod) {
+    throw new ApiError(400, "Invalid payment method");
+  }
+  
+
+  // Create Razorpay order options
   const orderOptions = {
-    amount: totalAmount * 100, // Convert to paisa
+    amount: totalAmount * 100, 
     currency: "INR",
     receipt: nanoid(10),
   };
 
+  // Create Razorpay order
   razorpayInstance.orders.create(orderOptions, async (err, razorpayOrder) => {
-
+    
     if (err || !razorpayOrder) {
-      return res
-      .status(500)
-      .json(
-        new ApiResponse(
-          500,
-           null, 
-           "Failed to create Razorpay order"
-          )
-        );
+      console.log(err.error.description);
+      
+      return res.status(500).json(new ApiResponse(500, err.error.description, `${err.error.description}`));
     }
 
+    // Create order in database
     const newOrder = await Order.create({
       owner: req.user._id,
-      cartItems: cart._id,
+      cartItems: cart._id, // Ensure this contains item references
       address: address._id,
-      paymentMethod,
+      paymentMethod :formattedPaymentMethod,
       razorpayPaymentId: razorpayOrder.id,
-      totalAmount,
+      totalAmount, 
       status: "Pending",
     });
-    
-    if(!newOrder){
-      throw new ApiError(
-        500,
-        "order is not create!"
-      )
+
+    if (!newOrder) {
+      throw new ApiError(500, "Order not created!");
     }
 
-    return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200, 
-        razorpayOrder, 
-        "Razorpay order created"
-      )
-    );
+    return res.status(200).json(new ApiResponse(200, newOrder, "Razorpay order created"));
   });
 });
+
 
 const verifyRazorpayPayment = asyncHandler(async (req, res) => {
 

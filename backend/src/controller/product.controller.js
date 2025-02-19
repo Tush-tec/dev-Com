@@ -86,7 +86,52 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
   console.log(`Page: ${pageNumber}, Limit: ${limitNumber}, Products Fetched: ${products.length}`);
 
-  res.render(products)
+  // res.render("products")
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      products,
+      `Here are your products`,
+      {
+        totalProducts,
+        totalPages: Math.ceil(totalProducts / limitNumber),
+        currentPage: pageNumber
+      }
+    )
+  );
+});
+
+
+const getProducts = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 100 } = req.query;
+
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
+
+  if (isNaN(pageNumber) || isNaN(limitNumber) || pageNumber < 1 || limitNumber < 1) {
+    throw new ApiError(400, "Invalid page or limit values.");
+  }
+
+  const products = await Product.find()
+    .skip((pageNumber - 1) * limitNumber) 
+    .limit(limitNumber) 
+    .populate('category');  
+
+  const totalProducts = await Product.countDocuments();
+
+  console.log(`Page: ${pageNumber}, Limit: ${limitNumber}, Products Fetched: ${products.length}`);
+
+  console.log(products);
+  
+
+
+  res.render("ProductsList", {
+    products,
+    totalProducts,
+    totalPages: Math.ceil(totalProducts / limitNumber),
+    currentPage: pageNumber
+  })
 
   // return res.status(200).json(
   //   new ApiResponse(
@@ -320,5 +365,6 @@ export {
   deleteProductById,
   getFeaturedProduct,
   incrementProductViews,
-  getProductsByCategory
+  getProductsByCategory,
+  getProducts
 };

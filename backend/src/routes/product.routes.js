@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createProduct, getAllProduct, getProductById, getProductsByCategory, updateProductById, deleteProductById, } from "../controller/product.controller.js";
+import { createProduct, getAllProduct, getProductById, getProductsByCategory, updateProductById, deleteProductById, getProducts, } from "../controller/product.controller.js";
 import { authMiddleware } from "../middleware/auth.js";
 import upload from "../middleware/multer.middleware.js";
 import { UserRolesEnum } from "../constant.js";
@@ -65,6 +65,10 @@ router.get('/:id', async (req, res, next) => {
 router.route("/product/all-product").get(
     authMiddleware,
     getAllProduct,
+)
+router.route("/product/get-products").get(
+    authMiddleware,
+    getProducts,
 )
 
 

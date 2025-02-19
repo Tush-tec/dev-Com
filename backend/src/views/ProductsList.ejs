@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .table-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .product-image {
+            width: 60px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .action-buttons .btn {
+            font-size: 14px;
+            padding: 5px 10px;
+            margin: 2px;
+        }
+        .table th {
+            background-color: #212529 !important;
+            color: white;
+            text-align: center;
+        }
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+        .description-cell {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('includes/header.ejs') %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2  min-vh-100">
+                <%- include('includes/sidebar.ejs') %>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 p-4">
+                <div class="table-container">
+                    <h2 class="text-center mb-4">Product List</h2>
+                    <div class="table-responsive">
+                        <table id="productTable" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Main Image</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (products.length > 0) { %>
+                                    <% products.forEach((product, index) => { %>
+                                        <tr>
+                                            <td><%= index + 1 %></td>
+                                            <td><%= product.name %></td>
+                                            <td class="description-cell" title="<%= product.description %>"><%= product.description %></td>
+                                            <td><%= product.category ? product.category.categoryName : 'Uncategorized' %></td>
+                                            <td>&#8377;<%= Number(product.price.toFixed(2)).toLocaleString('en-IN') %></td>
+                                            <td><%= product.stock.toLocaleString('en-IN') %></td>
+                                            <td>
+                                                <% if (product.mainImage) { %>
+                                                    <img src="<%= product.mainImage.replace('/upload/', '/upload/w_300,h_200,c_fill/') %>" alt="Product Image" class="product-image">
+                                                <% } else { %>
+                                                    <span class="text-muted">No Image</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <a href="/api/v1/products/<%= product._id %>" class="btn btn-sm btn-warning">Edit</a>
+                                                    <form action="/api/v1/products/delete/<%= product._id %>" method="POST" style="display:inline;">
+                                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">No products found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#productTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true
+            });
+        });
+    </script>
+
+</body>
+</html>

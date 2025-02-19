@@ -31,7 +31,9 @@ const createCategory = asyncHandler(async(req,res)=>{
         )
     }
 
-    res.redirect("/api/v1/categories/category" )
+    res.redirect("/api/v1/categories/category")
+
+
 
     // return res
     // .status(200)
@@ -44,56 +46,36 @@ const createCategory = asyncHandler(async(req,res)=>{
     // )
 })
 
-const getCategory = asyncHandler(async(req,res)=>{
+const getCategory = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
 
-    const {page = 1, limit = 10} = req.query
-    
-    const categoryAggregate =  await Category.aggregate([
-        {
-            $match:{}
-        }
-    ])
+    // Convert query params to numbers and ensure they are valid
+    const currentPage = Math.max(parseInt(page), 1);
+    const itemsPerPage = Math.max(parseInt(limit), 1);
 
-    const paginationOptions = {
-        page: Math.max(page, 1), 
-        limit: Math.max(limit, 1), 
-        pagination: true,
-        customLabels: {
-          totalDocs: "totalItems",
-          docs: "categories",
-          limit: "itemsPerPage",
-          page: "currentPage",
-          totalPages: "totalPages",
-          pagingCounter: "serialNumberStartFrom",
-          hasPrevPage: "hasPreviousPage",
-          hasNextPage: "hasNextPage",
-          prevPage: "previousPage",
-          nextPage: "nextPage",
+    // Fetch categories with pagination
+    const categories = await Category.find({})
+        .skip((currentPage - 1) * itemsPerPage) 
+        .limit(itemsPerPage)
+        .exec(); 
+
+    // Get total count for pagination
+    const totalItems = await Category.countDocuments();
+
+    // Render categoryList.ejs with data
+    res.render("categoryList", {
+        categories, // Pass categories to EJS
+        pagination: {
+            totalItems,
+            currentPage,
+            totalPages: Math.ceil(totalItems / itemsPerPage),
+            hasNextPage: currentPage < Math.ceil(totalItems / itemsPerPage),
+            hasPrevPage: currentPage > 1,
         },
-    };
+    });
+});
 
-    const aggregatePaginate = await Category.aggregatePaginate(categoryAggregate, paginationOptions)
 
-    if(!aggregatePaginate){
-        throw new ApiError(
-            404,
-            'Category not found',
-        )
-    }
-
-    // res.render("category", categoryName
-    // )
-
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            'Category found',
-            aggregatePaginate
-        )
-    )
-})
 
 const getCategoryById = asyncHandler(async(req,res) =>{
     const {categoryId} = req.params
@@ -128,7 +110,7 @@ const getCategoryById = asyncHandler(async(req,res) =>{
 
 const updateCategory  = asyncHandler(async(req,res) =>{
     const {categoryId} = req.params
-    const {name} = req.body
+    const {categoryName} = req.body
 
     if(!categoryId){
         throw new ApiError(
@@ -137,7 +119,7 @@ const updateCategory  = asyncHandler(async(req,res) =>{
         )
     }
 
-    if(!name){
+    if(!categoryName){
         throw new ApiError(
             400,
             'Name is required',
@@ -149,7 +131,7 @@ const updateCategory  = asyncHandler(async(req,res) =>{
         categoryId,
         {
             $set:{
-                name
+                categoryName
             }
         },
         {
@@ -164,16 +146,18 @@ const updateCategory  = asyncHandler(async(req,res) =>{
         )
     }
 
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(    
-            200,
-            category,
-            'Category updated',
+     res.redirect('/api/v1/categories/get-categaory')
 
-        )   
-    )
+    // return res
+    // .status(200)
+    // .json(
+    //     new ApiResponse(    
+    //         200,
+    //         category,
+    //         'Category updated',
+
+    //     )   
+    // )
 })
 
 const deleteCategory = asyncHandler(async(req,res) =>{
@@ -196,6 +180,9 @@ const deleteCategory = asyncHandler(async(req,res) =>{
                 'Category not found',
             )
         }
+
+        // res.redirect('/categories'); // Redirect to category list after deletion
+
 
         return res
         .status(200)

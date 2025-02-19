@@ -19,9 +19,9 @@ router.route('/get-categaory').get(getCategory);
 // router.route('/:categoryId').get(getCategoryById);
 
 // Route to update a category by ID
-router.route('/:categoryId').put(authMiddleware, updateCategory); // Assuming protect middleware for authentication
+router.route('/edit/:categoryId').post(authMiddleware, updateCategory); // Assuming protect middleware for authentication
 
 // Route to delete a category by ID
-router.route('/:categoryId').delete(authMiddleware, deleteCategory); // Assuming protect middleware for authentication
+router.route('/delete/:categoryId').post(authMiddleware, deleteCategory); // Assuming protect middleware for authentication
 
 export default router;

@@ -72,8 +72,6 @@ router.route("/product/all-product").get(
   router.route('/product/:id').post(
       authMiddleware,
       upload.single("mainImage"),
-      // updateProductValidator(),
-      // validate,
       updateProductById
 
   )
@@ -82,8 +80,6 @@ router.route("/product/all-product").get(
 
   router.route('/delete/:id').post(
     authMiddleware,
-    // verifyPermission([UserRolesEnum.ADMIN]),
-    // validate,
     deleteProductById
   );
 

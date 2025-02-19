@@ -86,18 +86,20 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
   console.log(`Page: ${pageNumber}, Limit: ${limitNumber}, Products Fetched: ${products.length}`);
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      products,
-      `Here are your products`,
-      {
-        totalProducts,
-        totalPages: Math.ceil(totalProducts / limitNumber),
-        currentPage: pageNumber
-      }
-    )
-  );
+  res.render(products)
+
+  // return res.status(200).json(
+  //   new ApiResponse(
+  //     200,
+  //     products,
+  //     `Here are your products`,
+  //     {
+  //       totalProducts,
+  //       totalPages: Math.ceil(totalProducts / limitNumber),
+  //       currentPage: pageNumber
+  //     }
+  //   )
+  // );
 });
 
 

@@ -4,70 +4,106 @@ import { LocalStorage } from "../Utils/app";
 import cookie from "js-cookie";
 import { useAuth } from "../Utils/AuthContext";
 import { useSelector } from "react-redux";
+import userDetails from "../Pages/userDetails"
+import {jwtDecode} from "jwt-decode"
 
 const HeaderPage = () => {
   const [isLoggin, setLoggin] = useState(false);
   const [dropDown, setDropDown] = useState(false);
+  const [user, setUser] = useState(null)
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        document.querySelector("ul.navbar").classList.add("scrolled");
-      } else {
-        document.querySelector("ul.navbar").classList.remove("scrolled");
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
 
   const cart = useSelector((state) => state.cart.userCart || []);
+  // console.log(cart);
+  
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  // console.log(cartCount);
+  
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = cookie.get("accessToken");
+    // console.log(token );
+    
 
     if (token) {
       setLoggin(true);
     }
+    try {
+
+      const decode = jwtDecode(token)
+      console.log(decode);
+      console.log(decode.avatar);
+      setUser(decode)
+      
+      
+      
+    } catch (error) {
+      console.error("Invalid token", error);
+    }
 
     const checkCookieIsStore = setInterval(() => {
       if (!cookie.get("accessToken")) {
+        
         LocalStorage.clear();
         setLoggin(false);
         clearInterval(checkCookieIsStore);
       }
     }, 1000);
   }, []);
+// console.log(isLoggin);
+
+
 
   const { logout } = useAuth();
+  const {login} = useAuth()
+
+
+
 
   const handleLogout = () => {
     logout();
     setLoggin(false);
   };
 
-  return (
-    <header className="shadow-lg font-[sans-serif]  tracking-wide relative z-50">
-      <section
-        className="flex items-center relative py-5 
-        lg:px-10 px-4 border-gray-200 border-b bg-blue-100 lg:min-h-[70px] max-lg:min-h-[60px]"
-      >
-        <a to="/" className="hidden max-sm:block">
-          <img
-            src="https://readymadeui.com/readymadeui-short.svg"
-            alt="logo"
-            className="w-9"
-          />
-        </a>
 
-        <div className="flex flex-wrap w-full items-center ">
-          {/* <input type='text' placeholder='Search something...'
-            className='xl:w-80 max-lg:hidden lg:ml-10 max-md:mt-4 max-lg:ml-4 bg-gray-100 border focus:bg-transparent px-4 rounded h-10 outline-none text-sm transition-all' /> */}
+
+
+  return (
+    <header className="font-[sans-serif] tracking-wide "> 
+
+      <section
+        className="shadow-lg flex items-center  py-5 
+      lg:px-10 px-4 border-gray-200 border-b bg-[#D4D4D8] lg:min-h-[70px] max-lg:min-h-[60px] z-40"
+      >
+        <div className="flex flex-wrap w-full items-center  border-gray-700">
+        {isLoggin && user?.avatar && (
+            <div className="">
+              <img
+                src={user.avatar}
+                alt="User Avatar"
+                className="w-15 h-15 rounded-full object-cover"
+              />
+            </div>
+          )}
+         
+          
+          
+           {/* Avatar Section - Left Side */}
+        
+          {/* {isLoggin && user?.avatar && (
+            <div className="mr-4">
+              <img
+                src={user.avatar}
+                alt="User Avatar"
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            </div>
+          )} */}
+
+
           <div className="ml-auto ">
             <ul className="flex items-center">
               <li className="max-md:hidden flex items-center text-[15px] max-lg:py-2 px-4 font-medium text-gray-800 cursor-pointer">
@@ -100,26 +136,16 @@ const HeaderPage = () => {
                     data-original="#000000"
                   />
                 </svg>
+                {/* User Profile */}
+
                 Community
               </li>
-              <li className="max-lg:py-2 px-4 cursor-pointer">
-                <span className="relative">
-                  {/* Cart Icon */}
-                  {/* <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 inline" viewBox="0 0 512 512">
-                    <path
-                      d="M164.96 300.004h.024c.02 0 .04-.004.059-.004H437a15.003 15.003 0 0 0 14.422-10.879l60-210a15.003 15.003 0 0 0-2.445-13.152A15.006 15.006 0 0 0 497 60H130.367l-10.722-48.254A15.003 15.003 0 0 0 105 0H15C6.715 0 0 6.715 0 15s6.715 15 15 15h77.969c1.898 8.55 51.312 230.918 54.156 243.71C131.184 280.64 120 296.536 120 315c0 24.812 20.188 45 45 45h272c8.285 0 15-6.715 15-15s-6.715-15-15-15H165c-8.27 0-15-6.73-15-15 0-8.258 6.707-14.977 14.96-14.996zM477.114 90l-51.43 180H177.032l-40-180zM150 405c0 24.813 20.188 45 45 45s45-20.188 45-45-20.188-45-45-45-45 20.188-45 45zm45-15c8.27 0 15 6.73 15 15s-6.73 15-15 15-15-6.73-15-15 6.73-15 15-15zm167 15c0 24.813 20.188 45 45 45s45-20.188 45-45-20.188-45-45-45-45 20.188-45 45zm45-15c8.27 0 15 6.73 15 15s-6.73 15-15 15-15-6.73-15-15 6.73-15 15-15zm0 0"
-                      data-original="#000000"></path>
-                  </svg> */}
-                  <span className="absolute left-auto -ml-1 -top-2 rounded-full bg-red-500 px-1 py-0 text-xs text-white">
-                    {/* Add Cart Count Here */}
-                  </span>
-                </span>
-              </li>
+              
               {isLoggin ? (
                 <li>
                   <button
                     onClick={handleLogout}
-                    className="bg-orange-500 px-2 py-1 text-white rounded hover:bg-red-700"
+                    className="bg-[#011228] px-2 py-1 text-white rounded hover:bg-red-700"
                   >
                     {" "}
                     Logout
@@ -133,6 +159,7 @@ const HeaderPage = () => {
                   >
                     Login
                   </Link>
+
                   <span className="text-2xl">&#47;</span>
                   <Link
                     to="/register"
@@ -165,9 +192,9 @@ const HeaderPage = () => {
       </section>
 
       <div
-        id="collapseMenu "
-        className="max-lg:hidden  lg:!block max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-50 max-lg:before:inset-0 max-lg:before:z-50"
-      >
+      id="collapseMenu"
+      className="max-lg:hidden lg:!block max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-50 max-lg:before:inset-0 max-lg:before:z-50"
+    >
         <button
           id="toggleClose"
           className="lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white w-9 h-9 flex items-center justify-center border"
@@ -189,8 +216,8 @@ const HeaderPage = () => {
         </button>
 
         <ul
-      className="navbar bg-blue-300 gap-4 lg:flex lg:flex-wrap lg:items-center lg:justify-center px-15 py-5 "
-    >
+        className="nav bg-[#E5E5E5] gap-4 lg:flex lg:flex-wrap lg:items-center lg:justify-center px-15 py-6 z-50"
+      >
           
           <li className="max-lg:border-b max-lg:py-5
            px-5
@@ -228,7 +255,7 @@ const HeaderPage = () => {
           </li>
 
           <li
-            className="relative"
+            className=""
             onMouseEnter={() => setDropDown(true)}
             onMouseLeave={() => setDropDown(false)}
           >
@@ -238,24 +265,8 @@ const HeaderPage = () => {
             >
               Products
             </Link>
-            {dropDown && (
-              <ul className="absolute left-0 mt-2 w-40 bg-white text-black shadow-lg rounded-md">
-                <li className="px-4 py-2 hover:bg-gray-200">
-                  <Link to="/products/tables">Tables</Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-200">
-                  <Link to="/products/electronics">Electronics</Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-200">
-                  <Link to="/products/chairs">Chairs</Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-200">
-                  <Link to="/products/lights">Lights</Link>
-                </li>
-              </ul>
-            )}
+            
           </li>
-          <Link to="/cart">Cart ({cartCount})</Link>
 
         </ul>
       </div>

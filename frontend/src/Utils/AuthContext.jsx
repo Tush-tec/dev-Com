@@ -53,7 +53,10 @@ const AuthProvider = ({ children }) => {
                         
                         if (user && accessToken) {
                             setUser(user.username);
+                            console.log(user);
+                            
                             setToken(accessToken);
+                            
                             LocalStorage.set("Token", accessToken);
                             LocalStorage.set("RefreshToken", refreshToken);
                             

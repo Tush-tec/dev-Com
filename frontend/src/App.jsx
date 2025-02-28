@@ -6,6 +6,7 @@ import { Router, Routes, Route } from 'react-router-dom'
 import RegisterForm from './Components/Form/RegisterForm'
 import LoginForm from './Components/Form/LoginForm'
 import CheckOut from './Pages/CheckOut'
+import Profile from './Pages/Profile'
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path='/checkout' element = {<CheckOut/>}/>
+        <Route path='/profile' element={<Profile/>}/>
       </Routes>
     
 

@@ -128,6 +128,73 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
+const getUser = asyncHandler(async (req, res) => {
+  if (!req.user?._id) {
+    throw new ApiError(400, "User ID is required");
+  }
+
+  const userData = await User.aggregate([
+    {
+      $match: { _id: req.user._id }, // Find the user
+    },
+    {
+      $lookup: {
+        from: "orders", // Join with Orders collection
+        localField: "_id",
+        foreignField: "owner",
+        as: "orders",
+      },
+    },
+    {
+      $unwind: {
+        path: "$orders",
+        preserveNullAndEmptyArrays: true, // Keep users even if they have no orders
+      },
+    },
+    {
+      $lookup: {
+        from: "carts", // Join with CartItems collection
+        localField: "orders.cartItems",
+        foreignField: "_id",
+        as: "orders.cartDetails",
+      },
+    },
+    {
+      $lookup: {
+        from: "addresses", // Join with Addresses collection
+        localField: "orders.address",
+        foreignField: "_id",
+        as: "orders.addressDetails",
+      },
+    },
+    {
+      $group: {
+        _id: "$_id",
+        name: { $first: "$name" },
+        email: { $first: "$email" },
+        orders: { $push: "$orders" }, // Re-group orders after `$unwind`
+      },
+    },
+    {
+      $project: {
+        password: 0, // Exclude password field
+        "orders.__v": 0, // Exclude unnecessary fields
+        "orders.cartDetails.__v": 0,
+        "orders.addressDetails.__v": 0,
+      },
+    },
+  ]);
+
+  if (!userData.length) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, { user: userData[0] }, "User found successfully")
+  );
+});
+
+
 const loggedOutUser = asyncHandler(async (req, res) => {
 
   
@@ -338,6 +405,7 @@ export {
   generateAccessAndRefreshTokens,
   registerUser,
   loginUser,
+  getUser,
   loggedOutUser,
   updateAccountDetails,
   updateUserAvatar,

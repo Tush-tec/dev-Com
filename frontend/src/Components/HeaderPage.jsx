@@ -4,7 +4,6 @@ import { LocalStorage } from "../Utils/app";
 import cookie from "js-cookie";
 import { useAuth } from "../Utils/AuthContext";
 import { useSelector } from "react-redux";
-import userDetails from "../Pages/userDetails"
 import {jwtDecode} from "jwt-decode"
 
 const HeaderPage = () => {
@@ -138,7 +137,9 @@ const HeaderPage = () => {
                 </svg>
                 {/* User Profile */}
 
-                Community
+                <Link to="/profile">
+                Profile
+                </Link>
               </li>
               
               {isLoggin ? (

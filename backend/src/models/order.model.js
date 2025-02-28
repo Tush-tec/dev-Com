@@ -9,10 +9,10 @@
         ref: "User",
         required: true,
       },
-      cartItems: {
+      cartItems: [{
         type : Schema.Types.ObjectId,
         ref:"Cart"
-      },
+      }],
       address: {
       type : Schema.Types.ObjectId,
       ref: "Address"

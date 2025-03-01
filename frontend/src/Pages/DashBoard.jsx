@@ -1,14 +1,103 @@
+// import React, { useEffect, useState } from "react";
+
+// const Dashboard = () => {
+//   const [userData, setUserData] = useState(null);
+
+//   useEffect(() => {
+//     fetch("http://localhost:8080/api/v1/users/account-details", {
+//       credentials: "include",
+//     })
+//       .then((res) => res.json())
+//       .then((data) => setUserData(data.data.userData))
+//       .catch((err) => console.error("Error fetching user data:", err));
+//   }, []);
+
+//   if (!userData) return <div className="text-center mt-10">Loading...</div>;
+
+//   return (
+//     <div className="max-w-4xl mx-auto p-6">
+//       <h1 className="text-2xl font-bold mb-4">User Dashboard</h1>
+//       <div className="bg-white p-4 shadow rounded-lg mb-6">
+//         <p className="font-serif ">`Hello <span className="font-semibold"></span>{userData.email}  From your account dashboard you can view your recent orders, manage your shipping and billing addresses, and edit your password and account details.`</p>
+//       </div>
+//       <h2 className="text-xl font-semibold mb-2">Orders</h2>
+//       {userData.orders.map((order) => (
+//         <div key={order._id} className="border p-4 mb-4 rounded-lg">
+//           <p className="font-semibold">Order ID: {order._id}</p>
+//           <p>Payment Method: {order.paymentMethod}</p>
+//           <p>Status: {order.status}</p>
+//           <p>Total Amount: ₹{order.totalAmount}</p>
+//           <p>Date: {new Date(order.createdAt).toLocaleString()}</p>
+
+//           <h3 className="mt-2 font-semibold">Cart Items</h3>
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//             {order.cartDetails[0].items.map((item) => (
+//               <div key={item._id} className="border p-2 rounded-lg flex">
+//                 <img src={item.image} alt={item.name} className="w-16 h-16 rounded-lg mr-2" />
+//                 <div>
+//                   <p className="font-semibold">{item.name}</p>
+//                   <p>Quantity: {item.quantity}</p>
+//                   <p>Price: ₹{item.price}</p>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+
+//           <h3 className="mt-2 font-semibold">Shipping Address</h3>
+//           <p>
+//             {order.addressDetails[0].addressLine.street}, {order.addressDetails[0].addressLine.locality}, {order.addressDetails[0].addressLine.city}, {order.addressDetails[0].addressLine.pincode}
+//           </p>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default Dashboard;
+
+
+
+
+
+
 import { Link } from "react-router-dom";
-import { FaShoppingCart, FaMapMarkerAlt, FaHeart, FaUser, FaBell, FaQuestionCircle, FaCreditCard, FaClipboardList, FaTruck, FaGift, FaLock, FaHeadset } from "react-icons/fa";
+import { FaShoppingCart, FaMapMarkerAlt, FaHome, FaUser, FaBell, FaQuestionCircle, FaCreditCard, FaClipboardList, FaTruck, FaGift, FaLock, FaHeadset } from "react-icons/fa";
+import { requestHandler } from "../Utils/app";
+import { fetchUserAllInfo } from "../Api/api";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
+  
+  const [userInfo, setUserInfo] = useState(null)
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() =>{
+    const fetchData = async ()=>{
+      await requestHandler(
+        fetchUserAllInfo,
+        setLoading,
+        (data) =>{
+          console.log("Data",data.data.userData.orders);
+          
+          setUserInfo(data)
+        },
+        (errorMessage) =>{
+          setError(errorMessage)
+        }
+      )
+    }
+    console.log(fetchUserAllInfo());
+    
+    fetchData()
+  },[])
+
   const sections = [
     {
       title: "Overview",
       items: [
-        { name: "Recent Orders", icon: <FaClipboardList size={40} />, path: "/orders" },
+        { name: "Orders List", icon: <FaClipboardList size={40} />, path: "/profile/order-list" },
         { name: "Pending Actions", icon: <FaTruck size={40} />, path: "/pending-actions" },
-        { name: "Loyalty Points", icon: <FaGift size={40} />, path: "/loyalty-points" },
       ],
     },
     {
@@ -32,7 +121,8 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center  p-6 w-full">
+    <div className="flex flex-col items-center justify-center p-6 w-full">
+
       {sections.map((section, idx) => (
         <div key={idx} className="mb-8 w-full max-w-full px-4">
           <h2 className="text-xl font-semibold mb-4">{section.title}</h2>
@@ -53,5 +143,6 @@ const Dashboard = () => {
     </div>
   );
 };
+
 
 export default Dashboard;

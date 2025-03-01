@@ -7,11 +7,13 @@ import RegisterForm from './Components/Form/RegisterForm'
 import LoginForm from './Components/Form/LoginForm'
 import CheckOut from './Pages/CheckOut'
 import Profile from './Pages/Profile'
-import Account from './Pages/Account'
 import Address from './Pages/Address'
 import Orders from './Pages/Orders'
 import WishList from './Pages/WishList'
 import DashBoard from './Pages/DashBoard'
+import OrderList from './Pages/OrderList'
+import UserDashboard from './Pages/UserDashboard'
+import Account from './Pages/Account'
 
 function App() {
 
@@ -26,8 +28,11 @@ function App() {
         <Route path='/profile/dashboard' element={<DashBoard/>}/>
         <Route path='/profile/account' element={<Account/>}/>
         <Route path='/profile/addresses' element={<Address/>}/>
-        <Route path='/profile/orders' element={<Orders/>}/>
+        <Route path='/profile/orders' element={<UserDashboard/>}/>
+        <Route path='/profile/order-list' element={<OrderList/>}/>
         <Route path='/profile/wishlist' element={<WishList/>}/>
+        <Route path='/profile/userDashboard' element={<UserDashboard/>}/>
+        
         
       </Routes>
     

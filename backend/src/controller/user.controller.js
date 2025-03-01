@@ -135,11 +135,11 @@ const getUser = asyncHandler(async (req, res) => {
 
   const userData = await User.aggregate([
     {
-      $match: { _id: req.user._id }, // Find the user
+      $match: { _id: req.user._id }, 
     },
     {
       $lookup: {
-        from: "orders", // Join with Orders collection
+        from: "orders", 
         localField: "_id",
         foreignField: "owner",
         as: "orders",
@@ -153,15 +153,15 @@ const getUser = asyncHandler(async (req, res) => {
     },
     {
       $lookup: {
-        from: "carts", // Join with CartItems collection
-        localField: "cartItems",
+        from: "carts", 
+        localField: "orders.cartItems",
         foreignField: "_id",
-        as: "cartDetails",
+        as: "orders.cartDetails",
       },
     },
     {
       $lookup: {
-        from: "addresses", // Join with Addresses collection
+        from: "addresses", 
         localField: "orders.address",
         foreignField: "_id",
         as: "orders.addressDetails",
@@ -170,15 +170,15 @@ const getUser = asyncHandler(async (req, res) => {
     {
       $group: {
         _id: "$_id",
-        name: { $first: "$name" },
+        name: { $first: "$username" },
         email: { $first: "$email" },
-        orders: { $push: "$orders" }, // Re-group orders after `$unwind`
+        orders: { $push: "$orders" }, 
       },
     },
     {
       $project: {
-        password: 0, // Exclude password field
-        "orders.__v": 0, // Exclude unnecessary fields
+        password: 0, 
+        "orders.__v": 0, 
         "orders.cartDetails.__v": 0,
         "orders.addressDetails.__v": 0,
       },
@@ -190,7 +190,7 @@ const getUser = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json(
-    new ApiResponse(200, { user: [0] }, "User found successfully")
+    new ApiResponse(200, { userData: userData[0] }, "User found successfully")
   );
 });
 

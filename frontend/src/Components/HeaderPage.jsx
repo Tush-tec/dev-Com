@@ -13,10 +13,10 @@ const HeaderPage = () => {
 
 
 
-  const cart = useSelector((state) => state.cart.userCart || []);
+  // const cart = useSelector((state) => state.cart.userCart || []);
   // console.log(cart);
   
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  // const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
   // console.log(cartCount);
   
 
@@ -33,8 +33,8 @@ const HeaderPage = () => {
     try {
 
       const decode = jwtDecode(token)
-      console.log(decode);
-      console.log(decode.avatar);
+      // console.log(decode);
+      // console.log(decode.avatar);
       setUser(decode)
       
       
@@ -122,7 +122,7 @@ const HeaderPage = () => {
                     />
                   </g>
                 </svg>
-                Products and Services
+                <Link to="/profile/userDashboard">User Dashboard</Link>
               </li>
               <li className="max-md:hidden flex items-center text-[15px] max-lg:py-2 px-4 font-medium text-gray-800 cursor-pointer">
                 <svg

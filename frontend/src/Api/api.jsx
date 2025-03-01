@@ -52,6 +52,22 @@ const createOrder =(data) => {
     return apiClient.post('/order/create-order', address)
 }
 
+const fetchUserAllInfo = (data) =>{
+    return apiClient.get('/users/account-details', data)
+}
+
+const updateAvatar = (formData) => {
+    return apiClient.patch('/users/update-avatar', formData)
+}
+const updateAccountDetails = (data) => {
+    return apiClient.patch('/users/update-account-details', data)
+}
+const updatePassword = (data) => {
+    return apiClient.patch('/users/auth/change-user-password', data)
+} 
+
+
+
 export {
     registerUser,
     loginUser,
@@ -59,5 +75,10 @@ export {
     fetchProducts,
     getItemFromCart,
     createAddress,
-    createOrder
+    createOrder,
+    fetchUserAllInfo,
+    updateAvatar,
+    updateAccountDetails,
+    updatePassword
+    
 }   

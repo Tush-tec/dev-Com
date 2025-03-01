@@ -15,16 +15,16 @@ const Profile = () => {
     <>
       <HeaderPage />
       <div className="flex">
-        {/* Pass setActivePage to SideBar */}
-        <SideBar setActivePage={setActivePage} activePage={activePage} /> 
-        <div className=" flex p-10">
-          {activePage === 'dashboard' && <DashBoard />}
-          {activePage === 'account' && <Account />}
-          {activePage === 'orders' && <Orders />}
-          {activePage === 'wishlist' && <WishList />}
-          {activePage === 'address' && <Address />}
-        </div>
-      </div>
+  <SideBar setActivePage={setActivePage} activePage={activePage} /> 
+  <div className="flex-grow p-10"> {/* Ensures it takes up the remaining width */}
+    {activePage === 'dashboard' && <DashBoard />}
+    {activePage === 'account' && <Account />}
+    {activePage === 'orders' && <Orders />}
+    {activePage === 'wishlist' && <WishList />}
+    {activePage === 'address' && <Address />}
+  </div>
+</div>
+
       <Footer />
     </>
   );

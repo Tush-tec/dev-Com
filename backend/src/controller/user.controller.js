@@ -154,9 +154,9 @@ const getUser = asyncHandler(async (req, res) => {
     {
       $lookup: {
         from: "carts", // Join with CartItems collection
-        localField: "orders.cartItems",
+        localField: "cartItems",
         foreignField: "_id",
-        as: "orders.cartDetails",
+        as: "cartDetails",
       },
     },
     {
@@ -190,7 +190,7 @@ const getUser = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json(
-    new ApiResponse(200, { user: userData[0] }, "User found successfully")
+    new ApiResponse(200, { user: [0] }, "User found successfully")
   );
 });
 

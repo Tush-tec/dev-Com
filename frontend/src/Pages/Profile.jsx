@@ -1,9 +1,33 @@
-import React from 'react'
+import React, { useState } from 'react';
+import HeaderPage from '../Components/HeaderPage';
+import SideBar from '../Components/Sidebar';
+import Footer from '../Components/Footer';
+import DashBoard from './DashBoard';
+import Orders from './Orders';
+import WishList from './WishList';
+import Account from './Account';
+import Address from './Address';
 
 const Profile = () => {
-  return (
-    <div>Profile</div>
-  )
-}
+  const [activePage, setActivePage] = useState('dashboard'); // Default page
 
-export default Profile
+  return (
+    <>
+      <HeaderPage />
+      <div className="flex">
+        {/* Pass setActivePage to SideBar */}
+        <SideBar setActivePage={setActivePage} activePage={activePage} /> 
+        <div className=" flex p-10">
+          {activePage === 'dashboard' && <DashBoard />}
+          {activePage === 'account' && <Account />}
+          {activePage === 'orders' && <Orders />}
+          {activePage === 'wishlist' && <WishList />}
+          {activePage === 'address' && <Address />}
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+export default Profile;

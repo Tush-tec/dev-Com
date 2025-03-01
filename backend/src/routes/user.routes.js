@@ -1,7 +1,7 @@
 import { Router } from "express";
 import upload from "../middleware/multer.middleware.js";
 import { authMiddleware } from "../middleware/auth.js";
-import { registerUser,loginUser,loggedOutUser,updateAccountDetails,updateUserAvatar,changeCurrentUserPassword, updateUserRole, getUser } from "../controller/user.controller.js";
+import { registerUser,loginUser,loggedOutUser,updateAccountDetails,updateUserAvatar,changeCurrentUserPassword, updateUserRole, getUser, getIndividualUser } from "../controller/user.controller.js";
 import passport from "passport";
 import { asyncHandler } from "../utils/asyncHandler.js"; 
 import { googleCallBack } from "../middleware/authGoggle.middleware.js";
@@ -51,8 +51,12 @@ router.route('/account-details').get(
 
 router.route('/auth/logout').post(
     authMiddleware,
-    
     loggedOutUser
+)
+
+router.route('/user/:id').get(
+    authMiddleware,
+    getIndividualUser
 )
 
 router.route('/update-account-details').patch(

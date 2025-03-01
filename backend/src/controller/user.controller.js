@@ -128,6 +128,25 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
+const getIndividualUser = asyncHandler(async(req,res) =>{
+  const { id } = req.params;  
+  const user = await User.findById(id).select("-password");
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+    return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user, 
+        "User found"
+      )
+    );
+})
+
+
 const getUser = asyncHandler(async (req, res) => {
   if (!req.user?._id) {
     throw new ApiError(400, "User ID is required");
@@ -411,5 +430,6 @@ export {
   updateUserAvatar,
   // refereshAccessToken,
   changeCurrentUserPassword,
-  updateUserRole
+  updateUserRole,
+  getIndividualUser
 };

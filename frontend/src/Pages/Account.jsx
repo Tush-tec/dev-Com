@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchUser, updateAvatar, updateAccountDetails, updatePassword } from '../Api/api';
 import { jwtDecode } from 'jwt-decode';
+import HeaderPage from '../Components/HeaderPage';
 
 const Account = () => {
     const [user, setUser] = useState(null);
@@ -95,6 +96,8 @@ const Account = () => {
     if (error) return <p className="text-center text-red-500">{error}</p>;
 
     return (
+        <>
+        <HeaderPage/>
         <div className="bg-white shadow-lg rounded-lg p-6 w-96 flex flex-col items-center space-y-6">
             {user && (
                 <>
@@ -168,6 +171,7 @@ const Account = () => {
                 </>
             )}
         </div>
+        </>
     );
 };
 

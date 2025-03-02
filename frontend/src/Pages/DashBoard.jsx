@@ -96,7 +96,7 @@ const Dashboard = () => {
     {
       title: "Overview",
       items: [
-        { name: "Orders List", icon: <FaClipboardList size={40} />, path: "/profile/order-list" },
+        { name: "Orders List", icon: <FaClipboardList size={40} />, path: "/profile/order" },
         { name: "Pending Actions", icon: <FaTruck size={40} />, path: "/pending-actions" },
       ],
     },

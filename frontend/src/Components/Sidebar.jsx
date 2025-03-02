@@ -1,5 +1,6 @@
 import React from "react";
 import { FaHome, FaUser, FaMapMarkerAlt, FaClipboardList, FaHeart } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const SideBar = ({ setActivePage, activePage }) => {
   return (
@@ -7,7 +8,8 @@ const SideBar = ({ setActivePage, activePage }) => {
       <div className="w-64 h-screen bg-gray-700 p-6 border-r">
         <div className="absolute top-20">
           <ul className="space-y-6">
-            <li
+            <Link
+            to="/profile/dashboard"
               className={`flex items-center p-2 rounded cursor-pointer ${
                 activePage === "dashboard"
                   ? "bg-gray-300 text-gray-900"
@@ -16,8 +18,10 @@ const SideBar = ({ setActivePage, activePage }) => {
               onClick={() => setActivePage("dashboard")}
             >
               <FaHome className="mr-2" /> Dashboard
-            </li>
-            <li
+            </Link>
+            <Link
+
+            to="/profile/account"
               className={`flex items-center p-2 rounded cursor-pointer ${
                 activePage === "account"
                   ? "bg-gray-300 text-gray-900"
@@ -26,8 +30,9 @@ const SideBar = ({ setActivePage, activePage }) => {
               onClick={() => setActivePage("account")}
             >
               <FaUser className="mr-2" /> Account Details
-            </li>
-            <li
+            </Link>
+            <Link
+            to="/profile/address"
               className={`flex items-center p-2 rounded cursor-pointer ${
                 activePage === "address"
                   ? "bg-gray-300 text-gray-900"
@@ -36,8 +41,9 @@ const SideBar = ({ setActivePage, activePage }) => {
               onClick={() => setActivePage("address")}
             >
               <FaMapMarkerAlt className="mr-2" /> Addresses
-            </li>
-            <li
+            </Link>
+            <Link
+            to="/profile/orders"
               className={`flex items-center p-2 rounded cursor-pointer ${
                 activePage === "orders"
                   ? "bg-gray-300 text-gray-900"
@@ -46,8 +52,9 @@ const SideBar = ({ setActivePage, activePage }) => {
               onClick={() => setActivePage("orders")}
             >
               <FaClipboardList className="mr-2" /> Orders
-            </li>
-            <li
+            </Link>
+            <Link
+            to='/profile/wishlist'
               className={`flex items-center p-2 rounded cursor-pointer ${
                 activePage === "wishlist"
                   ? "bg-gray-300 text-gray-900"
@@ -56,7 +63,7 @@ const SideBar = ({ setActivePage, activePage }) => {
               onClick={() => setActivePage("wishlist")}
             >
               <FaHeart className="mr-2" /> Wish List
-            </li>
+            </Link>
           </ul>
         </div>
       </div>

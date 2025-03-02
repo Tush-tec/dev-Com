@@ -38,6 +38,7 @@
         enum: ['Pending', 'Paid', 'Shipped', 'Delivered', 'Cancelled'],
         default: 'Pending',
       },
+      
     },
     { timestamps: true }
   );

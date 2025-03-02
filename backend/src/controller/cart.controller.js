@@ -201,7 +201,8 @@ const getCart = asyncHandler(async (req, res) => {
         }
     ]);
 
-
+    console.log( "add to cart", cart);
+    
 
     if (!cart) {
         throw new ApiError(404, "Cart not found");
@@ -223,6 +224,8 @@ const removeFromCart = asyncHandler(async (req, res) => {
     }
 
     const cart = await Cart.findOne({ owner: req.user._id, isActive: true });
+    console.log("Remove from cart",cart);
+    
 
     if (!cart) {
         throw new ApiError(404, "Cart not found.");

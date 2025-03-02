@@ -17,7 +17,6 @@ router.route('/add-to-cart/:productId').post(
 
 )
 
-
 router.post('/add-to-cart', addToCart)
 router.get('/get-cart', authMiddleware, getCart)
 router.delete('/remove-from-cart/:productId', authMiddleware, removeFromCart)

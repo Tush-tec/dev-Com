@@ -158,46 +158,38 @@ const getUser = asyncHandler(async (req, res) => {
     },
     {
       $lookup: {
-        from: "orders", 
+        from: "orders",
         localField: "_id",
         foreignField: "owner",
         as: "orders",
       },
     },
     {
-      $unwind: {
-        path: "$orders",
-        preserveNullAndEmptyArrays: true, // Keep users even if they have no orders
-      },
-    },
-    {
       $lookup: {
-        from: "carts", 
+        from: "carts",
         localField: "orders.cartItems",
         foreignField: "_id",
-        as: "orders.cartDetails",
+        as: "cartDetails",
       },
     },
     {
       $lookup: {
-        from: "addresses", 
+        from: "addresses",
         localField: "orders.address",
         foreignField: "_id",
-        as: "orders.addressDetails",
+        as: "addressDetails",
       },
     },
     {
-      $group: {
-        _id: "$_id",
-        name: { $first: "$username" },
-        email: { $first: "$email" },
-        orders: { $push: "$orders" }, 
+      $addFields: {
+        "orders.cartDetails": "$cartDetails",
+        "orders.addressDetails": "$addressDetails",
       },
     },
     {
       $project: {
-        password: 0, 
-        "orders.__v": 0, 
+        password: 0,
+        "orders.__v": 0,
         "orders.cartDetails.__v": 0,
         "orders.addressDetails.__v": 0,
       },
@@ -212,6 +204,7 @@ const getUser = asyncHandler(async (req, res) => {
     new ApiResponse(200, { userData: userData[0] }, "User found successfully")
   );
 });
+
 
 
 const loggedOutUser = asyncHandler(async (req, res) => {

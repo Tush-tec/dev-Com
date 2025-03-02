@@ -36,13 +36,13 @@ const orderFulfillmentHelper = async (orderPaymentId, req) => {
 
 
   const cartAggregation = await Cart.aggregate([
-    { $match: { _id: order.cartItems } },  
+    { $match: { _id: { $in: order.cartItems } } },  
     {
       $lookup: {
-        from: "products", // Collection name in MongoDB
-        localField: "items.productId", // Field in Cart collection
-        foreignField: "_id", // Matching field in Product collection
-        as: "cartItemsDetails", // The name of the merged data
+        from: "products", 
+        localField: "items.productId", 
+        foreignField: "_id", 
+        as: "cartItemsDetails", 
       },
     },
   ]);

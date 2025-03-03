@@ -54,7 +54,7 @@
                 })
                 .addCase(addToCart.fulfilled, (state, action) => {
                     state.isLoading = false;
-                    console.log("Add to Cart Response:", action.payload);
+                    // console.log("Add to Cart Response:", action.payload);
                 
                     if (action.payload && action.payload.data && action.payload.data.items) {
                         state.cartItems = action.payload.data.items;  // ✅ Update cart with full item list
@@ -73,7 +73,6 @@
                 .addCase(fetchCartItem.fulfilled, (state, action) => {
                     state.isLoading = false;
                 state.cartItems = action.payload;
-                console.log("fetcg cart item", action.payload);
 
 
                 })

@@ -14,7 +14,7 @@ const Orders = () => {
           credentials: "include",
         });
         const data = await response.json();
-        console.log("API Response:", data.data.userData.orders[0].cartDetails); // Debugging API response
+        console.log("API Response:", data.data.userData);
 
         if (data?.data?.userData) {
           setUserData(data.data.userData);

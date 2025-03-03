@@ -114,6 +114,8 @@ const addToCart = asyncHandler(async (req, res) => {
             items: [],
         });
     }
+    console.log(cart);
+    
 
     const existingItem = cart.items.find(
         (item) => item.productId.toString() === productId.toString()

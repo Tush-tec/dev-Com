@@ -1,49 +1,53 @@
-  import mongoose,{Schema} from "mongoose";
-  import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+import mongoose, { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
-
-  const orderSchema = new mongoose.Schema(
-    {
-      owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
-      cartItems: [{
-        type : Schema.Types.ObjectId,
-        ref:"Cart"
-      }],
-      address: {
-      type : Schema.Types.ObjectId,
-      ref: "Address"
-      },
-      paymentMethod: {
-        type: String,
-        enum: ["UPI", "Razorpay"],
-        required: true,
-      },
-      transactionId: {
-        type: String,
-        required: function () {
-          return this.paymentMethod === "UPI";
-        },
-      },
-      razorpayPaymentId: String,
-      totalAmount: {
-        type: Number,
-        required: true,
-      },
-      status: {
-        type: String,
-        enum: ['Pending', 'Paid', 'Shipped', 'Delivered', 'Cancelled'],
-        default: 'Pending',
-      },
-      
+const orderSchema = new mongoose.Schema(
+  {
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    { timestamps: true }
-  );
+    cartItems: [
+      {
+        productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+        name: String,
+        image: String,
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
+      }
+    ],
+    address: {
+      type: Schema.Types.ObjectId,
+      ref: "Address",
+      required: true,
+    },
+    paymentMethod: {
+      type: String,
+      enum: ["UPI", "Razorpay"],
+      required: true,
+    },
+    transactionId: {
+      type: String,
+      default: null, // Allow null for non-UPI payments
+    },
+    razorpayPaymentId: {
+      type: String,
+      default: null,
+    },
+    totalAmount: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["Pending", "Paid", "Shipped", "Delivered", "Cancelled"],
+      default: "Pending",
+    },
+  },
+  { timestamps: true }
+);
 
+orderSchema.plugin(mongooseAggregatePaginate);
 
-  orderSchema.plugin(mongooseAggregatePaginate)
-
-  export const Order = mongoose.model("Order", orderSchema)
+export const Order = mongoose.model("Order", orderSchema);

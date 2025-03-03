@@ -19,14 +19,9 @@ const razorpayInstance = new Razorpay({
 
 
 const orderFulfillmentHelper = async (orderPaymentId, req) => {
-
   const order = await Order.findOneAndUpdate(
-    {
-      razorpayPaymentId: orderPaymentId 
-    },
-    { 
-      $set:{ status: "Paid" } 
-    },
+    { razorpayPaymentId: orderPaymentId },
+    { $set: { status: "Paid" } },
     { new: true }
   );
 
@@ -34,27 +29,8 @@ const orderFulfillmentHelper = async (orderPaymentId, req) => {
     throw new ApiError(404, "Order does not exist");
   }
 
-
-  const cartAggregation = await Cart.aggregate([
-    { $match: { _id: { $in: order.cartItems } } },  
-    {
-      $lookup: {
-        from: "products", 
-        localField: "items.productId", 
-        foreignField: "_id", 
-        as: "cartItemsDetails", 
-      },
-    },
-  ]);
-
-  const cart = cartAggregation[0]; // Extract the cart object
-
-  if (!cart) {
-    throw new ApiError(404, "Cart not found");
-  }
-
   // Prepare bulk updates for reducing stock
-  const bulkStockUpdates = cart.items.map((item) => ({
+  const bulkStockUpdates = order.cartItems.map((item) => ({
     updateOne: {
       filter: { _id: item.productId }, // Find product by ID
       update: { $inc: { stock: -item.quantity } }, // Reduce stock
@@ -63,17 +39,16 @@ const orderFulfillmentHelper = async (orderPaymentId, req) => {
 
   await Product.bulkWrite(bulkStockUpdates, { skipValidation: true });
 
-  // Clear cart after purchase
-  await Cart.updateOne({ _id: cart._id }, { $set: { items: [] } });
+  // Delete cart after order completion
+  await Cart.deleteOne({ owner: req.user._id });
 
   return order;
 };
 
 
+
 const generateRazorpayOrder = asyncHandler(async (req, res) => {
   const { addressId, paymentMethod } = req.body;
-  console.log(addressId);
-  console.log(paymentMethod);
 
   if (!razorpayInstance) {
     throw new ApiError(500, "Razorpay instance not initialized");
@@ -81,90 +56,81 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
 
   // Fetch the address
   const address = await Address.findOne({ _id: addressId, owner: req.user._id });
-
   if (!address) throw new ApiError(404, "Address not found");
 
-  // Fetch cart and join cartItems with product details using aggregation
+  // Fetch user's cart
   const cartAggregation = await Cart.aggregate([
     { $match: { owner: req.user._id } },
     {
       $lookup: {
-        from: "products", // Name of the referenced collection
-        localField: "items.productId", // Field in Cart collection
-        foreignField: "_id", // Corresponding field in Product collection
+        from: "products",
+        localField: "items.productId",
+        foreignField: "_id",
         as: "cartItemsDetails",
       },
     },
   ]);
 
-  const cart = cartAggregation[0]; 
-  // console.log("cart", cartAggregation[0]);
-  // console.log("Cart items Details", cart.cartItemsDetails);
-  
-  
+  const cart = cartAggregation[0];
 
   if (!cart || !cart.items.length) throw new ApiError(400, "User cart is empty");
-//   console.log("cartItems", cart.items);
-// console.log("cartItems with quantity", cart.items[0].quantity);
-// console.log("cartItems with productDetails", cart);
 
-  // Calculate total amount
-  const totalAmount = cart.items.reduce((sum, item) => {
-    
+  // Format cart items into order schema structure
+  const cartItems = cart.items.map((item) => {
     const product = cart.cartItemsDetails.find(p => p._id.toString() === item.productId.toString());
 
-    return sum + (product ? product.price * item.quantity : 0);
-  }, 0);
+    return {
+      productId: item.productId,
+      quantity: item.quantity,
+      price: product ? product.price : 0,
+      name: product ? product.name : "Unknown Product",
+      image: product ? product.image : "",
+    };
+  });
 
-  console.log(totalAmount * 100);
+  // Calculate total amount
+  const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  // Validate Payment Method
   const validPaymentMethods = {
-    Online: "Razorpay", // Convert "Online" to "Razorpay"
+    Online: "Razorpay",
     UPI: "UPI",
     Razorpay: "Razorpay",
   };
 
   const formattedPaymentMethod = validPaymentMethods[paymentMethod];
+  if (!formattedPaymentMethod) throw new ApiError(400, "Invalid payment method");
 
-  if (!formattedPaymentMethod) {
-    throw new ApiError(400, "Invalid payment method");
-  }
-  
-
-  // Create Razorpay order options
+  // Create Razorpay order
   const orderOptions = {
-    amount: totalAmount * 100, 
+    amount: totalAmount * 100,
     currency: "INR",
     receipt: nanoid(10),
   };
 
-  // Create Razorpay order
   razorpayInstance.orders.create(orderOptions, async (err, razorpayOrder) => {
-    
     if (err || !razorpayOrder) {
       console.log(err.error.description);
-      
-      return res.status(500).json(new ApiResponse(500, err.error.description, `${err.error.description}`));
+      return res.status(500).json(new ApiResponse(500, err.error.description, err.error.description));
     }
 
-    // Create order in database
+    // Create order in DB
     const newOrder = await Order.create({
       owner: req.user._id,
-      cartItems: cart._id, // Ensure this contains item references
+      cartItems, // Now contains actual product details
       address: address._id,
-      paymentMethod :formattedPaymentMethod,
+      paymentMethod: formattedPaymentMethod,
       razorpayPaymentId: razorpayOrder.id,
-      totalAmount, 
+      totalAmount,
       status: "Pending",
     });
 
-    if (!newOrder) {
-      throw new ApiError(500, "Order not created!");
-    }
+    if (!newOrder) throw new ApiError(500, "Order not created!");
 
     return res.status(200).json(new ApiResponse(200, newOrder, "Razorpay order created"));
   });
 });
+
 
 
 const verifyRazorpayPayment = asyncHandler(async (req, res) => {
@@ -179,6 +145,7 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
   if (expectedSignature === razorpay_signature) {
 
     const order = await orderFulfillmentHelper(razorpay_order_id, req);
+
     return res.status(201).json(new ApiResponse(201, order, "Order placed successfully"));
   }
   throw new ApiError(400, "Invalid Razorpay signature");

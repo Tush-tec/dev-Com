@@ -15,6 +15,8 @@ export const addToCart = createAsyncThunk(
     async ({ userId, productId, quantity }) => {
 
         const res = await axios.post(`/api/v1/cart/add-to-cart/${productId}`, { userId, productId, quantity });
+        // console.log(res);
+        
         return res.data;  
     }
 );
@@ -24,6 +26,8 @@ export const fetchCartItem = createAsyncThunk(
     async () => {
 
         const res = await axios.get(`/api/v1/cart/get-cart`);
+        // console.log(res.data);
+        
         return res.data.data.items;  
     }
 );
@@ -69,17 +73,7 @@ const cartSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.error.message || 'Failed to fetch cart items';
             })
-            .addCase(removeCartItem.pending, (state) => {
-                state.isLoading = true;
-            })
-            .addCase(removeCartItem.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.cartItems = Array.isArray(action.payload) ? action.payload : [];
-            })
-            .addCase(removeCartItem.rejected, (state, action) => {
-                state.isLoading = false;
-                state.error = action.error.message || 'Failed to remove from cart';
-            });
+            
     }
 });
 

@@ -162,8 +162,11 @@
               });
     
               if (verifyRes.data.success) {
-                alert("Payment Successful! 🎉");
-                navigate("/order-success");
+            alert("Payment Successful! 🎉");
+
+            dispatch(fetchCartItem());
+
+            navigate("/profile/order");
               } else {
                 throw new Error("Payment verification failed. Please contact support.");
               }

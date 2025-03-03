@@ -4,7 +4,7 @@ import { useProducts } from "../Utils/ProductContext";
 import Loader from "./Loader";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { LocalStorage } from "../Utils/app";
-import { addToCart, removeCartItem } from "../Utils/Store/CartSlice";
+import { addToCart, fetchCartItem, removeCartItem } from "../Utils/Store/CartSlice";
 import Cart from "./Cart";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -65,7 +65,7 @@ const Products = () => {
     y;
   };
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     const quantity = selectedQuantities[product._id] || 1;
     dispatch(
       addToCart({
@@ -73,7 +73,9 @@ const Products = () => {
         productId: product._id,
         quantity,
       })
-    );
+    ).unwrap(),
+
+    await dispatch(fetchCartItem())
     setSelectedQuantities((prev) => ({ ...prev, [product._id]: 0 }));
   };
 

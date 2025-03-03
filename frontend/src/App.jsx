@@ -14,6 +14,8 @@ import UserDashboard from './Pages/UserDashboard'
 import Account from './Pages/Account'
 import Orders from './Pages/Orders'
 import Home from './Pages/Home'
+import Products from './Components/Products'
+import Cart from './Components/Cart'
 
 function App() {
 
@@ -22,6 +24,8 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/" element={<Home/>}/>
+        <Route path="/products" element={<Products/>}/>
+        <Route path='/cart' element={<Cart/>}/>
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path='/checkout' element = {<CheckOut/>}/>

@@ -69,7 +69,8 @@ const Orders = () => {
                       {order.status}
                     </span>
                   </p>
-                  <p className="text-lg font-semibold text-gray-800 mt-2">Total: ₹{order.totalAmount}</p>
+                  <p className="text-lg font-semibold text-gray-800 mt-2">  Total: ₹{order.totalAmount.toLocaleString('en-IN')}
+</p>
                 </div>
 
                 {/* Cart Items */}

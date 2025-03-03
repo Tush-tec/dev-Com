@@ -13,9 +13,10 @@ const Cart = () => {
   const { cartItems = [], isLoading, error } = useSelector((state) => state.cart);
   const userId = LocalStorage.get("Token");
 
-  useEffect(  () => {
-     dispatch(fetchCartItem());
+  useEffect(() => {
+    dispatch(fetchCartItem());
   }, [dispatch]);
+  
 
 
   
@@ -27,7 +28,7 @@ const Cart = () => {
     if (quantity > 0) {
         try {
             await dispatch(addToCart({ userId, productId: id, quantity })).unwrap();
-            await dispatch(fetchCartItem()); // Ensures UI gets the latest cart from the backend
+            await dispatch(fetchCartItem()); 
         } catch (error) {
             console.error("Failed to update cart:", error);
         }

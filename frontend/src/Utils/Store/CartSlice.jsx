@@ -54,33 +54,52 @@
                 })
                 .addCase(addToCart.fulfilled, (state, action) => {
                     state.isLoading = false;
-                    
-                    const addedItem = action.payload; // Assuming API returns the new item
-                    const existingItemIndex = state.cartItems.findIndex(item => item._id === addedItem._id);
+                    console.log("Add to Cart Response:", action.payload);
                 
-                    if (existingItemIndex !== -1) {
-                        state.cartItems[existingItemIndex].quantity = addedItem.quantity; // Update quantity
+                    if (action.payload && action.payload.data && action.payload.data.items) {
+                        state.cartItems = action.payload.data.items;  // ✅ Update cart with full item list
                     } else {
-                        state.cartItems.push(addedItem); // Add new item
+                        console.error("Unexpected API response format:", action.payload);
                     }
-                })
-                
+                })   
                 .addCase(addToCart.rejected, (state, action) => {
                     state.isLoading = false;
                     state.error = action.error.message || 'Failed to add to cart';
                 })
                 .addCase(fetchCartItem.pending, (state) => {
                     state.isLoading = true;
+                    
                 })
                 .addCase(fetchCartItem.fulfilled, (state, action) => {
                     state.isLoading = false;
                 state.cartItems = action.payload;
+                console.log("fetcg cart item", action.payload);
+
 
                 })
                 .addCase(fetchCartItem.rejected, (state, action) => {
                     state.isLoading = false;
                     state.error = action.error.message || 'Failed to fetch cart items';
                 })
+                .addCase(removeCartItem.pending, (state) => {
+                    state.isLoading = true;
+                })
+                .addCase(removeCartItem.fulfilled, (state, action) => {
+                    state.isLoading = false;
+                    
+                    if (action.payload && action.payload.data && action.payload.data.items) {
+
+                        state.cartItems = action.payload.data.items;
+                    } else {
+
+                        const { productId } = action.meta.arg;
+                        state.cartItems = state.cartItems.filter((item) => item.productId !== productId);
+                    }
+                })
+                .addCase(removeCartItem.rejected, (state, action) => {
+                    state.isLoading = false;
+                    state.error = action.error.message || "Failed to remove cart item";
+                });
                 
         }
     });

@@ -67,15 +67,14 @@ const Products = () => {
 
   const handleAddToCart = async (product) => {
     const quantity = selectedQuantities[product._id] || 1;
-    dispatch(
+    await dispatch(
       addToCart({
         owner: token,
         productId: product._id,
         quantity,
       })
-    ).unwrap(),
-
-    await dispatch(fetchCartItem())
+    );
+    
     setSelectedQuantities((prev) => ({ ...prev, [product._id]: 0 }));
   };
 

@@ -84,7 +84,7 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
       quantity: item.quantity,
       price: product ? product.price : 0,
       name: product ? product.name : "Unknown Product",
-      image: product ? product.image : "",
+      image: product ? product.mainImage : "",
     };
   });
 

@@ -224,7 +224,7 @@ const HeaderPage = () => {
            px-5
            ">
             <Link
-              to="/home"
+              to="/"
               className="hover:text-yellow-300  text-[15px]  font-medium block"
             >
               Home

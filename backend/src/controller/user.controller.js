@@ -166,8 +166,8 @@ const getUser = asyncHandler(async (req, res) => {
     },
     {
       $lookup: {
-        from: "carts",
-        localField: "orders.cartItems",
+        from: "products", // Change from "orders" to "products"
+        localField: "orders.cartItems.productId", // Accessing inside orders
         foreignField: "_id",
         as: "cartDetails",
       },
@@ -199,6 +199,7 @@ const getUser = asyncHandler(async (req, res) => {
   if (!userData.length) {
     throw new ApiError(404, "User not found");
   }
+
 
   return res.status(200).json(
     new ApiResponse(200, { userData: userData[0] }, "User found successfully")

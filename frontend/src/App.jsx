@@ -13,6 +13,7 @@ import DashBoard from './Pages/DashBoard'
 import UserDashboard from './Pages/UserDashboard'
 import Account from './Pages/Account'
 import Orders from './Pages/Orders'
+import Home from './Pages/Home'
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<Home/>}/>
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path='/checkout' element = {<CheckOut/>}/>

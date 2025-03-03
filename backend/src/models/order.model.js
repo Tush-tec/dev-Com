@@ -10,11 +10,21 @@ const orderSchema = new mongoose.Schema(
     },
     cartItems: [
       {
-        productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+        productId: { 
+          type: Schema.Types.ObjectId, 
+          ref: "Product",
+          required: true 
+        },
         name: String,
+
         image: String,
-        quantity: { type: Number, required: true },
-        price: { type: Number, required: true },
+        quantity: {
+           type: Number, 
+           required: true 
+          },
+        price: { 
+          type: Number, required: true
+         },
       }
     ],
     address: {

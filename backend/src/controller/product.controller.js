@@ -68,7 +68,7 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const getAllProduct = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 20 } = req.query;
+  const { page = 1, limit =20 } = req.query;
 
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);
@@ -83,10 +83,11 @@ const getAllProduct = asyncHandler(async (req, res) => {
     .populate('category');  
 
   const totalProducts = await Product.countDocuments();
+  const totalPages = Math.ceil(totalProducts / limitNumber);
 
   console.log(`Page: ${pageNumber}, Limit: ${limitNumber}, Products Fetched: ${products.length}`);
-
-  // res.render("products")
+  console.log( pageNumber < totalPages,  );
+  
 
   return res.status(200).json(
     new ApiResponse(
@@ -95,12 +96,14 @@ const getAllProduct = asyncHandler(async (req, res) => {
       `Here are your products`,
       {
         totalProducts,
-        totalPages: Math.ceil(totalProducts / limitNumber),
-        currentPage: pageNumber
+        totalPages,
+        currentPage: pageNumber,
+        hasMore: pageNumber < totalPages, 
       }
     )
   );
 });
+
 
 
 const getProducts = asyncHandler(async (req, res) => {

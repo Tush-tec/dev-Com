@@ -34,9 +34,10 @@ const logOutUser = (data) => {
     return apiClient.post('/users/auth/logout', data)
 }
 
-const fetchProducts = () => {
-    return apiClient.get(`/products/product/all-product`)
-}
+const fetchProducts = ({ page = 1, limit = 20 }) => {
+    return apiClient.get(`/products/product/all-product?page=${page}&limit=${limit}`);
+};
+
 
 
 const getItemFromCart = () => {

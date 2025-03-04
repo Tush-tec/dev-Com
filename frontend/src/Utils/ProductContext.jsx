@@ -14,39 +14,45 @@ const ProductContext = createContext({
     return useContext(ProductContext);
 };
 
- const ProductProvider = ({ children }) => {
+const ProductProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [category, setCategory] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [hasMore, setHasMore] = useState(true); 
 
-    const getAllProducts = async (data) => {
+    const getAllProducts = async ({ page }) => {
         setLoading(true);
         setError(null);
 
         try {
             await requestHandler(
-                async () => fetchProducts(data),
+                async () => fetchProducts({page}), 
                 setLoading,
                 (res) => {
-                    setProducts(res.data);
-
+                    setProducts((prevProducts) => {
+                        const newProducts = res.data.filter(
+                            (newProduct) => !prevProducts.some((prev) => prev._id === newProduct._id)
+                        );
+                        return [...prevProducts, ...newProducts]; 
+                    });
+                    
+                    if (res.data.length === 0) {
+                        setHasMore(false); 
+                    }
                 }
-            )
-            
-
+            );
         } catch (error) {
-            
+            setError(error);
         }
     };
 
-
-
     return (
-        <ProductContext.Provider value={{ products, getAllProducts, loading, error }}>
+        <ProductContext.Provider value={{ products, getAllProducts, loading, error, hasMore }}>
             {children}
         </ProductContext.Provider>
     );
 };
+
 
 export { ProductContext, ProductProvider, useProducts };

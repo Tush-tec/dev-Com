@@ -45,7 +45,9 @@ const Cart = () => {
       <h2 className="text-lg font-semibold mb-4 text-center text-gray-700">Your Cart</h2>
 
       {cartItems.length === 0 ? (
-        <p className="text-center text-gray-500">Your cart is empty.</p>
+        <p className="text-center text-gray-500" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        An empty cart? What a lonely place. Go on, give it some company! 🛒
+      </p>
       ) : (
         <ul className="space-y-4">
           {(Array.isArray(cartItems) ? cartItems : []).map((item, index) => (

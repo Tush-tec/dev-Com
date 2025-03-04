@@ -66,6 +66,7 @@ router.route("/product/all-product").get(
     authMiddleware,
     getAllProduct,
 )
+
 router.route("/product/get-products").get(
     authMiddleware,
     getProducts,

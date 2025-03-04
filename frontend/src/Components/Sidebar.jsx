@@ -43,7 +43,7 @@ const SideBar = ({ setActivePage, activePage }) => {
               <FaMapMarkerAlt className="mr-2" /> Addresses
             </Link>
             <Link
-            to="/profile/orders"
+            to="/profile/order"
               className={`flex items-center p-2 rounded cursor-pointer ${
                 activePage === "orders"
                   ? "bg-gray-300 text-gray-900"

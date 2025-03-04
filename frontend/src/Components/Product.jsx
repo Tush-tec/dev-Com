@@ -8,8 +8,9 @@ import { addToCart, fetchCartItem, removeCartItem } from "../Utils/Store/CartSli
 import Cart from "./Cart";
 import { Link, useNavigate } from "react-router-dom";
 import HeaderPage from "./HeaderPage";
+import Footer from "./Footer";
 
-const Products = () => {
+const Product = () => {
   const { products, getAllProducts, loading, error } = useProducts();
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cartItems);
@@ -81,7 +82,7 @@ const Products = () => {
 
   return (
     <>
-  
+  <HeaderPage/>
     <div className="flex ">
       <div className="flex-1 p-4">
         {loading && <Loader />}
@@ -161,8 +162,9 @@ const Products = () => {
         )}
       </div>
     </div>
+    <Footer/>
     </>
   );
 };
 
-export default Products;
+export default Product;

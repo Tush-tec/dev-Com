@@ -16,6 +16,7 @@ import Orders from './Pages/Orders'
 import Home from './Pages/Home'
 import Products from './Components/Products'
 import Cart from './Components/Cart'
+import Product from './Components/product'
 
 function App() {
 
@@ -24,7 +25,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/" element={<Home/>}/>
-        <Route path="/products" element={<Products/>}/>
+        <Route path="/products" element={<Product/>}/>
         <Route path='/cart' element={<Cart/>}/>
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />

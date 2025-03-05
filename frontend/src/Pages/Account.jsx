@@ -27,7 +27,7 @@ const Account = () => {
                 const userId = decoded.id || decoded._id;
                 if (!userId) throw new Error('User ID not found');
 
-                const response = await getALLUserInfo(userId); // Use correct `userId`
+                const response = await getALLUserInfo(userId); 
                 console.log(response.data.data.userData);
                 
                 setUser(response.data.data.userData);

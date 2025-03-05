@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { Address } from "../models/address.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -103,6 +103,12 @@ const getAllAddress = asyncHandler(async(req,res) =>{
 
 const getAddressById = asyncHandler(async(req,res) =>{
     const {addressId} = req.params
+
+    console.log("addressId validation",isValidObjectId(addressId));
+    
+
+    console.log("valid object id" ,isValidObjectId(req.user?._id));
+    
 
     const address = await Address.findById(
         {

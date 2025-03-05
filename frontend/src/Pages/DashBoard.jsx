@@ -112,7 +112,7 @@ const Dashboard = () => {
       title: "Account Management",
       items: [
         { name: "Personal Info", icon: <FaUser size={40} />, path: "/profile/personal-info" },
-        { name: "Change Password", icon: <FaLock size={40} />, path: "/change-password" },
+        { name: "Change Password", icon: <FaLock size={40} />, path: "/profile/change-password" },
         { name: "Saved Addresses", icon: <FaMapMarkerAlt size={40} />, path: "/address" },
         { name: "Payment Methods", icon: <FaCreditCard size={40} />, path: "/payment-methods" },
       ],

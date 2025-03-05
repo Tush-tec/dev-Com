@@ -18,6 +18,7 @@ import Products from './Components/Products'
 import Cart from './Components/Cart'
 import Product from './Components/product'
 import Personalnfo from './Pages/Personalnfo'
+import ChangePassword from './Pages/ChangePassword'
 
 function App() {
 
@@ -40,6 +41,7 @@ function App() {
         <Route path='/profile/wishlist' element={<WishList/>}/>
         <Route path='/profile/userDashboard' element={<UserDashboard/>}/>
         <Route path='/profile/personal-info' element={<Personalnfo/>}/>
+        <Route path='/profile/change-password' element={<ChangePassword/>}/>
         
         
         

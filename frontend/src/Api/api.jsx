@@ -65,16 +65,17 @@ const getALLUserInfo = (data) => {
     return apiClient.get('/users/account-details', data)
 }
 
-
 const updateAvatar = (formData) => {
     return apiClient.patch('/users/update-avatar', formData)
 }
+
 const updateAccountDetails = (data) => {
     return apiClient.patch('/users/update-account-details', data)
 }
-const updatePassword = (data) => {
-    return apiClient.patch('/users/auth/change-user-password', data)
-} 
+
+    const updatePassword = (formData) => {
+        return apiClient.patch('/users/auth/change-user-password', formData)
+    } 
 
 
 

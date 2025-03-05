@@ -22,8 +22,8 @@ const userSchema =  new Schema(
         },
         storedUserName:{
             type:String,
-            required: true,
-            unique: true 
+            // required: true,
+            // unique: true 
         },
         email:{
             type: String,

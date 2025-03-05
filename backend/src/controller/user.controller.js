@@ -383,12 +383,12 @@ const changeCurrentUserPassword = asyncHandler(async (req, res) => {
 
   const { oldPassword, newPassword, confirmPassword } = req.body;
 
-// if(!oldPassword ||  !newPassword || !confirmPassword){
-//   throw new ApiError(
-//     400,
-//     "Please fill all fields to change password"
-//   )
-// }
+if(!oldPassword ||  !newPassword || !confirmPassword){
+  throw new ApiError(
+    400,
+    "Please fill all fields to change password"
+  )
+}
 
   const user = await User.findById(req.user?._id);
   if (!user) throw new ApiError(404, "User not found");
@@ -405,6 +405,10 @@ const changeCurrentUserPassword = asyncHandler(async (req, res) => {
 
   if (newPassword !== confirmPassword) {
     throw new  ApiError(401, "Password Not Match, Please Check and TryAgain!");
+  }
+
+  if (!user.storedUserName) {
+    user.storedUserName = user.username; // or any default logic
   }
 
   await user.save();

@@ -35,12 +35,14 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please fill all fields");
   }
 
-  const existUser = await User.findOne({
-    $or: [{ username }, { email }],
-  });
-
+  const existUser = await User.findOne({ username });
   if (existUser) {
-    throw new ApiError(400, "Username or Email already exists");
+    throw new ApiError(400, "Username already exists");
+  }
+
+  const existEmail = await User.findOne({ email });
+  if (existEmail) {
+    throw new ApiError(400, "Email already exists");
   }
 
   const avatarLocalPath = req.files?.avatar[0]?.path;
@@ -55,78 +57,111 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Failed to upload avatar");
   }
 
-  const createUser = await User.create({
-    username,
-    email,
-    fullname,
-    password,
-    avatar: avatar.url,
-  });
 
-  const checkUserCreatedorNot = await User.findById(createUser._id).select(
-    "-password -refreshToken"
-  );
+  let storedUserName;
+  let isUnique = false;
 
-  if (!checkUserCreatedorNot) {
-    throw new ApiError(500,checkUserCreatedorNot, "Something went wrong during registration");
+  while (!isUnique) {
+    const assignRandomLetters = Math.random().toString(36).substring(2, 5).toUpperCase().padEnd(2, 'X');
+    const assignRandomNumber = Math.floor(100 + Math.random() * 9000);
+
+    const usernameVariations = [
+      `${username}_${assignRandomLetters}${assignRandomNumber}`,
+      `${username}_${assignRandomNumber}${assignRandomLetters}`,
+      `${username}_${assignRandomLetters.charAt(0)}${assignRandomNumber}${assignRandomLetters.charAt(1) || ''}`,
+      `${username}_${assignRandomLetters.split('').reverse().join('')}`,
+      `${username}_${assignRandomLetters}${assignRandomLetters.split('').reverse().join('')}`,
+    ];
+
+    storedUserName = usernameVariations[Math.floor(Math.random() * usernameVariations.length)];
+    
+
+    const existingStoredUser = await User.findOne({ storedUserName });
+    if (!existingStoredUser) {
+      isUnique = true; 
+    }
   }
 
-  
-   return res
-   .status(201)
-   .json(
-    new ApiResponse(
-      201,
-      checkUserCreatedorNot,
-      "User created successfully",
-    )
-   );
-});
+  try {
+    const createUser = await User.create({
+      username,
+      storedUserName,  
+      email,
+      fullname,
+      password,
+      avatar: avatar.url,
+    });
 
-const loginUser = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
+    console.log(createUser);
 
-  if (!username || !password) {
-    throw new ApiError(400, "Username and Password are required");
-  }
-
-  const user = await User.findOne({ username });
-
-  if (!user) {
-    throw new ApiError(404, "User not found");
-  }
-
-  const isValidPassword = await user.isPasswordCorrect(password);
-
-  if (!isValidPassword) {
-    throw new ApiError(401, "Invalid password");
-  }
-
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    user._id
-  );
-
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
-
-  const options = {
-    httpOnly: true,
-    secure: true, 
-  };
-
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken)
-    .cookie("refreshToken", refreshToken)
-    .json(
-      new ApiResponse(
-        200,
-         { loggedInUser, accessToken, refreshToken},
-        "User logged in successfully"
-      )
+    const checkUserCreatedorNot = await User.findById(createUser._id).select(
+      "-password -refreshToken"
     );
+
+    if (!checkUserCreatedorNot) {
+      throw new ApiError(500, "Something went wrong during registration");
+    }
+
+    return res.status(201).json(
+      new ApiResponse(201, checkUserCreatedorNot, "User created successfully")
+    );
+
+  } catch (error) {
+    if (error.code === 11000) {  // MongoDB duplicate key error
+      return res.status(400).json(
+        new ApiResponse(400, null, "Username is already taken. Please try again.")
+      );
+    }
+    throw new ApiError(500, "Something went wrong during registration");
+  }
 });
+
+
+
+  const loginUser = asyncHandler(async (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      throw new ApiError(400, "Username and Password are required");
+    }
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const isValidPassword = await user.isPasswordCorrect(password);
+
+    if (!isValidPassword) {
+      throw new ApiError(401, "Invalid password");
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+      user._id
+    );
+
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
+    const options = {
+      httpOnly: true,
+      secure: true, 
+    };
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken)
+      .cookie("refreshToken", refreshToken)
+      .json(
+        new ApiResponse(
+          200,
+          { loggedInUser, accessToken, refreshToken},
+          "User logged in successfully"
+        )
+      );
+  });
 
 const getIndividualUser = asyncHandler(async(req,res) =>{
   const { id } = req.params;  

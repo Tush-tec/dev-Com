@@ -20,6 +20,11 @@ const userSchema =  new Schema(
             required: true,
             index: true
         },
+        storedUserName:{
+            type:String,
+            required: true,
+            unique: true 
+        },
         email:{
             type: String,
             lowercase:true,

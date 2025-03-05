@@ -26,7 +26,7 @@ const Account = () => {
                 if (!userId) throw new Error('User ID not found');
 
                 const response = await getALLUserInfo(data);
-                console.log(response.data.data.userData.addressDetails);
+                console.log(response.data.data.userData);
                 
                 setUser(response.data.data.userData);
             } catch (err) {
@@ -52,7 +52,7 @@ const Account = () => {
                             <img src={user.avatar} alt={user.username.charAt(0).toUpperCase() + user.username.slice(1)} className="w-20 h-20 rounded-full" />
                             <div>
                                 <h3 className="text-gray-900 text-xl" style={{ fontFamily: "Source Code Pro" }}>
-                                    {user.username.charAt(0).toUpperCase() + user.username.slice(1)}
+                                    {user.storedUserName.charAt(0).toUpperCase() + user.storedUserName.slice(1)}
                                 </h3>
                                 <h4 className="text-xl " style={{ fontFamily: "Montserrat" }}>
                                     {user.fullname.charAt(0).toUpperCase() + user.fullname.slice(1)}

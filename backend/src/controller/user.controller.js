@@ -92,7 +92,6 @@ const registerUser = asyncHandler(async (req, res) => {
       avatar: avatar.url,
     });
 
-    console.log(createUser);
 
     const checkUserCreatedorNot = await User.findById(createUser._id).select(
       "-password -refreshToken"

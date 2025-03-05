@@ -48,7 +48,7 @@ const Orders = () => {
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
         <h2 className="text-2xl font-semibold text-gray-700">
           Oh wow, look who's finally here— 
-          <span className="text-purple-600 font-extrabold font-mono" style={{ color: usernameColor ,  fontFamily: "'Playfair Display', serif"}}> {userData.username.charAt(0).toUpperCase() + userData.username.slice(1)} </span>! 
+          <span className="text-purple-600 font-extrabold font-mono" style={{ color: usernameColor ,  fontFamily: "'Playfair Display', serif"}}> {userData.storedUserName.charAt(0).toUpperCase() + userData.storedUserName.slice(1)} </span>! 
         </h2>
         </div>
 

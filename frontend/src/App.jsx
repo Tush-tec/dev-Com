@@ -17,6 +17,7 @@ import Home from './Pages/Home'
 import Products from './Components/Products'
 import Cart from './Components/Cart'
 import Product from './Components/product'
+import Personalnfo from './Pages/Personalnfo'
 
 function App() {
 
@@ -38,6 +39,8 @@ function App() {
         <Route path='/profile/order' element={<Orders/>}/>
         <Route path='/profile/wishlist' element={<WishList/>}/>
         <Route path='/profile/userDashboard' element={<UserDashboard/>}/>
+        <Route path='/profile/personal-info' element={<Personalnfo/>}/>
+        
         
         
       </Routes>

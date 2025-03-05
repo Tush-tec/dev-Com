@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const apiClient = axios.create({
-    baseURL:" http://localhost:8080/api/v1/"  ,    //import.meta.env.BASE_URL,
+    baseURL:"http://localhost:8080/api/v1/",    //import.meta.env.BASE_URL,
     withCredentials:true,
     timeout:120000
 })
@@ -49,6 +49,10 @@ const createAddress = (address) => {
     return apiClient.post('/address/create-address', address)
 }
 
+const getSaveAddress = (addressId) => {    
+    return apiClient.get(`/address/get-address/${addressId}`)
+} 
+
 const createOrder =(data) => {
     return apiClient.post('/order/create-order', address)
 }
@@ -78,9 +82,7 @@ const updatePassword = (formData) => {
 } 
 
 
-const getSaveAddress = (addressId) => {
-    return apiClient.get(`/address/${addressId}`)
-} 
+
 
 
 export {

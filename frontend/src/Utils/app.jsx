@@ -2,23 +2,26 @@ const isBrowser = typeof window !== "undefined"; // Move this outside the class
 
 const requestHandler = async (api, setLoading, onSuccess, onError) => {
   try {
-
     if (typeof api !== 'function') {
       throw new Error('API function is not defined');
     }
 
     setLoading && setLoading(true);
+    console.log("Sending API request...");
 
     const { data } = await api();
+    console.log("API Response:", data);
 
     if (data?.success) {
       onSuccess(data);
     } else {
+      console.error("Unexpected API Response:", data);
       onError('Something went wrong with the API response');
     }
   } catch (error) {
-    let errorMessage = 'Something went wrong.';
+    console.error("API Error:", error);
 
+    let errorMessage = 'Something went wrong.';
     if (error?.response?.data?.message) {
       errorMessage = error.response.data.message;
     } else if (error?.message) {
@@ -26,22 +29,15 @@ const requestHandler = async (api, setLoading, onSuccess, onError) => {
     }
 
     onError(errorMessage);
-
-
-    console.error('API Error:', error);
-
-    if (error?.response?.data?.statusCode && [401, 403].includes(error.response.data.statusCode)) {
+    if (error?.response?.status === 401 || error?.response?.status === 403) {
       localStorage.clear();
-
-
-      if (typeof window !== 'undefined') {
-        window.location.href = "/login";
-      }
+      window.location.href = "/login";
     }
   } finally {
     setLoading && setLoading(false);
   }
 };
+
 
 
 

@@ -42,6 +42,7 @@ function App() {
         <Route path='/profile/userDashboard' element={<UserDashboard/>}/>
         <Route path='/profile/personal-info' element={<Personalnfo/>}/>
         <Route path='/profile/change-password' element={<ChangePassword/>}/>
+        <Route path='/profile/address/:addressId' element={<Address/>}/>
         
         
         

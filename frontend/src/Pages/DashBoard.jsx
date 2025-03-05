@@ -61,36 +61,41 @@
 
 
 import { Link } from "react-router-dom";
-import { FaShoppingCart, FaMapMarkerAlt, FaHome, FaUser, FaBell, FaQuestionCircle, FaCreditCard, FaClipboardList, FaTruck, FaGift, FaLock, FaHeadset } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import {
+  FaShoppingCart, FaMapMarkerAlt, FaHome, FaUser, FaBell,
+  FaQuestionCircle, FaCreditCard, FaClipboardList, FaTruck,
+  FaGift, FaLock, FaHeadset
+} from "react-icons/fa";
 import { requestHandler } from "../Utils/app";
 import { fetchUserAllInfo } from "../Api/api";
-import { useEffect, useState } from "react";
+import HeaderPage from "../Components/HeaderPage";
 
 const Dashboard = () => {
-  
-  const [userInfo, setUserInfo] = useState(null)
-  const [error, setError] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [userInfo, setUserInfo] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() =>{
-    const fetchData = async ()=>{
+  useEffect(() => {
+    const fetchData = async () => {
       await requestHandler(
         fetchUserAllInfo,
         setLoading,
-        (data) =>{
-          console.log("Data",data.data.userData.orders);
-          
-          setUserInfo(data)
+        (data) => {
+          console.log("Fetched User Data:", data);
+          setUserInfo(data?.data?.userData); // Ensure correct data mapping
         },
-        (errorMessage) =>{
-          setError(errorMessage)
-        }
-      )
-    }
-    console.log(fetchUserAllInfo());
-    
-    fetchData()
-  },[])
+        setError
+      );
+    };
+
+    fetchData();
+  }, []);
+
+  // console.log(userInfo.addressDetails._id );
+  
+
+  const userAddressId = userInfo?.addressDetails?.[0]?._id || ""; 
 
   const sections = [
     {
@@ -113,18 +118,20 @@ const Dashboard = () => {
       items: [
         { name: "Personal Info", icon: <FaUser size={40} />, path: "/profile/personal-info" },
         { name: "Change Password", icon: <FaLock size={40} />, path: "/profile/change-password" },
-        { name: "Saved Addresses", icon: <FaMapMarkerAlt size={40} />, path: "/address" },
+        { name: "Saved Addresses", icon: <FaMapMarkerAlt size={40} />, path: `/profile/address/${userAddressId}` },
         { name: "Payment Methods", icon: <FaCreditCard size={40} />, path: "/payment-methods" },
       ],
     },
-   
   ];
 
   return (
+    
     <div className="flex flex-col items-center justify-center p-6 w-full">
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">Error: {error}</p>}
 
       {sections.map((section, idx) => (
-        <div key={idx} className="mb-8 w-full max-w-full px-4">
+        <div key={idx} className="mb-8 w-full px-4">
           <h2 className="text-xl font-semibold mb-4">{section.title}</h2>
           <div className="grid grid-cols-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
             {section.items.map((item, index) => (
@@ -143,6 +150,5 @@ const Dashboard = () => {
     </div>
   );
 };
-
 
 export default Dashboard;

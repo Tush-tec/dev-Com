@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import HeaderPage from '../Components/HeaderPage';
 import Footer from '../Components/Footer';
 import SideBar from '../Components/Sidebar';
+import Loader from '../Components/Loader';
 
 const Account = () => {
     const [user, setUser] = useState(null);
@@ -40,7 +41,7 @@ const Account = () => {
         getUser();
     }, []);
 
-    if (loading) return <p className="text-center text-gray-500">Loading...</p>;
+    if (loading) return <p className="text-center text-gray-500"><Loader/></p>;
     if (error) return <p className="text-center text-red-500">{error}</p>;
 
     return (

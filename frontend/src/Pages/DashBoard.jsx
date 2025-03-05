@@ -70,6 +70,7 @@ import {
 import { requestHandler } from "../Utils/app";
 import { fetchUserAllInfo } from "../Api/api";
 import HeaderPage from "../Components/HeaderPage";
+import Loader from "../Components/Loader";
 
 const Dashboard = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -127,7 +128,7 @@ const Dashboard = () => {
   return (
     
     <div className="flex flex-col items-center justify-center p-6 w-full">
-      {loading && <p>Loading...</p>}
+      {loading && <p><Loader/></p>}
       {error && <p className="text-red-500">Error: {error}</p>}
 
       {sections.map((section, idx) => (

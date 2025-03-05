@@ -73,10 +73,14 @@ const updateAccountDetails = (data) => {
     return apiClient.patch('/users/update-account-details', data)
 }
 
-    const updatePassword = (formData) => {
-        return apiClient.patch('/users/auth/change-user-password', formData)
-    } 
+const updatePassword = (formData) => {
+    return apiClient.patch('/users/auth/change-user-password', formData)
+} 
 
+
+const getSaveAddress = (addressId) => {
+    return apiClient.get(`/address/${addressId}`)
+} 
 
 
 export {
@@ -92,6 +96,7 @@ export {
     updateAccountDetails,
     updatePassword,
     fetchUser,
-    getALLUserInfo
+    getALLUserInfo,
+    getSaveAddress
 
 }   

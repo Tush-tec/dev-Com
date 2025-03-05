@@ -46,7 +46,6 @@ const orderFulfillmentHelper = async (orderPaymentId, req) => {
 };
 
 
-
 const generateRazorpayOrder = asyncHandler(async (req, res) => {
   const { addressId, paymentMethod } = req.body;
 
@@ -130,8 +129,6 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, newOrder, "Razorpay order created"));
   });
 });
-
-
 
 const verifyRazorpayPayment = asyncHandler(async (req, res) => {
 

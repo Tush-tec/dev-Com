@@ -76,7 +76,7 @@ const Orders = () => {
                 {/* Cart Items */}
                 <h3 className="mt-4 text-lg font-semibold text-gray-700">Items Purchased</h3>
                 <div className="mt-2">
-                {order.cartDetails?.map((item) => (  // ✅ Directly access the product details
+                {order.cartDetails?.map((item) => (  
                   <div key={item._id} className="flex items-center bg-gray-50 p-3 rounded-lg mb-2">
                     <img src={item.mainImage} alt={item.name} className="w-12 h-12 rounded-lg mr-3" />
                     <div>

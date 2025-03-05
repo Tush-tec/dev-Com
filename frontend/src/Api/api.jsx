@@ -61,6 +61,10 @@ const fetchUser = (userId) => {
     return apiClient.get(`/users/user/${userId}`);
 };
 
+const getALLUserInfo = (data) => {
+    return apiClient.get('/users/account-details', data)
+}
+
 
 const updateAvatar = (formData) => {
     return apiClient.patch('/users/update-avatar', formData)
@@ -86,6 +90,7 @@ export {
     updateAvatar,
     updateAccountDetails,
     updatePassword,
-    fetchUser
+    fetchUser,
+    getALLUserInfo
 
 }   

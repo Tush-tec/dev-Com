@@ -63,12 +63,19 @@ const getSaveAddress = (addressId) => {
 } 
 
 const createOrder =(data) => {
-    return apiClient.post('/order/create-order', address)
+    return apiClient.post('/orders/order/create-order', address)
 }
+
+const fetchOrders = (type = "") => {
+    return apiClient.get(`orders/order/get/${type}`);
+};
+
+
 
 const fetchUserAllInfo = (data) =>{
     return apiClient.get('/users/account-details', data)
 }
+
 
 const fetchUser = (userId) => {
     return apiClient.get(`/users/user/${userId}`);
@@ -104,6 +111,7 @@ export {
     getItemFromCart,
     createAddress,
     createOrder,
+    fetchOrders,
     fetchUserAllInfo,
     updateAvatar,
     updateAccountDetails,

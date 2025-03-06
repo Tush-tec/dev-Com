@@ -3,75 +3,50 @@ import Loader from "../Components/Loader";
 import HeaderPage from "../Components/HeaderPage";
 import Footer from "../Components/Footer";
 import SideBar from "../Components/Sidebar";
+import { requestHandler } from "../Utils/app";
+import { fetchOrders } from "../Api/api";
+import { Link } from "react-router-dom";
 
 const Orders = () => {
-  const [userData, setUserData] = useState(null);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Color Change
-  const [usernameColor, setUsernameColor] = useState("#000");
-
   useEffect(() => {
-    const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-    setUsernameColor(randomColor);
-  }, []);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/api/v1/users/account-details", {
-          credentials: "include",
-        });
-        const data = await response.json();
-        console.log("API Response:", data.data.userData);
-
-        if (data?.data?.userData) {
-          setUserData(data.data.userData);
-        }
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
+    requestHandler(
+      () => fetchOrders(""), // Fetch all orders
+      setLoading,
+      (data) => {
+        setOrders(data?.data || [])
+      }, // Set orders if API is successful
+      (error) => console.error("Failed to fetch orders:", error)
+    );
   }, []);
 
   if (loading) return <div className="text-center mt-10"><Loader /></div>;
-  if (!userData) return <div className="text-center mt-10 text-red-500">Failed to load user data.</div>;
+  if (!orders.length) return <div className="text-center mt-10 text-red-500">No orders found.</div>;
 
   return (
     <>
       <HeaderPage />
 
-      {/* Layout using Flexbox */}
-      <div className="flex min-h-screen">
+      <div className="flex  min-h-screen">
         {/* Sidebar */}
         <SideBar />
 
-        {/* Content on the right */}
-        <div className="flex-1 bg-gray-100 p-6">
+        {/* Main Content */}
+        <div className=" bg-gray-100 p-6 overflow-hidden">
           <div className="max-w-7xl mx-auto">
-            {/* User Info */}
-            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-              <h2 className="text-2xl font-semibold text-gray-700">
-                Oh wow, look who's finally here— 
-                <span className="text-purple-600 font-extrabold font-mono" style={{ color: usernameColor, fontFamily: "'Playfair Display', serif" }}>
-                  {(userData.storedUserName || userData.username).charAt(0).toUpperCase() + (userData.storedUserName || userData.username).slice(1)}
-                </span>!
-              </h2>
-            </div>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Your Orders</h2>
 
-            {/* Orders Section */}
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
-              Ah, Capitalism at its Finest! Here’s Your Purchase— :)
-            </h2>
-
-            {userData.orders?.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {userData.orders.map((order) => (
-                  <div key={order._id} className="bg-white shadow-md rounded-lg p-6">
+            {/* Scrollable Container with Full Width */}
+            <div className=" ">
+              <div className="flex overflow-x-auto container space-x-6 pb-4">
+                {orders.map((order) => (
+                  <div 
+                    key={order._id} 
+                    className="bg-white shadow-md rounded-lg p-6 min-w-[350px] max-w-[400px]"
+                  >
+                  <Link to ={`order/${order._id}` }>
                     <div className="border-b pb-4">
                       <p className="text-gray-600">Order ID: <span className="font-semibold">{order._id}</span></p>
                       <p className="text-gray-600">
@@ -80,46 +55,49 @@ const Orders = () => {
                           {order.status}
                         </span>
                       </p>
-                      <p className="text-lg font-semibold text-gray-800 mt-2">Total: ₹{order.totalAmount.toLocaleString('en-IN')}</p>
+                      <p className="text-lg font-semibold text-gray-800 mt-2">Total: ₹{order.totalPrice.toLocaleString('en-IN')}</p>
                     </div>
+                    </Link>
+
 
                     {/* Cart Items */}
                     <h3 className="mt-4 text-lg font-semibold text-gray-700">Items Purchased</h3>
                     <div className="mt-2">
-                      {order.cartDetails?.map((item) => (
-                        <div key={item._id} className="flex items-center bg-gray-50 p-3 rounded-lg mb-2">
-                          <img src={item.mainImage} alt={item.name} className="w-12 h-12 rounded-lg mr-3" />
+                      {order.cartItems.map((item) => (
+                        <Link to={`order/${order._id}`}>
+                        <div key={item.productId} className="flex items-center bg-gray-50 p-3 rounded-lg mb-2">
+                          <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg mr-3" />
                           <div>
                             <p className="text-gray-800 font-medium">{item.name}</p>
-                            <p className="text-gray-600 text-sm">Qty: {item.quantity || 1} | ₹{item.price}</p>
+                            <p className="text-gray-600 text-sm">Qty: {item.quantity} | ₹{item.price}</p>
                           </div>
                         </div>
+                        </Link>
+              
                       ))}
                     </div>
 
                     {/* Address */}
-                    {order.addressDetails?.length > 0 && (
+                    {order.addressDetails && (
                       <>
-                        <h3 className="mt-4 text-lg font-semibold text-gray-700">Shipping Addresses</h3>
-                        {order.addressDetails.map((address) => (
-                          <div key={address._id} className="text-gray-600 text-sm mt-3 p-3 border rounded-lg bg-gray-50">
-                            <div><span className="font-semibold">House No.:</span> {address.addressLine?.houseNumber}</div>
-                            <div><span className="font-semibold">Street No.:</span> {address.addressLine?.street}</div>
-                            <div><span className="font-semibold">Locality:</span> {address.addressLine?.locality}</div>
-                            <div><span className="font-semibold">City:</span> {address.addressLine?.city}</div>
-                            <div><span className="font-semibold">Pincode:</span> {address.addressLine?.pincode}</div>
-                            <div><span className="font-semibold">State:</span> {address.state}</div>
-                            <div><span className="font-semibold">Phone:</span> {address.phoneNumber}</div>
-                          </div>
-                        ))}
+                        <h3 className="mt-4 text-lg font-semibold text-gray-700 ">Shipping Address</h3>
+                        <div className="text-gray-600 text-sm mt-3 p-3 border rounded-lg bg-gray-50 space-y-1">
+                          <div><span className="font-semibold">Street:</span> {order.addressDetails.addressLine.street}</div>
+                          <div><span className="font-semibold">House Number:</span> {order.addressDetails.addressLine.houseNumber}</div>
+                          <div><span className="font-semibold">ApartMent Number:</span> {order.addressDetails.addressLine.apartmentNumber}</div>
+                          <div><span className="font-semibold">Locality:</span> {order.addressDetails.addressLine.locality}</div>
+                          <div><span className="font-semibold">City:</span> {order.addressDetails.addressLine.city}</div>
+                          <div><span className="font-semibold">District:</span> {order.addressDetails.addressLine.district}</div>
+                          <div><span className="font-semibold">Pincode:</span> {order.addressDetails.addressLine.pincode}</div>
+                          <div><span className="font-semibold">State:</span> {order.addressDetails.state}</div>
+                          <div><span className="font-semibold">Pincode:</span> {order.addressDetails.pincode}</div>
+                        </div>
                       </>
                     )}
                   </div>
                 ))}
               </div>
-            ) : (
-              <p className="text-center text-gray-600 mt-6">No orders found.</p>
-            )}
+            </div>
           </div>
         </div>
       </div>

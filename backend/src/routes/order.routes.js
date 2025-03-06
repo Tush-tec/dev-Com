@@ -15,7 +15,7 @@ router.route('/verify-payment').post(
     verifyRazorpayPayment
 )
 
-router.route('/order/get/:type').get(
+router.route('/order/get/:type?').get(
     authMiddleware,
     getOrders
 )

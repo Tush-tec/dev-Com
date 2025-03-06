@@ -8,6 +8,7 @@ connectionInstance()
     })
 })
 .catch((error)=> {
-    console.log('Error connecting to database', error);
+
+    console.log('Error connecting to database', error || error.message);
     
 }) 

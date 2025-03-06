@@ -107,7 +107,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
 
 const getProducts = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 100 } = req.query;
+  const { page = 1, limit = 15 } = req.query;
 
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);

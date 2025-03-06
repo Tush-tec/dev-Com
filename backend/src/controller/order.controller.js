@@ -9,6 +9,8 @@ import { Address } from '../models/address.model.js';
 import { Cart } from '../models/cart.model.js';
 import { error } from 'console';
 import { Product } from '../models/product.model.js';
+import { isValidObjectId } from 'mongoose';
+import { totalmem } from 'os';
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -169,6 +171,16 @@ const getOrderById = asyncHandler(async (req, res) => {
 
   const { orderId } = req.params;
 
+  if(isValidObjectId(orderId)){
+    throw new ApiError(
+      400,
+      "Invalid order id. Please provide a valid order id."
+    )
+  }
+  console.log(isValidObjectId(orderId));
+  console.log(orderId);
+  
+
   const order = await Order.findById(orderId).populate("owner cartItems address");
 
   if (!order) throw new ApiError(404, "Order does not exist");
@@ -176,6 +188,99 @@ const getOrderById = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, order, "Order fetched successfully"));
 
 });
+
+const getOrders = asyncHandler(async (req, res) => {
+  const { type } = req.params; // Get type from URL
+  const { page = 1, limit = 10 } = req.query;
+
+  const matchQuery = { owner: req.user._id };
+  let sortStage = null;
+  let limitStage = [];
+
+  // Handle different order types
+  if (type === "latest") {
+    sortStage = { $sort: { createdAt: -1 } };
+    limitStage = [{ $limit: 1 }];
+  } else if (type === "pending") {
+    matchQuery.status = "Pending";
+  } else if (type === "delivered") {
+    matchQuery.status = "Delivered";
+  }
+
+  const pipeline = [
+    { $match: matchQuery },
+    ...(sortStage ? [sortStage] : []), 
+    ...limitStage, 
+    {
+      $lookup: {
+        from: "addresses",
+        localField: "address",
+        foreignField: "_id",
+        as: "addressDetails",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "ownerDetails",
+      },
+    },
+    { $unwind: { path: "$ownerDetails", preserveNullAndEmptyArrays: true } },
+    { $unwind: { path: "$addressDetails", preserveNullAndEmptyArrays: true } },
+    { $unwind: "$cartItems" },
+    {
+      $lookup: {
+        from: "products",
+        localField: "cartItems.productId",
+        foreignField: "_id",
+        as: "cartItems.productDetails",
+      },
+    },
+    { $unwind: { path: "$cartItems.productDetails", preserveNullAndEmptyArrays: true } },
+    {
+      $group: {
+        _id: "$_id",
+        totalPrice: { $first: "$totalAmount" },
+        status: { $first: "$status" },
+        createdAt: { $first: "$createdAt" },
+        ownerDetails: { $first: "$ownerDetails" },
+        addressDetails: { $first: "$addressDetails" },
+        cartItems: {
+          $push: {
+            productId: "$cartItems.productId",
+            quantity: "$cartItems.quantity",
+            name: "$cartItems.productDetails.name",
+            price: "$cartItems.productDetails.price",
+            image: "$cartItems.productDetails.mainImage",
+          },
+        },
+      },
+    },
+  ];
+
+  const orders = await Order.aggregate(pipeline);
+
+  if (!orders.length) {
+    throw new ApiError(404, "No orders found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, orders, "Orders retrieved successfully"));
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const getOrderListAdmin = asyncHandler(async (req, res) => {
 
@@ -196,6 +301,7 @@ export {
   generateRazorpayOrder,
   verifyRazorpayPayment,
   getOrderById,
+  getOrders,
   getOrderListAdmin,
   updateOrderStatus,
 };

@@ -38,6 +38,10 @@ const fetchProducts = ({ page = 1, limit = 20 }) => {
     return apiClient.get(`/products/product/all-product?page=${page}&limit=${limit}`);
 };
 
+const fetchIndividualProduct =(productId) =>{
+    return apiClient.get(`/products/product/${productId}`)
+}
+
 
 
 const getItemFromCart = () => {

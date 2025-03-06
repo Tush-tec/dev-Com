@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createProduct, getAllProduct, getProductById, getProductsByCategory, updateProductById, deleteProductById, getProducts, } from "../controller/product.controller.js";
+import { createProduct, getAllProduct, getProductById, getProductsByCategory, updateProductById, deleteProductById, getProducts, getIndividualProduct, } from "../controller/product.controller.js";
 import { authMiddleware } from "../middleware/auth.js";
 import upload from "../middleware/multer.middleware.js";
 import { UserRolesEnum } from "../constant.js";
@@ -34,8 +34,9 @@ router.get('/products', async (req, res) => {
   res.render('products', { categories, products });
 });
 
+
 //     # Get products by Id
-router.get('/:id', async (req, res, next) => {
+router.get('/product/:id', async (req, res, next) => {
   try {
     console.log("Request params:", req.params);
     const { id } = req.params;
@@ -60,6 +61,12 @@ router.get('/:id', async (req, res, next) => {
     next(error);
   }
 });
+
+
+router.route("/product/show-item/:productId").get(
+  authMiddleware,
+  getIndividualProduct
+)
 
 
 router.route("/product/all-product").get(

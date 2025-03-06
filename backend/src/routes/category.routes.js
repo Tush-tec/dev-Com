@@ -1,5 +1,5 @@
 import express from 'express';
-import { createCategory, getCategory, getCategoryById, updateCategory, deleteCategory } from "../controller/category.controller.js"
+import { createCategory, getCategory, getProductsByCategory, updateCategory, deleteCategory } from "../controller/category.controller.js"
 import { authMiddleware } from '../middleware/auth.js';
 import { Category } from '../models/category.model.js';
 
@@ -14,6 +14,11 @@ router.route("/create-category").post(authMiddleware, createCategory);
 
 // Route to get all categories with pagination
 router.route('/get-categaory').get(getCategory); 
+
+router.route('/get-product-with-category/:categoryId').get(
+  authMiddleware,
+  getProductsByCategory
+)
 
 // Route to get a category by ID
 // router.route('/:categoryId').get(getCategoryById);

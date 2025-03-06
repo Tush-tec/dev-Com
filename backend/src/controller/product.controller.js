@@ -7,6 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { match } from "assert";
 
 
 
@@ -151,8 +152,6 @@ const getProducts = asyncHandler(async (req, res) => {
 });
 
 
-
-
 const getProductById = asyncHandler(async (req, res) => {
   const { productId } = req.params;
 
@@ -168,10 +167,60 @@ const getProductById = asyncHandler(async (req, res) => {
 
   const categories =  await Category.findById(product.category);
 
+
    res.render("productEdit", { product, categories });
 
 });
 
+
+const getIndividualProduct= asyncHandler(async (req,res) =>{
+
+  const {productId} = req.params
+
+  if (!isValidObjectId(productId)) {
+    throw new ApiError
+    (
+      400, 
+      "Invalid product ID"
+    )
+  }
+
+  const product = await Product.aggregate([
+    {
+      $match :{
+        _id: new mongoose.Types.ObjectId(productId)
+      }
+    },
+    {
+      $lookup:{
+        from: "categories",
+        localField:"category",
+        foreignField:"_id",
+        as: "categoryDetails"
+      }
+    }
+  ])
+  console.log(product);
+  console.log(product.length);
+  
+
+  if(!product.length){
+    throw  new ApiError(
+      404,
+      "Product not found"
+    )
+  }
+
+  return res
+  .status(201)
+  .json(
+    new ApiResponse(
+      201,
+      product[0],
+      "Here's you Product"
+    )
+  )
+})
 
 const updateProductById = asyncHandler(async (req, res) => {
 
@@ -369,5 +418,5 @@ export {
   getFeaturedProduct,
   incrementProductViews,
   getProductsByCategory,
-  getProducts
-};
+  getProducts,
+  getIndividualProduct};

@@ -3,6 +3,7 @@ import { Category } from '../models/category.model.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
 import { ApiError } from '../utils/ApiError.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
+import { Product } from '../models/product.model.js'
 
 
 const createCategory = asyncHandler(async(req,res)=>{
@@ -75,38 +76,36 @@ const getCategory = asyncHandler(async (req, res) => {
     });
 });
 
+const getProductsByCategory = asyncHandler(async (req, res) => {
+    const { categoryId } = req.params;
+  
+    if (!isValidObjectId(categoryId)) {
+      throw new ApiError(
+        400, "Invalid category ID"
+    )}
+  
 
-
-const getCategoryById = asyncHandler(async(req,res) =>{
-    const {categoryId} = req.params
-
-    if(!categoryId){
-        throw new ApiError(
-            400,
-            'Category id is required',
-        )
-    }
-
-    const category = await Category.findById(categoryId)
-
-    if(!category){
-        throw new ApiError(
-            404,
-            'Category not found',
-        )
-    }
-
+    const products = await Product.find({ category: categoryId })
+      .select("name price stock mainImage")
+      .sort({ createdAt: -1 }) 
+      .limit(50); 
+  
+    if (!products.length) {
+      throw new ApiError(
+        404, 
+        "No products found in this category"
+    )}
+  
     return res
     .status(200)
     .json(
-        new ApiResponse(
-            200,
-            category,
-            'Category found',
-           
-        )
-    )
-})
+      new ApiResponse(
+        200, 
+        products, 
+        "Products fetched successfully"
+    ));
+  });
+  
 
 const updateCategory  = asyncHandler(async(req,res) =>{
     const {categoryId} = req.params
@@ -198,7 +197,7 @@ const deleteCategory = asyncHandler(async(req,res) =>{
 export{
     createCategory,
     getCategory,
-    getCategoryById,
+    getProductsByCategory,
     updateCategory,
     deleteCategory
 }

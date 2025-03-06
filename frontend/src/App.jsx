@@ -19,6 +19,7 @@ import Cart from './Components/Cart'
 import Product from './Components/product'
 import Personalnfo from './Pages/Personalnfo'
 import ChangePassword from './Pages/ChangePassword'
+import ShopItem from './Pages/ShopItem'
 
 function App() {
 
@@ -43,6 +44,7 @@ function App() {
         <Route path='/profile/personal-info' element={<Personalnfo/>}/>
         <Route path='/profile/change-password' element={<ChangePassword/>}/>
         <Route path='/profile/address/:addressId' element={<Address/>}/>
+        <Route path='/products/product/:prdocutId' element={<ShopItem/>}/>
         
         
         

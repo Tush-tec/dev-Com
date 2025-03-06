@@ -113,6 +113,8 @@ const AuthProvider = ({ children }) => {
         }
     }, []);
 
+    
+
     return (
         <AuthContext.Provider value={{ user, token, register, login, logout }}>
             {isLoading ? <Loader /> : children}

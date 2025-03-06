@@ -7,7 +7,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { match } from "assert";
 
 
 
@@ -151,7 +150,6 @@ const getProducts = asyncHandler(async (req, res) => {
   // );
 });
 
-
 const getProductById = asyncHandler(async (req, res) => {
   const { productId } = req.params;
 
@@ -167,15 +165,15 @@ const getProductById = asyncHandler(async (req, res) => {
 
   const categories =  await Category.findById(product.category);
 
-
    res.render("productEdit", { product, categories });
 
 });
 
-
 const getIndividualProduct= asyncHandler(async (req,res) =>{
 
   const {productId} = req.params
+  console.log(productId);
+  
 
   if (!isValidObjectId(productId)) {
     throw new ApiError
@@ -416,7 +414,8 @@ export {
   updateProductById,
   deleteProductById,
   getFeaturedProduct,
+  getIndividualProduct,
   incrementProductViews,
   getProductsByCategory,
-  getProducts,
-  getIndividualProduct};
+  getProducts
+};

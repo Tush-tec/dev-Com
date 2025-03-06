@@ -90,11 +90,13 @@ const Products = () => {
 
                 return (
                   <div key={product._id} className=" shadow-md rounded-lg p-4">
-                    <img
-                      src={product.mainImage.replace("/upload/", "/upload/w_600,h_750,c_fill/")}
-                      alt={product.name}
-                      className="w-full h-64 object-cover rounded"
-                    />
+<Link to={`/product/${product._id}`} className="block">
+<img
+    src={product.mainImage.replace("/upload/", "/upload/w_600,h_750,c_fill/")}
+    alt={product.name}
+    className="w-full h-64 object-cover rounded"
+  />
+</Link>
                     <div className="p-4 flex flex-col text-center">
                       <h3 className="text-lg font-serif">{product.name}</h3>
                       <p className="text-gray-700">

@@ -66,7 +66,7 @@ const ChangePassword = () => {
     <div className="max-w-md mx-auto mt-10 bg-[#162130] text-white p-6 rounded-lg shadow-lg mb-10">
     <h1 className="flex flex-col items-center justify-center text-2xl mb-4 text-white">
   <KeyIcon className="h-8 w-8 mb-2 text-white" />
-  Click to confuse yourself later
+  Click to confuse yourself later_ !
 </h1>
 
       {error && <p className="text-red-500 text-center">{error}</p>}

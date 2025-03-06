@@ -34,9 +34,8 @@ router.get('/products', async (req, res) => {
   res.render('products', { categories, products });
 });
 
-
 //     # Get products by Id
-router.get('/product/:id', async (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
   try {
     console.log("Request params:", req.params);
     const { id } = req.params;
@@ -63,15 +62,14 @@ router.get('/product/:id', async (req, res, next) => {
 });
 
 
-router.route("/product/show-item/:productId").get(
-  authMiddleware,
-  getIndividualProduct
-)
-
-
 router.route("/product/all-product").get(
     authMiddleware,
     getAllProduct,
+)
+
+router.route('/item/:productId').get(
+  authMiddleware,
+  getIndividualProduct
 )
 
 router.route("/product/get-products").get(

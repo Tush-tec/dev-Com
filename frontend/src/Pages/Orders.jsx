@@ -100,14 +100,18 @@ const Orders = () => {
                     {/* Address */}
                     {order.addressDetails?.length > 0 && (
                       <>
-                        <h3 className="mt-4 text-lg font-semibold text-gray-700">Shipping Address</h3>
-                        <div className="text-gray-600 text-sm mt-1">
-                          <div><span className="font-semibold">House No.:</span> {order.addressDetails[0]?.addressLine?.houseNumber}</div>
-                          <div><span className="font-semibold">Street No.:</span> {order.addressDetails[0]?.addressLine?.street}</div>
-                          <div><span className="font-semibold">Locality:</span> {order.addressDetails[0]?.addressLine?.locality}</div>
-                          <div><span className="font-semibold">City:</span> {order.addressDetails[0]?.addressLine?.city}</div>
-                          <div><span className="font-semibold">Pincode:</span> {order.addressDetails[0]?.addressLine?.pincode}</div>
-                        </div>
+                        <h3 className="mt-4 text-lg font-semibold text-gray-700">Shipping Addresses</h3>
+                        {order.addressDetails.map((address) => (
+                          <div key={address._id} className="text-gray-600 text-sm mt-3 p-3 border rounded-lg bg-gray-50">
+                            <div><span className="font-semibold">House No.:</span> {address.addressLine?.houseNumber}</div>
+                            <div><span className="font-semibold">Street No.:</span> {address.addressLine?.street}</div>
+                            <div><span className="font-semibold">Locality:</span> {address.addressLine?.locality}</div>
+                            <div><span className="font-semibold">City:</span> {address.addressLine?.city}</div>
+                            <div><span className="font-semibold">Pincode:</span> {address.addressLine?.pincode}</div>
+                            <div><span className="font-semibold">State:</span> {address.state}</div>
+                            <div><span className="font-semibold">Phone:</span> {address.phoneNumber}</div>
+                          </div>
+                        ))}
                       </>
                     )}
                   </div>

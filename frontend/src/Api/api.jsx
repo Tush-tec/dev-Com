@@ -39,9 +39,14 @@ const fetchProducts = ({ page = 1, limit = 20 }) => {
 };
 
 const fetchIndividualProduct =(productId) =>{
-    return apiClient.get(`/products/product/${productId}`)
+    return apiClient.get(`/products/item/${productId}`)
 }
 
+const fetchProductForParticularCategory = (categoryId) =>{
+    console.log(categoryId);
+    
+    return apiClient.get(`/categories/get-product-with-category/${categoryId}`)
+}
 
 
 const getItemFromCart = () => {
@@ -94,6 +99,8 @@ export {
     loginUser,
     logOutUser,
     fetchProducts,
+    fetchIndividualProduct,
+    fetchProductForParticularCategory,
     getItemFromCart,
     createAddress,
     createOrder,

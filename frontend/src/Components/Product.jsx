@@ -92,6 +92,7 @@ const Product = () => {
 
                 return (
                   <div key={product._id} className=" shadow-md rounded-lg p-4">
+                    <Link to={`/product/${product._id}`} className="block">
                     <img
                       src={product.mainImage.replace("/upload/", "/upload/w_600,h_750,c_fill/")}
                       alt={product.name}
@@ -103,6 +104,7 @@ const Product = () => {
                         Price: <span className="font-bold">&#8377;{product.price.toLocaleString("en-IN")}</span>
                       </p>
                     </div>
+                    </Link>
 
                     <div className="p-2">
                       <div className="flex items-center justify-center space-x-3 mt-1">

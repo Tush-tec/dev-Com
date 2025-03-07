@@ -113,53 +113,7 @@ const Orders = () => {
                       ))}
                     </div>
 
-                    {order.addressDetails && (
-                      <>
-                        <h3 className="mt-4 text-lg font-semibold text-gray-700 ">
-                          Shipping Address
-                        </h3>
-                        <div className="text-gray-600 text-sm mt-3 p-3 border rounded-lg bg-gray-50 space-y-1">
-                          <div>
-                            <span className="font-semibold">Street:</span>{" "}
-                            {order.addressDetails.addressLine.street}
-                          </div>
-                          <div>
-                            <span className="font-semibold">House Number:</span>{" "}
-                            {order.addressDetails.addressLine.houseNumber}
-                          </div>
-                          <div>
-                            <span className="font-semibold">
-                              ApartMent Number:
-                            </span>{" "}
-                            {order.addressDetails.addressLine.apartmentNumber}
-                          </div>
-                          <div>
-                            <span className="font-semibold">Locality:</span>{" "}
-                            {order.addressDetails.addressLine.locality}
-                          </div>
-                          <div>
-                            <span className="font-semibold">City:</span>{" "}
-                            {order.addressDetails.addressLine.city}
-                          </div>
-                          <div>
-                            <span className="font-semibold">District:</span>{" "}
-                            {order.addressDetails.addressLine.district}
-                          </div>
-                          <div>
-                            <span className="font-semibold">Pincode:</span>{" "}
-                            {order.addressDetails.addressLine.pincode}
-                          </div>
-                          <div>
-                            <span className="font-semibold">State:</span>{" "}
-                            {order.addressDetails.state}
-                          </div>
-                          <div>
-                            <span className="font-semibold">Pincode:</span>{" "}
-                            {order.addressDetails.pincode}
-                          </div>
-                        </div>
-                      </>
-                    )}
+                   
                   </div>
                 ))}
               </div>

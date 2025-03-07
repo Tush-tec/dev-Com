@@ -42,11 +42,16 @@ const fetchIndividualProduct =(productId) =>{
     return apiClient.get(`/products/item/${productId}`)
 }
 
+const fetchCategory = () =>{
+    return apiClient.get(`/categories/get-categories`)
+}
+
 const fetchProductForParticularCategory = (categoryId) =>{
     console.log(categoryId);
-    
     return apiClient.get(`/categories/get-product-with-category/${categoryId}`)
 }
+
+
 
 
 const getItemFromCart = () => {
@@ -101,12 +106,14 @@ const updatePassword = (formData) => {
 
 
 
+
 export {
     registerUser,
     loginUser,
     logOutUser,
     fetchProducts,
     fetchIndividualProduct,
+    fetchCategory,
     fetchProductForParticularCategory,
     getItemFromCart,
     createAddress,

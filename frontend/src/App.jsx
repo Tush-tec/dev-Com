@@ -20,6 +20,8 @@ import Product from './Components/product'
 import Personalnfo from './Pages/Personalnfo'
 import ChangePassword from './Pages/ChangePassword'
 import ProductDetails from './Pages/ProductDetails'
+import Category from './Pages/Category'
+import CategoryProduct from './Pages/CategoryProduct'
 
 function App() {
 
@@ -45,6 +47,8 @@ function App() {
         <Route path='/profile/change-password' element={<ChangePassword/>}/>
         <Route path='/profile/address/:addressId' element={<Address/>}/>
         <Route path='/product/:productId' element={<ProductDetails />} />
+        <Route path='/categories' element={<Category/>}/>
+        <Route path='/categories/get-product-with-category/:categoryId' element={<CategoryProduct/>}/>
         
         
         

@@ -18,9 +18,9 @@ const Address = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  useEffect( async() => {
     if (!addressId) return;
-    requestHandler(
+    await requestHandler(
       () => getSaveAddress(addressId),
       setLoading,
       (data) => {

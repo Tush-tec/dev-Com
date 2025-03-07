@@ -47,7 +47,7 @@ const createCategory = asyncHandler(async(req,res)=>{
     // )
 })
 
-const getCategory = asyncHandler(async (req, res) => {
+const getCategoryForAdmin = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
     // Convert query params to numbers and ensure they are valid
@@ -75,6 +75,46 @@ const getCategory = asyncHandler(async (req, res) => {
         },
     });
 });
+
+const getCategory = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+
+    // Convert query params to numbers and ensure they are valid
+    const currentPage = Math.max(parseInt(page), 1);
+    const itemsPerPage = Math.max(parseInt(limit), 1);
+
+    try {
+        // Fetch categories with pagination
+        const categories = await Category.find({})
+            .skip((currentPage - 1) * itemsPerPage)
+            .limit(itemsPerPage)
+            .exec();
+
+        // Get total count for pagination
+        const totalItems = await Category.countDocuments();
+
+        // Create response object correctly
+        return res.status(200).json(new ApiResponse(
+            200,  // Changed from 201 to 200
+            {
+                categories,
+                pagination: {
+                    totalItems,
+                    currentPage,
+                    totalPages: Math.ceil(totalItems / itemsPerPage),
+                    hasNextPage: currentPage < Math.ceil(totalItems / itemsPerPage),
+                    hasPrevPage: currentPage > 1,
+                },
+            },
+
+            "Here is your Categories Data",
+
+        ));
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 
 const getProductsByCategory = asyncHandler(async (req, res) => {
     const { categoryId } = req.params;
@@ -196,6 +236,7 @@ const deleteCategory = asyncHandler(async(req,res) =>{
 
 export{
     createCategory,
+    getCategoryForAdmin,
     getCategory,
     getProductsByCategory,
     updateCategory,

@@ -1,5 +1,5 @@
 import express from 'express';
-import { createCategory, getCategory, getProductsByCategory, updateCategory, deleteCategory } from "../controller/category.controller.js"
+import { createCategory,getCategoryForAdmin ,getCategory, getProductsByCategory, updateCategory, deleteCategory } from "../controller/category.controller.js"
 import { authMiddleware } from '../middleware/auth.js';
 import { Category } from '../models/category.model.js';
 
@@ -12,21 +12,18 @@ router.get('/category', async (req, res) => {
 
 router.route("/create-category").post(authMiddleware, createCategory);
 
-// Route to get all categories with pagination
-router.route('/get-categaory').get(getCategory); 
+
+router.route('/get-categaory').get(getCategoryForAdmin); 
+
+router.route('/get-categories').get(getCategory); 
 
 router.route('/get-product-with-category/:categoryId').get(
   authMiddleware,
   getProductsByCategory
 )
 
-// Route to get a category by ID
-// router.route('/:categoryId').get(getCategoryById);
+router.route('/edit/:categoryId').post(authMiddleware, updateCategory); 
 
-// Route to update a category by ID
-router.route('/edit/:categoryId').post(authMiddleware, updateCategory); // Assuming protect middleware for authentication
-
-// Route to delete a category by ID
-router.route('/delete/:categoryId').post(authMiddleware, deleteCategory); // Assuming protect middleware for authentication
+router.route('/delete/:categoryId').post(authMiddleware, deleteCategory); 
 
 export default router;

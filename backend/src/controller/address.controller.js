@@ -5,30 +5,32 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createAddress = asyncHandler(async (req, res) => {
+
     const { addressLine, state, phoneNumber } = req.body;
     console.log("Received Request Body:", req.body);
 
     const owner = req.user?._id;
-    console.log(owner);
 
-    // Ensure addressLine exists before destructuring
+       if (!owner) {
+        throw new ApiError(401, "You are not logged in");
+    }
+
+
     if (!addressLine) {
         throw new ApiError(400, "Address details are required.");
     }
 
-    // Destructure addressLine properly
+
     const { street, houseNumber, apartmentNumber, locality, district, city, pincode } = addressLine;
 
-    // Validate required fields
+
     if (!street || !houseNumber || !locality || !district || !city || !pincode || !state || !phoneNumber) {
         throw new ApiError(400, "Please provide all required address fields.");
     }
 
-    if (!owner) {
-        throw new ApiError(401, "You are not logged in");
-    }
+ 
 
-    // Corrected: Remove extra array brackets
+
     const address = await Address.create({
         addressLine: {
             street,

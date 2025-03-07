@@ -20,7 +20,7 @@ const ChangePassword = () => {
   const [onSuccess, setOnSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Handle input change
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -28,7 +28,7 @@ const ChangePassword = () => {
     });
   };
 
-  // Handle form submission
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -36,7 +36,7 @@ const ChangePassword = () => {
 
     const { oldPassword, newPassword, confirmPassword } = formData;
 
-    // Validation
+
     if (!oldPassword || !newPassword || !confirmPassword) {
       setError("All fields are required!");
       return;
@@ -46,17 +46,18 @@ const ChangePassword = () => {
       return;
     }
 
-    // Use requestHandler to make the API request
+
     await requestHandler(
-      () => updatePassword(formData), // API call function
-      setLoading, // Loading state handler
+      () => updatePassword(formData), 
+      setLoading, 
+      
       (data) => {
         setOnSuccess(true);
         setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });
 
-        setTimeout(() => navigate("/profile"), 2000);
+        setTimeout(() => navigate("/profile"), 100);
       },
-      setError // Error handler
+      setError 
     );
   };
 
@@ -111,7 +112,7 @@ const ChangePassword = () => {
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-2 rounded-md mt-4 "
           disabled={loading}
         >
-          {loading ? <Loader /> : "Change Password"} {/* Use Loading component */}
+          {loading ? <Loader /> : "Change Password"} 
         </button>
       </form>
     </div>

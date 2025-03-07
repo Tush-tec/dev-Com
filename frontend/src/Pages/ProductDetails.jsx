@@ -18,7 +18,7 @@ const ProductDetails = () => {
   const [cartHave, setCartHave]= useState(false)
 
 
-  // Fetch product details
+
   useEffect(() => {
     const fetchProduct = async () => {
       await requestHandler(
@@ -31,24 +31,24 @@ const ProductDetails = () => {
     fetchProduct();
   }, [productId]);
 
-  // Get user token from LocalStorage
+
   const token = localStorage.getItem("Token");
 
-  // Increase quantity
+
   const handleIncreaseQuantity = () => {
     if (quantity < product.stock) {
       setQuantity((prev) => prev + 1);
     }
   };
 
-  // Decrease quantity
+
   const handleDecreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity((prev) => prev - 1);
     }
   };
 
-  // Add to cart function
+
   const handleAddToCart = async () => {
     if (!token) {
       alert("Please login first!");
@@ -57,7 +57,7 @@ const ProductDetails = () => {
 
     await dispatch(
       addToCart({
-        userId: token, // Use token as userId
+        userId: token, 
         productId,
         quantity,
       })
@@ -67,11 +67,11 @@ const ProductDetails = () => {
     setCartHave(true)
   };
 
-  // Buy now function
+
   const handleBuyNow = async () => {
     await handleAddToCart();
     setTimeout(() => {
-      window.location.href = "/checkout"; // Redirect to checkout
+      window.location.href = "/checkout"; 
     }, 100);
   };
 
@@ -82,7 +82,7 @@ const ProductDetails = () => {
     <>
       <HeaderPage />
       <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-6">
-        {/* Image Section */}
+
         <div className="flex flex-col items-center">
           <img
             src={product.mainImage.replace("/upload/", "/upload/w_600,h_650,c_fill/")}
@@ -90,7 +90,7 @@ const ProductDetails = () => {
             className="w-full h-auto object-cover rounded-lg"
           />
         </div>
-        {/* Product Details */}
+
         <div>
           <h1 className="text-3xl font-bold">{product.name}</h1>
           <p className="text-gray-600 mt-2">{product.description}</p>
@@ -99,7 +99,7 @@ const ProductDetails = () => {
           </p>
           <p className="text-green-600 mt-1">In Stock: {product.stock.toLocaleString("en-IN")}</p>
 
-          {/* Quantity Selector */}
+
           <div className="mt-4 flex items-center space-x-4">
             <button
               onClick={handleDecreaseQuantity}
@@ -118,7 +118,7 @@ const ProductDetails = () => {
             </button>
           </div>
 
-          {/* Action Buttons */}
+
           <div className="mt-6 flex space-x-4">
             <button
               className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800"

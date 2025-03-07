@@ -9,14 +9,14 @@ import Account from './Account';
 import Address from './Address';
 
 const Profile = () => {
-  const [activePage, setActivePage] = useState('dashboard'); // Default page
+  const [activePage, setActivePage] = useState('dashboard');
 
   return (
     <>
       <HeaderPage />
       <div className="flex">
   <SideBar setActivePage={setActivePage} activePage={activePage} /> 
-  <div className="flex-grow p-10"> {/* Ensures it takes up the remaining width */}
+  <div className="flex-grow p-10"> 
     {activePage === 'dashboard' && <DashBoard />}
     {activePage === 'account' && <Account />}
     {activePage === 'orders' && <Orders />}

@@ -18,20 +18,22 @@ const Address = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect( async() => {
+  useEffect( () => {
+    const fetchSaveAddress = async () => {
     if (!addressId) return;
     await requestHandler(
       () => getSaveAddress(addressId),
       setLoading,
       (data) => {
         console.log("✅ API Response:", data.data);
-        setSaveAddress(data.data); // It's an object, not an array
+        setSaveAddress(data.data); 
       },
       (error) => {
         console.error("❌ API Error:", error);
         setError(error);
       }
-    );
+    )}
+    fetchSaveAddress();
   }, [addressId]);
 
   if (loading)
@@ -51,15 +53,15 @@ const Address = () => {
     <>
       <HeaderPage />
       <div className="flex min-h-screen bg-gray-100">
-        {/* Sidebar */}
+
         <SideBar />
 
-        {/* Main Content */}
+
         <div className="flex-1 p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-3xl font-semibold text-black">Your Address</h2>
             <Link
-              to="/add-address"
+              to="/address/create-address"
               className="bg-black text-white px-5 py-2 rounded-lg flex items-center hover:bg-gray-800 transition"
             >
               <PlusIcon className="w-5 h-5 mr-2" /> Add Address

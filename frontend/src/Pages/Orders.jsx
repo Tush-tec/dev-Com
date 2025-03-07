@@ -10,16 +10,24 @@ import { Link } from "react-router-dom";
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    requestHandler(
-      () => fetchOrders(""), // Fetch all orders
+
+    const getSaveOrder = async () => {
+    await requestHandler(
+      () => fetchOrders(""), 
+      
       setLoading,
       (data) => {
         setOrders(data?.data || [])
-      }, // Set orders if API is successful
-      (error) => console.error("Failed to fetch orders:", error)
-    );
+      },
+      
+      (error) => {
+        setError(error);
+      }
+    )}
+    getSaveOrder();
   }, []);
 
   if (loading) return <div className="text-center mt-10"><Loader /></div>;
@@ -30,15 +38,15 @@ const Orders = () => {
       <HeaderPage />
 
       <div className="flex  min-h-screen">
-        {/* Sidebar */}
+
         <SideBar />
 
-        {/* Main Content */}
+
         <div className=" bg-gray-100 p-6 overflow-hidden">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">Your Orders</h2>
 
-            {/* Scrollable Container with Full Width */}
+
             <div className=" ">
               <div className="flex overflow-x-auto container space-x-6 pb-4">
                 {orders.map((order) => (
@@ -60,7 +68,7 @@ const Orders = () => {
                     </Link>
 
 
-                    {/* Cart Items */}
+
                     <h3 className="mt-4 text-lg font-semibold text-gray-700">Items Purchased</h3>
                     <div className="mt-2">
                       {order.cartItems.map((item) => (
@@ -77,7 +85,7 @@ const Orders = () => {
                       ))}
                     </div>
 
-                    {/* Address */}
+
                     {order.addressDetails && (
                       <>
                         <h3 className="mt-4 text-lg font-semibold text-gray-700 ">Shipping Address</h3>

@@ -55,7 +55,7 @@ const PersonalInfo = () => {
           <h2 className="text-2xl font-semibold mt-4">{user?.fullname}</h2>
           <p className="text-gray-400">{user?.storedUserName}</p>
 
-          {/* Social Media Icons */}
+
           <div className="flex space-x-4 mt-4">
             <a href="#" className="text-gray-400 rounded-full border p-3 hover:text-white text-lg">
               <FaLinkedinIn />
@@ -69,7 +69,7 @@ const PersonalInfo = () => {
           </div>
         </div>
 
-        {/* Right Section - Info Display */}
+
         <div className="w-full md:w-2/3 bg-gray-700 p-6 md:p-8 ">
           <h2 className="text-3xl font-bold">{user?.fullname}</h2>
           <p className="text-gray-400 text-lg mt-4">{user?.storedUserName}</p>
@@ -77,7 +77,7 @@ const PersonalInfo = () => {
             <span className="font-semibold">Log-in with:</span> {user?.username}
           </p>
 
-          {/* Address Details */}
+
           <div className="mt-8">
             <h3 className="text-xl font-semibold text-white">Address Information</h3>
             <div className="mt-3 space-y-6">

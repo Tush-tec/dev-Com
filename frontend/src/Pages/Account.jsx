@@ -48,16 +48,16 @@ const Account = () => {
         <>
             <HeaderPage />
             <div className="flex min-h-screen bg-gray-100">
-                {/* Sidebar on the Left */}
+
                 <SideBar />
 
-                {/* User Details on the Right */}
+
                 <div className="flex-1 p-6">
                     <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
                         {user && (
                             <>
                                 <div className="flex items-center space-x-6">
-                                    {/* Enlarged Avatar */}
+
                                     <img 
                                         src={user.avatar} 
                                         alt={user.username.charAt(0).toUpperCase() + user.username.slice(1)} 
@@ -76,7 +76,7 @@ const Account = () => {
                                     </div>
                                 </div>
 
-                                {/* Address Details */}
+
                                 <div className="mt-6">
                                     <h3 className="text-lg font-semibold">Address Details</h3>
                                     <div className="mt-2 bg-gray-100 p-4 rounded-md">
@@ -96,7 +96,7 @@ const Account = () => {
                                     </div>
                                 </div>
 
-                                {/* Edit Button */}
+
                                 <div className="mt-6 flex justify-end">
                                     <Link to="/edit-account" className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Edit Details</Link>
                                 </div>

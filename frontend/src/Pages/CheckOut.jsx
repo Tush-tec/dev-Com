@@ -1,220 +1,318 @@
-  import React, { useEffect, useState } from "react";
-  import { useSelector, useDispatch } from "react-redux";
-  import { useNavigate } from "react-router-dom";
-  import axios from "axios";
-  import { fetchCartItem } from "../Utils/Store/CartSlice";
-  import HeaderPage from "../Components/HeaderPage";
-  import Footer from "../Components/Footer";
-  import { createAddress } from "../Api/api";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { fetchCartItem } from "../Utils/Store/CartSlice";
+import HeaderPage from "../Components/HeaderPage";
+import Footer from "../Components/Footer";
+import {
+  createAddress,
+  getAllSaveAddress,
+  createOrderWithRazorPay,
+  verifyRazorpayOrder,
+  createOrder,
+} from "../Api/api";
+import { requestHandler } from "../Utils/app";
+import Loader from "../Components/Loader";
 
-  const AddressForm = ({ address, handleChange, handleSubmit, errors }) => (
-    <div className="bg-white shadow-lg p-6 rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4">Billing Address</h2>
-      {errors && <p className="text-red-500 text-center">{errors}</p>}
-      <div className="space-y-4">
-        {[
-          { label: "Street", name: "street" },
-          { label: "House Number", name: "houseNumber" },
-          { label: "Apartment Number", name: "apartmentNumber" },
-          { label: "Locality", name: "locality" },
-          { label: "District", name: "district" },
-          { label: "City", name: "city" },
-          { label: "Pincode", name: "pincode" },
-          { label: "State", name: "state" },
-          { label: "Phone Number", name: "phoneNumber" },
-        ].map(({ label, name }) => (
-          <div key={name}>
-            <label className="block text-gray-700 font-medium">{label}</label>
-            <input
-              type="text"
-              name={name}
-              placeholder={label}
-              onChange={handleChange}
-              className="border p-3 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        ))}
-        <button
-          className="px-5 py-3 bg-black text-white rounded-md hover:bg-gray-800"
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
-      </div>
-    </div>
-  );
+const CheckOut = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { cartItems, isLoading } = useSelector((state) => state.cart);
 
-  const OrderSummary = ({ cartItems, subtotal, totalQuantity, handleProceedToPayment }) => (
-    <div className="bg-white shadow-lg p-6 rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
-      <div className="space-y-4 max-h-175 overflow-auto">
-        {cartItems.map((item) => (
-          <div key={item.productId} className="flex items-center justify-between p-2 border-b">
-            <img src={item.image.replace("/upload/", "/upload/w_400,h_200,c_fill/")} alt={item.name} className="w-20 h-20 object-cover rounded-md border" />
-            <div className="flex-1 px-4">
-              <h3 className="text-lg font-semibold">{item.name}</h3>
-              <p className="text-gray-600">Qty: {item.quantity}</p>
-              <p className="text-gray-600">₹{item.price.toLocaleString("en-IN")}</p>
-            </div>
-            <p className="font-semibold text-lg">₹{(item.quantity * item.price).toLocaleString("en-IN")}</p>
-          </div>
-        ))}
-      </div>
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [newAddress, setNewAddress] = useState({
+    street: "",
+    houseNumber: "",
+    apartmentNumber: "",
+    locality: "",
+    district: "",
+    city: "",
+    pincode: "",
+    state: "",
+    phoneNumber: "",
+  });
+  const [errors, setErrors] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [totalPrice, setTotalPrice] = useState(0);
 
-      <div className="mt-5 border-t pt-4">
-        <div className="flex justify-between text-lg font-sans mb-5 ">
-          <span>Total Quantity of Product:</span>
-          <span>{totalQuantity}</span>
-        </div>
-        <div className="flex justify-between text-xl font-serif mt-2 border-b  ">
-          <span>Subtotal:</span>
-          <span>₹{subtotal.toLocaleString("en-IN")}</span>
-        </div>
-      </div>
-      <div className="grid place-items-center">
-        <button onClick={handleProceedToPayment} className="mt-6 px-6 bg-black text-white py-3 rounded-md text-lg transition duration-300 ease-in-out">
-          Proceed to Payment
-        </button>
-      </div>
-    </div>
-  );
+  useEffect(() => {
+    dispatch(fetchCartItem()); // Fetch cart items on load
+    fetchAddresses();
+  }, [dispatch]);
 
-  const CheckOut = () => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { cartItems, isLoading } = useSelector((state) => state.cart);
+  
 
-    const [address, setAddress] = useState({
-      street: "", houseNumber: "", apartmentNumber: "", locality: "", district: "",
-      city: "", pincode: "", state: "", phoneNumber: "",
-    });
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      const total = cartItems.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
+      setTotalPrice(total);
+    }
+  }, [cartItems]);
 
-    const [errors, setErrors] = useState("");
-    const [isProcessing, setIsProcessing] = useState(false);
-
-    useEffect(() => { dispatch(fetchCartItem()); }, [dispatch]);
-
-    const handleChange = (e) => {
-      setAddress({ ...address, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-
-      e.preventDefault();
-      setErrors("");
-
-      try {
-        
-        const response = await createAddress({ addressLine: { ...address }, state: address.state, phoneNumber: address.phoneNumber });
-        // console.log("response", response.data.data._id);
-        if (response.data.success) {
-
-          setAddress({ ...address, _id: response.data.data._id }); 
-          
-          alert("Address saved successfully. You can proceed to payment.");
-        } else {
-          setErrors(response.data.errors || {});
-        }
-      } catch (error) {
-        setErrors(error.response?.data?.message || "An error occurred");
-      }
-    };
-
-    const handleProceedToPayment = async () => {
-      if (!address._id) {
-        setErrors("Address is not saved. Please submit the address first.");
-        return;
-      }
-    
-      setIsProcessing(true);
-    
-      try {
-        const {data} = await axios.post("http://localhost:8080/api/v1/orders/create-order", {
-          
-          addressId: address._id,
-          paymentMethod: "Online",
-        }, { withCredentials: true });
-        console.log("data",data.data);
-        
-    
-        if (!data || !data.success) {
-          throw new Error(response.data?.message || "Failed to create order");
-        }
-    
-        const {  razorpayPaymentId, totalAmount } = data.data;
-        if (!razorpayPaymentId || !totalAmount) {
-          throw new Error("Invalid Razorpay order details received");
-        }
-    
-        const options = {
-          key: import.meta.env.VITE_RAZORPAY_API_KEY,
-          totalAmount,
-          currency: "INR",
-          name: "DevCom",
-          description: "Secure Payment",
-          order_id: razorpayPaymentId,
-          handler: async function (paymentResponse) {
-            try {
-              const verifyRes = await axios.post("http://localhost:8080/api/v1/orders/verify-payment", {
-                razorpay_order_id: paymentResponse.razorpay_order_id,
-                razorpay_payment_id: paymentResponse.razorpay_payment_id,
-                razorpay_signature: paymentResponse.razorpay_signature,
-              });
-    
-              if (verifyRes.data.success) {
-            alert("Payment Successful! 🎉");
-
-            dispatch(fetchCartItem());
-
-            navigate("/profile/order");
-              } else {
-                throw new Error("Payment verification failed. Please contact support.");
-              }
-            } catch (error) {
-              console.error("Error verifying payment:", error);
-              alert("Payment verification failed.");
-            }
-          },
-          prefill: {
-            name: "Customer Name",
-            email: "customer@example.com",
-            contact: address.phoneNumber,
-          },
-          theme: { color: "#3399cc" },
-        };
-    
-        const rzp = new window.Razorpay(options);
-        rzp.open();
-    
-        rzp.on('payment.failed', function (response) {
-          alert(response.error.description);
-        });
-    
-      } catch (error) {
-        console.error("Error processing payment:", error.message);
-        setErrors(error.message || "Something went wrong. Please try again.");
-      } finally {
-        setIsProcessing(false);
-      }
-    };
-    
-
-    const subtotal = cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
-    const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-
-    return (
-      <>
-        <HeaderPage />
-        <div className="max-w-10xl mx-auto p-20 bg-gray-100 min-h-screen my-8">
-          {isLoading && <p className="text-center">Loading cart items...</p>}
-          <div className="grid md:grid-cols-2 gap-8">
-            <AddressForm address={address} handleChange={handleChange} handleSubmit={handleSubmit} errors={errors} />
-            <OrderSummary cartItems={cartItems} subtotal={subtotal} totalQuantity={totalQuantity} handleProceedToPayment={handleProceedToPayment} />
-          </div>
-        </div>
-        <Footer />
-      </>
+  const fetchAddresses = () => {
+    requestHandler(
+      getAllSaveAddress,
+      null,
+      (data) =>{
+        console.log(data);
+       setSavedAddresses(data.data.addresses)},
+      (error) => setErrors(error)
     );
   };
 
-  export default CheckOut;
+  const handleAddressSelection = (e) => {
+    setSelectedAddress(e.target.value);
+  };
+
+  const handleChange = (e) => {
+    setNewAddress({ ...newAddress, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setErrors("");
+    requestHandler(
+      () =>
+        createAddress({
+          addressLine: { ...newAddress },
+          state: newAddress.state,
+          phoneNumber: newAddress.phoneNumber,
+        }),
+      setIsProcessing,
+      (data) => {
+        setSavedAddresses([...savedAddresses, data.data]);
+        setShowAddressForm(false);
+        setSelectedAddress(data.data._id);
+      },
+      (error) => setErrors(error)
+    );
+  };
+
+  const handleProceedToPayment = () => {
+    if (!selectedAddress) {
+      setErrors("Please select or add an address.");
+      return;
+    }
+
+    if (!paymentMethod) {
+      setErrors("Please select a payment method.");
+      return;
+    }
+
+    if (paymentMethod === "Razorpay") {
+      requestHandler(
+        () => createOrderWithRazorPay(selectedAddress),
+        setIsProcessing,
+        (data) => {
+          const { razorpayPaymentId, totalAmount } = data.data;
+          if (!razorpayPaymentId || !totalAmount) {
+            throw new Error("Invalid Razorpay order details received");
+          }
+
+          const options = {
+            key: import.meta.env.VITE_RAZORPAY_API_KEY,
+            totalAmount,
+            currency: "INR",
+            name: "DevCom",
+            description: "Secure Payment",
+            order_id: razorpayPaymentId,
+            handler: async function (paymentResponse) {
+              requestHandler(
+                () => verifyRazorpayOrder(paymentResponse),
+                null,
+                () => {
+                  alert("Payment Successful! 🎉");
+                  dispatch(fetchCartItem());
+                  navigate("/profile/order");
+                },
+                (error) => alert(error)
+              );
+            },
+            prefill: {
+              name: "Customer Name",
+              email: "customer@example.com",
+              contact: "",
+            },
+            theme: { color: "#3399cc" },
+          };
+
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+          rzp.on("payment.failed", function (response) {
+            alert(response.error.description);
+          });
+        },
+        (error) => setErrors(error)
+      );
+    } else {
+      // COD API Call
+      requestHandler(
+        () => createOrder(selectedAddress, paymentMethod),
+    
+    
+        setIsProcessing,
+        () => {
+          alert("Order placed successfully with Cash on Delivery!");
+          dispatch(fetchCartItem());
+          navigate("/profile/order");
+        },
+        (error) => setErrors(error)
+      );
+    }
+  };
+
+  return (
+    <>
+    {errors && <p>{errors}</p>}
+    {isProcessing && <Loader/>}
+      <HeaderPage />
+      <div className="max-w-6xl mx-auto p-8 bg-gray-100 min-h-screen">
+        <h2 className="text-3xl font-bold text-center mb-6">Checkout</h2>
+
+        {isLoading && (
+          <Loader/>
+        )}
+
+<div className="grid md:grid-cols-2 gap-8">
+  {/* Address & Payment Section - Left Side */}
+  <div className="bg-white shadow-lg p-6 rounded-lg space-y-5">
+    <h2 className="text-2xl font-semibold mb-4">Select Address</h2>
+    
+    {savedAddresses.length > 0 ? (
+      savedAddresses.map((addr) => (
+        <label
+          key={addr._id}
+          className="flex items-start gap-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-100 transition shadow-sm"
+        >
+          <input
+            type="radio"
+            name="address"
+            value={addr._id}
+            className="mt-1 w-5 h-5 accent-black"
+            onChange={handleAddressSelection}
+          />
+          <div className="text-gray-700 space-y-1">
+            <p><span className="font-semibold">House Number:</span> {addr.addressLine.houseNumber}</p>
+            <p><span className="font-semibold">Apartment Number:</span> {addr.addressLine.apartmentNumber}</p>
+            <p><span className="font-semibold">Street:</span> {addr.addressLine.street}</p>
+            <p><span className="font-semibold">Locality:</span> {addr.addressLine.locality}</p>
+            <p><span className="font-semibold">City:</span> {addr.addressLine.city}</p>
+            <p><span className="font-semibold">District:</span> {addr.addressLine.district}</p>
+            <p><span className="font-semibold">State:</span> {addr.addressLine.state}</p>
+            <p><span className="font-semibold">Pincode:</span> {addr.addressLine.pincode}</p>
+            <p><span className="font-semibold">Phone:</span> {addr.phoneNumber}</p>
+          </div>
+        </label>
+      ))
+    ) : (
+      <p className="text-gray-500">No saved addresses found.</p>
+    )}
+
+    <button
+      className="text-blue-500 mt-4"
+      onClick={() => setShowAddressForm(!showAddressForm)}
+    >
+      {showAddressForm ? "Cancel" : "Add New Address"}
+    </button>
+
+    {showAddressForm && (
+      <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+        {Object.keys(newAddress).map((key) => (
+          <input
+            key={key}
+            type="text"
+            name={key}
+            placeholder={key}
+            onChange={handleChange}
+            className="border p-3 w-full rounded-md"
+          />
+        ))}
+        <button
+          type="submit"
+          className="w-full px-5 py-3 bg-black text-white rounded-md hover:bg-gray-800"
+        >
+          Submit
+        </button>
+      </form>
+    )}
+  </div>
+
+  {/* Cart Section - Right Side */}
+  <div className="bg-white shadow-lg p-6 rounded-lg">
+    <h2 className="text-2xl font-semibold mb-4">Your Cart</h2>
+
+    {cartItems?.length > 0 ? (
+      <>
+        {cartItems.map((item) => (
+          <div
+            key={item.productId}
+            className="flex justify-between items-center gap-4 p-3 border-b"
+          >
+            <div className="flex items-center gap-4">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-16 h-16 object-cover rounded-md"
+              />
+              <div>
+                <h3 className="text-lg font-semibold">{item.name}</h3>
+                <p>Price: ₹{item.price}</p>
+                <p>Quantity: {item.quantity}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+        <div className="text-xl font-bold mt-4">
+          Total Price: ₹{totalPrice}
+        </div>
+
+        <h2 className="text-2xl font-semibold mt-6 mb-4">Payment Method</h2>
+        <div className="flex flex-col gap-4 bg-gray-100 p-4 rounded-lg shadow-md">
+          <label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:bg-gray-200 transition">
+            <input
+              type="radio"
+              name="payment"
+              value="Razorpay"
+              className="w-5 h-5 accent-black"
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            />
+            <span className="text-gray-700 font-medium">Razorpay</span>
+          </label>
+          <label className="flex items-center gap-3 p-3 border rounded-md cursor-pointer hover:bg-gray-200 transition">
+            <input
+              type="radio"
+              name="payment"
+              value="Cash on Delivery"
+              className="w-5 h-5 accent-black"
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            />
+            <span className="text-gray-700 font-medium">Cash on Delivery</span>
+          </label>
+        </div>
+
+        <button
+          onClick={handleProceedToPayment}
+          className="mt-6 px-6 py-3 bg-black text-white rounded-md w-full hover:bg-gray-800"
+        >
+          Proceed to Payment
+        </button>
+      </>
+    ) : (
+      <p className="text-gray-500">No items in cart.</p>
+    )}
+  </div>
+</div>
+
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+export default CheckOut;

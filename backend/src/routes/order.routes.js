@@ -10,6 +10,7 @@ router.route('/create-order').post(
     authMiddleware,
     generateRazorpayOrder
 )
+
 router.route('/verify-payment').post(
     authMiddleware,
     verifyRazorpayPayment

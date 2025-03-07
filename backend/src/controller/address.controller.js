@@ -56,52 +56,42 @@ const createAddress = asyncHandler(async (req, res) => {
 });
 
 
-const getAllAddress = asyncHandler(async(req,res) =>{
+const getAllAddress = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
 
-    const {page = 1, limit=10} = req.query
+    const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+    const limitNumber = Math.max(parseInt(limit, 10) || 10, 1);
 
-    const aggregate =  await Address.aggregate(
-        [
-            {
-                $match:{
-                    owner: req.user?._id
-                }
+    // Creating an aggregation pipeline object
+    const aggregate = Address.aggregate([
+        {
+            $match: {
+                owner: req.user?._id
             }
-        ]
-    )
+        }
+    ]);
 
     const paginationOptions = {
-        page: Math.max(page, 1), 
-        limit: Math.max(limit, 1), 
+        page: pageNumber,
+        limit: limitNumber,
         pagination: true,
         customLabels: {
-          totalDocs: "totalItems",
-          docs: "categories",
+            totalDocs: "totalItems",
+            docs: "addresses",
         },
     };
 
-    const aggregatePaginate = await Address.aggregatePaginate(
-        aggregate,paginationOptions
+    const aggregatePaginate = await Address.aggregatePaginate(aggregate, paginationOptions);
 
-    )
-
-    if(!aggregatePaginate){
-        throw new ApiError(
-            500,
-            "No address found. aggregation pagination is failed!",
-        )
+    if (!aggregatePaginate.addresses.length) {
+        throw new ApiError(404, "No address found.");
     }
 
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            aggregatePaginate,
-            "Address retrieved successfully",
-        )    
-    )
-})
+    return res.status(200).json(
+        new ApiResponse(200, aggregatePaginate, "Address retrieved successfully")
+    );
+});
+
 
 const getAddressById = asyncHandler(async(req,res) =>{
     const {addressId} = req.params
@@ -214,6 +204,7 @@ const deleteAddressById = asyncHandler(async(req,res) =>{
 
 export{
     createAddress,
+    getAllAddress,
     getAddressById,
     updateAddress,
     deleteAddressById

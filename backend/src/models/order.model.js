@@ -34,7 +34,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["UPI", "Razorpay"],
+      enum: ["UPI", "Razorpay", "Cash on Delivery"],
       required: true,
     },
     transactionId: {

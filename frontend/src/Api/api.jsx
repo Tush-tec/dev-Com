@@ -66,14 +66,35 @@ const createAddress = (address) => {
 const getSaveAddress = (addressId) => {    
     return apiClient.get(`/address/get-address/${addressId}`)
 } 
+const getAllSaveAddress = () => {    
+    return apiClient.get(`/address/get-all-address`)
+} 
 
-const createOrder =(data) => {
-    return apiClient.post('/orders/order/create-order', address)
+const createOrder = (addressId, paymentMethod) => {
+    return apiClient.post("/orders/create-order", { addressId, paymentMethod });
+};
+
+
+const createOrderWithRazorPay = (addressId) => {
+    return apiClient.post('/orders/create-order', {
+        addressId,
+        paymentMethod: "Online"
+    });
 }
+
+const verifyRazorpayOrder = (paymentResponse) => {
+    return apiClient.post('/orders/verify-payment', {
+        razorpay_order_id: paymentResponse.razorpay_order_id,
+        razorpay_payment_id: paymentResponse.razorpay_payment_id,
+        razorpay_signature: paymentResponse.razorpay_signature,
+    });
+}
+
 
 const fetchOrders = (type = "") => {
     return apiClient.get(`orders/order/get/${type}`);
 };
+
 
 
 
@@ -118,6 +139,8 @@ export {
     getItemFromCart,
     createAddress,
     createOrder,
+    createOrderWithRazorPay,
+    verifyRazorpayOrder,
     fetchOrders,
     fetchUserAllInfo,
     updateAvatar,
@@ -125,6 +148,7 @@ export {
     updatePassword,
     fetchUser,
     getALLUserInfo,
-    getSaveAddress
+    getSaveAddress,
+    getAllSaveAddress
 
 }   

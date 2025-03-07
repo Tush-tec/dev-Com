@@ -56,6 +56,9 @@ const RegisterForm = () => {
     };
 
     return (
+
+        <>
+        {error && <div className="alert alert-danger">{error}</div>}
         <div className="flex justify-center items-center flex-col h-screen w-screen">
             <h1 className="text-3xl font-bold">Register to Devcom</h1>
             <div className="max-w-5xl w-1/2 p-8 flex justify-center items-center gap-5 flex-col  bg-dark shadow-md rounded-2xl my-16 border-secondary border-[1px]" style={{backgroundColor:" #162130"}}>
@@ -117,6 +120,8 @@ const RegisterForm = () => {
                 </small>
             </div>
         </div>
+
+        </>
     );
 };
 

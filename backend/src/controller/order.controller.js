@@ -97,6 +97,7 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
     Online: "Razorpay",
     UPI: "UPI",
     Razorpay: "Razorpay",
+"Cash on Delivery": "Cash on Delivery",
   };
 
   const formattedPaymentMethod = validPaymentMethods[paymentMethod];

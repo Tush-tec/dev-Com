@@ -248,10 +248,10 @@ const HeaderPage = () => {
           </li>
           <li className="max-lg:border-b max-lg:py-3 px-3">
             <Link
-              to="/service"
+              to="/categories"
               className="hover:text-yellow-300  text-[15px] font-medium block"
             >
-              Service
+              Category
             </Link>
           </li>
 

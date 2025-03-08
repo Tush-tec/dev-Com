@@ -112,7 +112,9 @@ userSchema.methods.generateAccessToken =  function(){
             username:this.username,
             email:this.email,
             fullname:this.fullname,
-            avatar: this.avatar
+            avatar: this.avatar,
+            storedUserName:this.storedUserName,
+
         },
         process.env.ACCESS_TOKEN_SECRET,
         {

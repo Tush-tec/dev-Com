@@ -23,6 +23,8 @@ import ProductDetails from './Pages/ProductDetails'
 import Category from './Pages/Category'
 import CategoryProduct from './Pages/CategoryProduct'
 import CreateAddress from './Pages/CreateAddress'
+import AboutUs from './Pages/AboutUs'
+import Contact from './Pages/Contact'
 
 function App() {
 
@@ -51,6 +53,8 @@ function App() {
         <Route path='/categories' element={<Category/>}/>
         <Route path='/categories/get-product-with-category/:categoryId' element={<CategoryProduct/>}/>
         <Route path='/address/create-address' element ={<CreateAddress/>}/>
+        <Route path='/about' element={<AboutUs/>}/>
+        <Route path='/contact' element={<Contact/>}/>
         
         
         

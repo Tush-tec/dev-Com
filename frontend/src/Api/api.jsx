@@ -124,6 +124,11 @@ const updatePassword = (formData) => {
 } 
 
 
+const contactMe = () =>{
+    return apiClient.post('/users/contact-me')
+}
+
+
 
 
 

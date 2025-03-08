@@ -70,6 +70,7 @@ import categoryRouter from "./routes/category.routes.js"
 import addressRouter from './routes/address.routes.js'
 import cartRouter from "./routes/cart.routes.js"
 import adminRouter from "./routes/admin.routes.js"
+import contactRouter from "./routes/contactMe.routes.js"
 
 app.use('/api/v1/admin', adminRouter)
 app.use('/api/v1/users', userRouter)
@@ -78,6 +79,7 @@ app.use('/api/v1/orders', orderRouter)
 app.use('/api/v1/categories', categoryRouter)
 app.use('/api/v1/address', addressRouter)
 app.use('/api/v1/cart', cartRouter)
+app.use('/api/v1/contact', contactRouter)
 
 
 

@@ -43,6 +43,7 @@ const CreateAddress = () => {
             setLoading,
             (data) => {
                 console.log("Address created successfully:", data);
+                window.location.href = "/checkout";
             },
             (error) => {
                 console.log("Error creating address:", error);
@@ -54,7 +55,7 @@ const CreateAddress = () => {
     return (
         <>
         <HeaderPage/>
-        <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md mt-10 mb-10">
+        <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md mt-10 mb-10 ">
             <div className="flex justify-center items-center flex-col">
                 {error && <div className="w-80 text-center text-red-500">{error}</div>}
             </div>

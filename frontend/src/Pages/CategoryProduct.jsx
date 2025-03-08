@@ -162,23 +162,24 @@ const CategoryProduct = () => {
 
             {/* Cart Sidebar */}
             <div
-              className={`fixed inset-y-0 right-0 w-80 bg-gray-100 shadow-lg h transform transition-transform ${
-                showCart ? "translate-x-0" : "translate-x-full"
-              } p-4 border-l border-gray-300 z-40`} // Lower z-index than header
-            >
-              <button
-                onClick={() => setShowCart(false)}
-                className="absolute top-2 right-2"
-              >
-                <XMarkIcon className="w-6 h-6 text-gray-600" />
-              </button>
-              <Cart />
-              {cartItems.length > 0 && (
-                <button className="mt-4 w-full bg-[#292928] hover:bg-[#363539] text-white py-2 rounded text-lg font-semibold">
-                  <Link to="/checkout">Proceed to Checkout</Link>
-                </button>
-              )}
-            </div>
+  className={`fixed inset-y-0 right-0 w-80 bg-gray-100 shadow-lg transform transition-transform ${
+    showCart ? "translate-x-0" : "translate-x-full"
+  } p-4 border-l border-gray-300 z-40 h-full overflow-y-auto`} // Added h-full and overflow-y-auto
+>
+  <button
+    onClick={() => setShowCart(false)}
+    className="absolute top-2 right-2"
+  >
+    <XMarkIcon className="w-6 h-6 text-gray-600" />
+  </button>
+  <Cart />
+  {cartItems.length > 0 && (
+    <button className="mt-4 w-full bg-[#292928] hover:bg-[#363539] text-white py-2 rounded text-lg font-semibold">
+      <Link to="/checkout">Proceed to Checkout</Link>
+    </button>
+  )}
+</div>
+
           </div>
         </div>
       </div>

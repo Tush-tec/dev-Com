@@ -43,24 +43,24 @@ const Dashboard = () => {
       title: "Overview",
       items: [
         { name: "Orders List", icon: <FaClipboardList size={40} />, path: "/profile/order" },
-        { name: "Pending Actions", icon: <FaTruck size={40} />, path: "/pending-actions" },
+        // { name: "Pending Actions", icon: <FaTruck size={40} />, path: "/pending-actions" },
       ],
     },
-    {
-      title: "Orders & Shopping History",
-      items: [
-        { name: "Active Orders", icon: <FaShoppingCart size={40} />, path: "/orders" },
-        { name: "Past Orders", icon: <FaClipboardList size={40} />, path: "/order-history" },
-        { name: "Track Order", icon: <FaTruck size={40} />, path: "/track-order" },
-      ],
-    },
+    // {
+    //   title: "Orders & Shopping History",
+    //   items: [
+    //     { name: "Active Orders", icon: <FaShoppingCart size={40} />, path: "/orders" },
+    //     { name: "Past Orders", icon: <FaClipboardList size={40} />, path: "/order-history" },
+    //     { name: "Track Order", icon: <FaTruck size={40} />, path: "/track-order" },
+    //   ],
+    // },
     {
       title: "Account Management",
       items: [
         { name: "Personal Info", icon: <FaUser size={40} />, path: "/profile/personal-info" },
         { name: "Change Password", icon: <FaLock size={40} />, path: "/profile/change-password" },
         { name: "Saved Addresses", icon: <FaMapMarkerAlt size={40} />, path: `/profile/address/${userAddressId}` },
-        { name: "Payment Methods", icon: <FaCreditCard size={40} />, path: "/payment-methods" },
+        // { name: "Payment Methods", icon: <FaCreditCard size={40} />, path: "/payment-methods" },
       ],
     },
   ];
@@ -72,7 +72,7 @@ const Dashboard = () => {
       {error && <p className="text-red-500">Error: {error}</p>}
 
       {sections.map((section, idx) => (
-        <div key={idx} className="mb-8 w-full px-4">
+        <div key={idx} className="mb-20 w-full px-4">
           <h2 className="text-xl font-semibold mb-4">{section.title}</h2>
           <div className="grid grid-cols-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
             {section.items.map((item, index) => (

@@ -124,8 +124,8 @@ const updatePassword = (formData) => {
 } 
 
 
-const contactMe = () =>{
-    return apiClient.post('/users/contact-me')
+const contactMe = (formData) =>{
+    return apiClient.post('/contact/create-contact', formData)
 }
 
 
@@ -154,6 +154,7 @@ export {
     fetchUser,
     getALLUserInfo,
     getSaveAddress,
-    getAllSaveAddress
+    getAllSaveAddress,
+    contactMe
 
 }   

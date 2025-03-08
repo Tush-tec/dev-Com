@@ -63,78 +63,72 @@ const HeaderPage = () => {
 
   return (
     <>
-      <header className="font-sans tracking-wide">
-        <section className="flex items-center   bg-gray-500 min-h-[70px] z-40">
-          <div className="flex w-full items-center justify-between">
-            {/* Profile and Avatar */}
-            {isLoggin && user?.avatar && (
-               <Link to="/profile">
-              <motion.div
-                className="flex items-center gap-4 p-3 border-b border-gray-300 rounded-lg shadow-md  "
-                initial={{ opacity: 0, x: -80 }}
-                animate={{ opacity: 1, x: 50 }}
-                transition={{ duration: 1, ease: "easeOut" }}
-              >
-               
-                  <img
-                    src={user.avatar}
-                    alt="User Avatar"
-                    className="w-12 h-10 rounded-full object-cover border border-white shadow"
-                  />
-                  <p className="font-semibold text-lg">
-                    <span
-                      className="text-gray-700"
-                      style={{ color: textColor }}
-                    >
-                      {user?.storedUserName}
-                    </span>
-                  </p>
-              </motion.div>
-              </Link>
+   <header className="font-sans tracking-wide">
+  <section className="flex items-center bg-gray-500 min-h-[70px] z-40">
+    <div className="flex w-full items-center justify-between">
+      {/* Profile and Avatar */}
+      {isLoggin && user?.avatar && (
+        <Link to="/profile">
+          <motion.div
+            className="flex items-center gap-4 p-3 border-b border-gray-300 rounded-lg shadow-md"
+            initial={{ opacity: 0, x: -80 }}
+            animate={{ opacity: 1, x: 50 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+          >
+            <img
+              src={user.avatar}
+              alt="User Avatar"
+              className="w-12 h-10 rounded-full object-cover border border-white shadow"
+            />
+            <p className="font-semibold text-lg">
+              <span className="text-gray-700" style={{ color: textColor }}>
+                {user?.storedUserName}
+              </span>
+            </p>
+          </motion.div>
+        </Link>
+      )}
 
-            )}
+      {/* Company Name */}
+      <motion.h1
+  className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text 
+  bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 
+  drop-shadow-lg tracking-widest uppercase"
+  initial={{ opacity: 0, y: -10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 1, ease: "easeOut" }}
+>
+  Wood You Believe It?
+</motion.h1>
 
-            {/* Navigation & Auth Buttons */}
-            <div className="flex items-center  ">
-              {isLoggin ? (
-                <>
-                  {/* <Link
-                    to="/profile"
-                    className="text-lg font-Poppins text-gray-800 bg-[#dce0e5] px-4 py-1.5 rounded  hover:text-[#000000]  transition"
-                  >
-                    Profile
-                  </Link> */}
-                  <motion.button
-                    onClick={handleLogout}
-                    className="bg-[#011228] px-4 py-2 text-white rounded font-bold transition hover:bg-red-"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                  >
-                    Logout
-                  </motion.button>
-                </>
-              ) : (
-                <div className="flex items-center gap-4">
-                  <Link
-                    to="/login"
-                    className="text-sm font-bold text-gray-800 hover:text-[#007bff]"
-                  >
-                    Login
-                  </Link>
-                  <span className="text-2xl">&#47;</span>
-                  <Link
-                    to="/register"
-                    className="text-sm font-bold text-gray-800 hover:text-[#007bff]"
-                  >
-                    Register
-                  </Link>
-                </div>
-              )}
-            </div>
+      {/* Navigation & Auth Buttons */}
+      <div className="flex items-center">
+        {isLoggin ? (
+          <motion.button
+            onClick={handleLogout}
+            className="bg-[#011228] px-4 py-2 text-white rounded font-bold transition hover:bg-red-600"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            Logout
+          </motion.button>
+        ) : (
+          <div className="flex items-center gap-4">
+            <Link to="/login" className="text-sm font-bold text-gray-800 hover:text-[#007bff]">
+              Login
+            </Link>
+            <span className="text-2xl">&#47;</span>
+            <Link to="/register" className="text-sm font-bold text-gray-800 hover:text-[#007bff]">
+              Register
+            </Link>
           </div>
-        </section>
-      </header>
+        )}
+      </div>
+    </div>
+  </section>
+</header>
+
 
       <div
         id="collapseMenu"
@@ -170,10 +164,10 @@ const HeaderPage = () => {
           </li>
           <li className="px-3">
             <Link
-              to="/categories"
+              to="/profile/order"
               className="hover:text-yellow-300 text-[15px] font-medium block"
             >
-              Category
+              Orders
             </Link>
           </li>
           <li className="px-3">
@@ -184,6 +178,7 @@ const HeaderPage = () => {
               Products
             </Link>
           </li>
+          
         </ul>
       </div>
     </>

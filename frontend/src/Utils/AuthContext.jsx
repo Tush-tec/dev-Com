@@ -22,6 +22,7 @@ const AuthProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
+    const [error, setError] = useState(null)
 
     const register = async (data) => {
         setIsLoading(true);
@@ -37,47 +38,41 @@ const AuthProvider = ({ children }) => {
 
     const login = async (data) => {
         setIsLoading(true);
-        const response = await loginUser(data);
-        console.log("Login Response:", response);
-        try {
-            await requestHandler(
+        await requestHandler(
+            async () => await loginUser(data), 
+            setIsLoading,
+            (res) => {
+                if (res.statusCode === 200 && res.success === 200) {
+                    const user = res.data.loggedInUser;
+                    const accessToken = res.data.accessToken;
+                    const refreshToken = res.data.refreshToken;
 
-                async () => await loginUser(data),
-                setIsLoading,
-                (res) => {
-                    if (res.statusCode === 200 && res.success === 200) {
-                
-                        const user = res.data.loggedInUser;
-                        const accessToken = res.data.accessToken;
-                        const refreshToken = res.data.refreshToken;
-                        
-                        if (user && accessToken) {
-                            setUser(user.username);
-                            console.log(user);
-                            
-                            setToken(accessToken);
-                            
-                            LocalStorage.set("Token", accessToken);
-                            LocalStorage.set("RefreshToken", refreshToken);
-                            
-                            navigate('/');
-                        } else {
-                            console.error("User or token is missing");
-                        }
+                    if (user && accessToken) {
+                        setUser(user.username);
+                        setToken(accessToken);
+
+                        LocalStorage.set("Token", accessToken);
+                        LocalStorage.set("RefreshToken", refreshToken);
+
+                        navigate('/');
+                        setError(null); 
                     } else {
-                        console.error("Unexpected response format", res);
+                        console.error("User or token is missing");
+                        setError("User or token is missing.");
                     }
-                },
-                (error) => {
-                    console.error("Login error:", error.message || error);
+                } else {
+                    console.error("Unexpected response format", res);
+                    setError("Unexpected response from the server.");
                 }
-            );
-        } catch (error) {
-            console.error("Login error:", error.message || error);
-        } finally {
-            setIsLoading(false);
-        }
+            },
+            (error) => {
+                setError(error );
+                setIsLoading(false);
+            }
+        );
     };
+
+    
     
 
     const logout = async () => {
@@ -116,7 +111,7 @@ const AuthProvider = ({ children }) => {
     
 
     return (
-        <AuthContext.Provider value={{ user, token, register, login, logout }}>
+        <AuthContext.Provider value={{ user, token, error, register, login, logout }}>
             {isLoading ? <Loader /> : children}
         </AuthContext.Provider>
     );

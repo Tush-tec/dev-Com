@@ -191,14 +191,14 @@ const getOrderById = asyncHandler(async (req, res) => {
 });
 
 const getOrders = asyncHandler(async (req, res) => {
-  const { type } = req.params; // Get type from URL
+  const { type } = req.params; 
   const { page = 1, limit = 10 } = req.query;
 
   const matchQuery = { owner: req.user._id };
   let sortStage = null;
   let limitStage = [];
 
-  // Handle different order types
+
   if (type === "latest") {
     sortStage = { $sort: { createdAt: -1 } };
     limitStage = [{ $limit: 1 }];
@@ -248,13 +248,18 @@ const getOrders = asyncHandler(async (req, res) => {
         createdAt: { $first: "$createdAt" },
         ownerDetails: { $first: "$ownerDetails" },
         addressDetails: { $first: "$addressDetails" },
+        paymentMethod: {$first: "$paymentMethod"},
         cartItems: {
           $push: {
             productId: "$cartItems.productId",
             quantity: "$cartItems.quantity",
             name: "$cartItems.productDetails.name",
             price: "$cartItems.productDetails.price",
+            paymentMethod :"$cartItems.productDetails.paymentMethod",
             image: "$cartItems.productDetails.mainImage",
+            createdAt : "$cartItems.productDetails.createdAt",
+
+
           },
         },
       },

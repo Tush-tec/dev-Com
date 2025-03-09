@@ -140,7 +140,7 @@ const HeaderPage = () => {
           <li className="px-5">
             <Link
               to="/"
-              className="hover:text-yellow-300 text-[15px] font-medium block"
+              className="hover:text-white hover:font-serif    text-[15px] font-medium block"
             >
               Home
             </Link>
@@ -148,7 +148,7 @@ const HeaderPage = () => {
           <li className="px-3">
             <Link
               to="/about"
-              className="hover:text-yellow-300 text-[15px] font-medium block"
+              className="hover:text-white hover:font-serif    text-[15px] font-medium block"
             >
               About
             </Link>
@@ -156,7 +156,7 @@ const HeaderPage = () => {
           <li className="px-3">
             <Link
               to="/contact"
-              className="hover:text-yellow-300 text-[15px] font-medium block"
+              className="hover:text-white hover:font-serif    text-[15px] font-medium block"
             >
               Contact
             </Link>
@@ -164,7 +164,7 @@ const HeaderPage = () => {
           <li className="px-3">
             <Link
               to="/profile/order"
-              className="hover:text-yellow-300 text-[15px] font-medium block"
+              className="hover:text-white hover:font-serif    text-[15px] font-medium block"
             >
               Orders
             </Link>
@@ -172,7 +172,7 @@ const HeaderPage = () => {
           <li className="px-3">
             <Link
               to="/products"
-              className="hover:text-yellow-300 text-[15px] font-medium block"
+              className="hover:text-white hover:font-serif    text-[15px] font-medium block"
             >
               Products
             </Link>
@@ -180,7 +180,7 @@ const HeaderPage = () => {
           <li className="px-3">
             <Link
               to="/cart/show-cart"
-              className="hover:text-yellow-300 text-[15px] font-medium block"
+              className="hover:text-white hover:font-serif    text-[15px] font-medium block"
             >
               Carts
             </Link>

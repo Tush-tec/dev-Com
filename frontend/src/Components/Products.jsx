@@ -45,6 +45,9 @@ const Products = () => {
     );
 
     setSelectedQuantities((prev) => ({ ...prev, [product._id]: 0 }));
+
+    alert('Product is add, now you can check it in the cart')
+
   };
 
   return (

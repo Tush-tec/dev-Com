@@ -42,6 +42,7 @@ const Products = () => {
         productId: product._id,
         quantity,
       })
+      
     );
 
     setSelectedQuantities((prev) => ({ ...prev, [product._id]: 0 }));

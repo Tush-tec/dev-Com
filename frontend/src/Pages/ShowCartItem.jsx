@@ -17,7 +17,9 @@ const ShowCartItem = () => {
   const userId = LocalStorage.get("Token");
 
   useEffect(() => {
-    dispatch(fetchCartItem());
+    const cart = dispatch(fetchCartItem());
+    console.log(cart);
+    
 
   }, [dispatch]);
 

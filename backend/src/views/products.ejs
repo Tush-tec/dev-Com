@@ -186,9 +186,10 @@
       
           <!-- Description Textarea -->
           <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
-          </div>
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" name="description" rows="3"  
+            style="visibility: hidden; height: 0;"></textarea>
+        </div>
          
       
           <!-- Submit Button -->
@@ -269,6 +270,7 @@
 
   <script>
     
+
     const {
         ClassicEditor,
         Essentials,
@@ -281,8 +283,10 @@
         Alignment
       } = CKEDITOR;
 
+          console.log(typeof ClassicEditor);
+
       ClassicEditor
-        .create(document.querySelector('#description'), {
+      .create(document.querySelector('#description'), {
           licenseKey: 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3Njg0MzUxOTksImp0aSI6IjIxYTZkODRmLWE1YTktNDExMC04YzM0LWM4NmRhMWQzYzI5MSIsImxpY2Vuc2VkSG9zdHMiOlsiMTI3LjAuMC4xIiwibG9jYWxob3N0IiwiMTkyLjE2OC4qLioiLCIxMC4qLiouKiIsIjE3Mi4qLiouKiIsIioudGVzdCIsIioubG9jYWxob3N0IiwiKi5sb2NhbCJdLCJ1c2FnZUVuZHBvaW50IjoiaHR0cHM6Ly9wcm94eS1ldmVudC5ja2VkaXRvci5jb20iLCJkaXN0cmlidXRpb25DaGFubmVsIjpbImNsb3VkIiwiZHJ1cGFsIl0sImxpY2Vuc2VUeXBlIjoiZGV2ZWxvcG1lbnQiLCJmZWF0dXJlcyI6WyJEUlVQIl0sInZjIjoiM2JmYWFhN2YifQ.9L64BQ8PryDuU7uPYmTwkbCYkwS0v4CPe-pr6ZfOSLywWYC7DB1REciVw2aI8JITvFsQpd1H4AYJ1REVIrftuw', // Create a free account on https://portal.ckeditor.com/checkout?plan=free
           plugins: [
             Essentials, Bold, Italic, Font, Paragraph,
@@ -297,13 +301,20 @@
           ]
         })
         .then(editor => {
-          window.editor = editor;
-        })
-        .catch(error => {
-          console.error(error);
-        });
+      document.querySelector("form").addEventListener("submit", function (e) {
+        console.log("Editor Data:", editor.getData());
+
+    const editorData = window.editor.getData(); // Get CKEditor content
+    document.getElementById("description").value = editorData; // Set textarea value
 
 
+      });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+
+   
         $(document).ready(
           function(){
             $('#productTable').DataTable()

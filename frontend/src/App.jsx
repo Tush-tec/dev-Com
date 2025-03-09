@@ -35,7 +35,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/" element={<Home/>}/>
         <Route path="/products" element={<Product/>}/>
-        <Route path='/added/cart' element={<Cart/>}/>
+        <Route path='/cart/show-cart' element={<Cart/>}/>
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path='/checkout' element = {<CheckOut/>}/>
@@ -56,7 +56,7 @@ function App() {
         <Route path='/address/create-address' element ={<CreateAddress/>}/>
         <Route path='/about' element={<AboutUs/>}/>
         <Route path='/contact' element={<Contact/>}/>
-        <Route path='/cart/show-cart' element={<ShowCartItem/>}/>
+        {/* <Route path='/cart/show-cart' element={<ShowCartItem/>}/> */}
         
         
         

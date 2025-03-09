@@ -12,14 +12,20 @@
 
     export const addToCart = createAsyncThunk(
         "cart/addToCart",
-        async ({ userId, productId, quantity }) => {
-
-            const res = await axios.post(`/api/v1/cart/add-to-cart/${productId}`, { userId, productId, quantity });
-            // console.log(res);
-            
-            return res.data;  
+        async ({ userId, productId, quantity }, { rejectWithValue }) => {
+            if (quantity <= 0) {
+                return rejectWithValue("Quantity must be greater than 0");
+            }
+    
+            try {
+                const res = await axios.post(`/api/v1/cart/add-to-cart/${productId}`, { userId, productId, quantity });
+                return res.data;
+            } catch (error) {
+                return rejectWithValue(error.response?.data || "Something went wrong");
+            }
         }
     );
+    
 
     export const fetchCartItem = createAsyncThunk(
         "cart/fetchCartItem",
@@ -31,6 +37,23 @@
             return res.data.data.items;  
         }
     );
+
+    export const updateCart = createAsyncThunk(
+        "cart/updateCart",
+
+        async ({ productId, quantity }, { rejectWithValue }) => {
+
+            try {
+                const res = await axios.post(`/api/v1/cart/update-cart/${productId}`, { productId, quantity });
+                console.log(res);
+                
+                return res; 
+
+            } catch (error) {
+                return rejectWithValue(error.response?.data || "Failed to update cart");
+            }
+        }
+    )
 
     export const removeCartItem = createAsyncThunk(
         "cart/removeCartItem",
@@ -54,14 +77,15 @@
                 })
                 .addCase(addToCart.fulfilled, (state, action) => {
                     state.isLoading = false;
-                    // console.log("Add to Cart Response:", action.payload);
                 
                     if (action.payload && action.payload.data && action.payload.data.items) {
-                        state.cartItems = action.payload.data.items;  // ✅ Update cart with full item list
+                        state.cartItems = action.payload.data.items;
                     } else {
                         console.error("Unexpected API response format:", action.payload);
                     }
-                })   
+                })
+                
+                
                 .addCase(addToCart.rejected, (state, action) => {
                     state.isLoading = false;
                     state.error = action.error.message || 'Failed to add to cart';
@@ -98,6 +122,22 @@
                 .addCase(removeCartItem.rejected, (state, action) => {
                     state.isLoading = false;
                     state.error = action.error.message || "Failed to remove cart item";
+                })
+
+                .addCase(updateCart.pending, (state) => {
+                    state.isLoading = true;
+                })
+                .addCase(updateCart.fulfilled, (state, action) => {
+                    state.isLoading = false;
+                    if (action.payload && action.payload.data && action.payload.data.items) {
+                        state.cartItems = action.payload.data.items; 
+                    } else {
+                        console.error("Unexpected API response format:", action.payload);
+                    }
+                })
+                .addCase(updateCart.rejected, (state, action) => {
+                    state.isLoading = false;
+                    state.error = action.error.message || "Failed to update cart";
                 });
                 
         }

@@ -68,7 +68,7 @@ const Cart = () => {
                     <p className="text-gray-600 text-sm">Price:&#8377;{(item.price ?? 0).toLocaleString("en-IN")}</p>
 
                       <span className="font-medium text-gray-700">Quantity:</span>
-                      <span className="px-1 py-1 bg-gray-100 rounded">{Number(item.quantity) || 1}</span>
+                      {/* <span className="px-1 py-1 bg-gray-100 rounded">{Number(item.quantity) || 1}</span> */}
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className="font-medium text-gray-700">Total Price:</span>

@@ -257,83 +257,78 @@ const removeFromCart = asyncHandler(async (req, res) => {
 });
 
 
-const updateCartItems = asyncHandler(async(req,res) =>{
-    const {productId,  quantity = 1} = req.body
+const updateCartItems = asyncHandler(async (req, res) => {
+    const { productId, quantity = 1 } = req.body;
+    const user = req.user?._id;
 
-    const user = req.user._id
+    console.log("from the user",user);
+    
 
-    if(!isValidObjectId(productId)){
-        throw new ApiError(
-            400, "Invalid product id."
-        )
+    if (!isValidObjectId(productId)) {
+        throw new ApiError(400, "Invalid product id.");
     }
-    if(!user){
-        throw new ApiError(
-            401, "You must be logged in to perform this action."
-        )
+    if (!user) {
+        throw new ApiError(401, "You must be logged in to perform this action.");
     }
 
-    const cart = await Cart.findOne({ user: user, isActive: true });
+    const cart = await Cart.find(user);
+    console.log(cart);
+    
     if (!cart) {
-      throw new ApiError(404, "No active cart found for the user.");
+        throw new ApiError(404, "No cart found for the user.");
     }
 
-    const product = await Product.findOne(
-        { _id: productId, isActive: true }
-    )
+    const product = await Product.findOne({ _id: productId });
+    if (!product) {
+        throw new ApiError(404, "Product not found or is inactive.");
+    }
 
-    if(quantity > product.stock){
+    if (quantity > product.stock) {
         throw new ApiError(
             400, 
             product.stock > 0 
             ? `Only ${product.stock} units are available, but you are trying to add ${quantity}.`
-        : "Product is out of stock."
-        )
+            : "Product is out of stock."
+        );
     }
 
-    const itemIndex = cart.items.findIndex(
-        (item) => item.productId.toString() === productId
-      );
-    
-      if (itemIndex !== -1) {
+    const itemIndex = cart.items.findIndex((item) => item.productId.toString() === productId);
 
+    if (itemIndex !== -1) {
+        // If item exists, update the quantity or remove it
         if (quantity === 0) {
-          cart.items.splice(itemIndex, 1);
+            cart.items.splice(itemIndex, 1);  // Remove the item if quantity is 0
         } else {
-
-          cart.items[itemIndex].quantity = quantity;
+            cart.items[itemIndex].quantity = quantity;  // Update the quantity
         }
-      } else {
+    } else {
+        // If item doesn't exist, add a new item
         if (quantity > 0) {
-          cart.items.push({
-            productId: productId,
-            quantity,
-          });
+            cart.items.push({
+                productId: productId,
+                quantity,
+                price: product.price,  // Store the product price in the cart
+            });
         } else {
-          throw new ApiError(400, "Quantity must be greater than 0 for new items.");
+            throw new ApiError(400, "Quantity must be greater than 0 for new items.");
         }
     }
 
+    // Recalculate total price
     cart.totalPrice = cart.items.reduce(
-        (acc, item) => acc + item.quantity * item.price,
+        (acc, item) => acc + (item.quantity * item.price),  // Ensure price exists
         0
-    )
+    );
 
-    await cart.save({ validateBeforeSave: true })
+    await cart.save({ validateBeforeSave: true });
 
     const newCart = await getCart(user);
 
-    return res
-    .status(200)
-    .json(
-         new ApiResponse(
-            200,
-            newCart,
-            "Cart updated successfully."
-        )
-    )
+    return res.status(200).json(
+        new ApiResponse(200, newCart, "Cart updated successfully.")
+    );
+});
 
-})
 
 const clearCart = asyncHandler(async(req,res) =>{
   const userId = req.user?._id;

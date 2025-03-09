@@ -91,14 +91,13 @@ const HeaderPage = () => {
 
       {/* Company Name */}
       <motion.h1
-  className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text 
-  bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 
+  className="text-3xl font-bold md:text-3xl font-poppins text-white
   drop-shadow-lg tracking-widest uppercase"
   initial={{ opacity: 0, y: -10 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 1, ease: "easeOut" }}
 >
-  Wood You Believe It?
+  Wood You Believe It
 </motion.h1>
 
       {/* Navigation & Auth Buttons */}
@@ -115,11 +114,11 @@ const HeaderPage = () => {
           </motion.button>
         ) : (
           <div className="flex items-center gap-4">
-            <Link to="/login" className="text-sm font-bold text-gray-800 hover:text-[#007bff]">
+            <Link to="/login" className="text-sm font-bold text-gray-800 hover:text-[#ffffff]">
               Login
             </Link>
             <span className="text-2xl">&#47;</span>
-            <Link to="/register" className="text-sm font-bold text-gray-800 hover:text-[#007bff]">
+            <Link to="/register" className="text-sm font-bold text-gray-800 hover:text-[#ffffff]">
               Register
             </Link>
           </div>
@@ -176,6 +175,14 @@ const HeaderPage = () => {
               className="hover:text-yellow-300 text-[15px] font-medium block"
             >
               Products
+            </Link>
+          </li>
+          <li className="px-3">
+            <Link
+              to="/cart/show-cart"
+              className="hover:text-yellow-300 text-[15px] font-medium block"
+            >
+              Carts
             </Link>
           </li>
           

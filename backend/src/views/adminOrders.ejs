@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Orders</title>
+
+    <!-- Bootstrap & DataTables CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+
+    <!-- jQuery, DataTables & Axios -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 95%;
+        }
+        table.dataTable tbody tr {
+            vertical-align: middle;
+        }
+        .table th, .table td {
+            text-align: center;
+        }
+        .btn {
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+        .status-select {
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center">Admin Order Management</h2>
+
+        <div class="card shadow p-3">
+            <table id="ordersTable" class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Address</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% orders.forEach(order => { %>
+                        <tr>
+                            <td><%= order._id %></td>
+                            <td><%= order.owner ? order.owner.username : 'N/A' %></td>
+                            <td>
+                                <ul class="list-unstyled">
+                                    <% order.cartItems.forEach(item => { %>
+                                        <li><%= item.name %> (x<%= item.quantity %>) - ₹<%= item.price %></li>
+                                    <% }); %>
+                                </ul>
+                            </td>
+                            <td><%= order.address ? `${order.address.street}, ${order.address.city}` : 'N/A' %></td>
+                            <td>₹<%= order.totalAmount %></td>
+                            <td>
+                                <select class="form-select status-select order-status" data-order-id="<%= order._id %>">
+                                    <option value="Pending" <%= order.status === "Pending" ? "selected" : "" %>>Pending</option>
+                                    <option value="Paid" <%= order.status === "Paid" ? "selected" : "" %>>Paid</option>
+                                    <option value="Shipped" <%= order.status === "Shipped" ? "selected" : "" %>>Shipped</option>
+                                    <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
+                                    <option value="Cancelled" <%= order.status === "Cancelled" ? "selected" : "" %>>Cancelled</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-success update-status" data-order-id="<%= order._id %>">Update</button>
+                                <a href="/admin/orders/<%= order._id %>" class="btn btn-info">View</a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#ordersTable').DataTable({
+                "responsive": true,
+                "lengthMenu": [10, 25, 50, 100],
+                "order": [[0, "desc"]], // Sort by latest orders
+                "columnDefs": [
+                    { "orderable": false, "targets": [2, 5, 6] } // Disable sorting on Items, Status, Actions
+                ]
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".update-status").forEach(button => {
+                button.addEventListener("click", function () {
+                    const orderId = this.getAttribute("data-order-id");
+                    const statusElement = document.querySelector(`.order-status[data-order-id="${orderId}"]`);
+                    
+                    if (!statusElement) {
+                        alert("Status dropdown not found!");
+                        return;
+                    }
+
+                    const status = statusElement.value;
+
+                    axios.post(`/api/v1/orders/order/toggle-order/${orderId}`, { status })
+                        .then(response => {
+                            alert(response.data.message);
+                            location.reload();
+                        })
+                        .catch(error => {
+                            alert(error.response?.data?.message || "Error updating status");
+                        });
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
+\end{code}

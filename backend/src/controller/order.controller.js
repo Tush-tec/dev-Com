@@ -151,44 +151,7 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
   throw new ApiError(400, "Invalid Razorpay signature");
 });
 
-const updateOrderStatus = asyncHandler(async (req, res) => {
 
-  const { orderId } = req.params;
-  const { status } = req.body;
-
-  let order = await Order.findById(orderId);
-  if (!order) throw new ApiError(404, "Order does not exist");
-
-  if (order.status === "Delivered") {
-    throw new ApiError(400, "Order is already delivered");
-  }
-
-  order.status = status;
-  await order.save();
-  return res.status(200).json(new ApiResponse(200, { status }, "Order status updated"));
-});
-
-const getOrderById = asyncHandler(async (req, res) => {
-
-  const { orderId } = req.params;
-
-  if(isValidObjectId(orderId)){
-    throw new ApiError(
-      400,
-      "Invalid order id. Please provide a valid order id."
-    )
-  }
-  console.log(isValidObjectId(orderId));
-  console.log(orderId);
-  
-
-  const order = await Order.findById(orderId).populate("owner cartItems address");
-
-  if (!order) throw new ApiError(404, "Order does not exist");
-
-  return res.status(200).json(new ApiResponse(200, order, "Order fetched successfully"));
-
-});
 
 const getOrders = asyncHandler(async (req, res) => {
   const { type } = req.params; 
@@ -280,27 +243,81 @@ const getOrders = asyncHandler(async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
 const getOrderListAdmin = asyncHandler(async (req, res) => {
-
-  const { status, page = 1, limit = 10 } = req.query;
+  const { status, page = 1, limit = 50 } = req.query;
   const query = status ? { status } : {};
 
-  const orders = await Order.paginate(query, {
-    page,
-    limit,
-    populate: ["owner", "cartItems", "address"],
-    customLabels: { totalDocs: "totalOrders", docs: "orders" },
+  const aggregateQuery = Order.aggregate([
+      { $match: query },
+      { $lookup: { from: "users", localField: "owner", foreignField: "_id", as: "owner" } },
+      { $lookup: { from: "addresses", localField: "address", foreignField: "_id", as: "address" } },
+      { $lookup: { from: "products", localField: "cartItems.productId", foreignField: "_id", as: "cartItems" } }
+  ]);
+
+  const result = await Order.aggregatePaginate(aggregateQuery, {
+      page,
+      limit,
+      customLabels: { totalDocs: "totalOrders", docs: "orders" }
   });
 
-  return res.status(200).json(new ApiResponse(200, orders, "Orders fetched successfully"));
+  res.render("adminOrders", { orders: result.orders }); 
+  
+    // return res.status(200).json(new ApiResponse(200, 
+    //   result
+    //   , "Orders retrieved successfully"));
+
+});
+
+
+  // return res.status(200).json(new ApiResponse(200, orders, "Orders retrieved successfully"));
+
+
+
+const updateOrderStatus = asyncHandler(async (req, res) => {
+
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  let order = await Order.findById(orderId);
+  if (!order) throw new ApiError(404, "Order does not exist");
+
+  // console.log("here is ORder", order)
+  // console.log("Number of cart items:", order.cartItems.length);
+
+  
+
+  if (order.status === "Delivered") {
+    throw new ApiError(400, "Order is already delivered");
+  }
+
+  order.status = status;
+
+  console.log(status)
+  
+  await order.save();
+  return res.status(200).json(new ApiResponse(200, { status }, "Order status updated"));
+});
+
+const getOrderById = asyncHandler(async (req, res) => {
+
+  const { orderId } = req.params;
+
+  if(isValidObjectId(orderId)){
+    throw new ApiError(
+      400,
+      "Invalid order id. Please provide a valid order id."
+    )
+  }
+  console.log(isValidObjectId(orderId));
+  console.log(orderId);
+  
+
+  const order = await Order.findById(orderId).populate("owner cartItems address");
+
+  if (!order) throw new ApiError(404, "Order does not exist");
+
+  return res.status(200).json(new ApiResponse(200, order, "Order fetched successfully"));
+
 });
 
 export {

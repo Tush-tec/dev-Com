@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth.js";
-import { generateRazorpayOrder, getOrders, getOrderById, verifyRazorpayPayment } from "../controller/order.controller.js";
+import { generateRazorpayOrder, getOrders, getOrderById, verifyRazorpayPayment, getOrderListAdmin, updateOrderStatus } from "../controller/order.controller.js";
 
 const router = Router()
 
@@ -28,5 +28,15 @@ router.route('/get-order/:id').get(
     getOrderById
 )
 
+router.route('/order/get-order').get(
+    authMiddleware,
+    getOrderListAdmin
+)
+
+router.route('/order/toggle-order/:orderId').post(
+    authMiddleware,
+    updateOrderStatus
+
+)
 
 export default router;

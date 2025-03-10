@@ -4,48 +4,50 @@ import { asyncHandler } from '../utils/asyncHandler.js'
 import { ApiError } from '../utils/ApiError.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { Product } from '../models/product.model.js'
+import { uploadOnCloudinary } from '../utils/cloudinary.js'
 
 
-const createCategory = asyncHandler(async(req,res)=>{
+const createCategory = asyncHandler(async (req, res) => {
 
-    const {categoryName, } = req.body
-
-    if(!categoryName){
-        throw new ApiError(
-            400,
-            'Category name is required',
-            
-        )
+    
+  
+    const { categoryName } = req.body;
+  
+    if (!categoryName) {
+      throw new ApiError(400, "Category name is required");
     }
+  
 
-    const category =  await Category.create(
-        {
-            categoryName,
-            owner:req.user?._id
-        }
-    )
-
-    if(!category){
-        throw new ApiError(
-            500,
-            'Failed to create category',
-        )
+    if (!req.files || !req.files.image || req.files.image.length === 0) {
+      throw new ApiError(400, "Main image is required");
     }
+  
+    const image = req.files.image[0].path; 
+    
+  
+    const uploadToCloudinary = await uploadOnCloudinary(image);
+  
+    if (!uploadToCloudinary) {
+      throw new ApiError(400, "Failed to upload image to Cloudinary");
+    }
+  
+    const category = await Category.create({
+      categoryName,
+      image: uploadToCloudinary.url, 
+      owner: req.user?._id,
+    });
+  
+    if (!category) {
+      throw new ApiError(500, "Failed to create category");
+    }
+    
+     res.redirect("/api/v1/categories/category")
 
-    res.redirect("/api/v1/categories/category")
 
-
-
-    // return res
-    // .status(200)
-    // .json(
-    //     new ApiResponse(
-    //         200,
-    //         category,
-    //         'Category created successfully',
-    //     )
-    // )
-})
+   
+  });
+  
+  
 
 const getCategoryForAdmin = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;

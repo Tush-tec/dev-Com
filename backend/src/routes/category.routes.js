@@ -2,6 +2,7 @@ import express from 'express';
 import { createCategory,getCategoryForAdmin ,getCategory, getProductsByCategory, updateCategory, deleteCategory } from "../controller/category.controller.js"
 import { authMiddleware } from '../middleware/auth.js';
 import { Category } from '../models/category.model.js';
+import upload from '../middleware/multer.middleware.js';
 
 const router = express.Router();
 
@@ -10,7 +11,20 @@ router.get('/category', async (req, res) => {
     res.render('category', { categories });
   });
 
-router.route("/create-category").post(authMiddleware, createCategory);
+router.route("/create-category").post(authMiddleware,
+  
+  upload.fields(
+    [
+      {
+        name: "image",
+        maxCount: 1
+      }
+    ]
+  ),
+  
+  createCategory);
+
+
 
 
 router.route('/get-categaory').get(getCategoryForAdmin); 

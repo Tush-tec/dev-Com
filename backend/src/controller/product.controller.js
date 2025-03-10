@@ -20,10 +20,7 @@ const createProduct = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Category does not exist");
   }
 
-  if (!req.files?.mainImage || !req.files?.mainImage.length) {
-
-    throw new ApiError(400, "Main image is required");
-  }
+ 
 
   const mainImageUrl =  req.files?.mainImage[0]?.path
 

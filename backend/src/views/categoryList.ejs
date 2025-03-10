@@ -79,6 +79,13 @@
                             <% categories.forEach((category) => { %>
                                 <tr>
                                     <td>
+                                        <img 
+                                        src="<%= category.image ? category.image.replace('/upload/', '/upload/w_600,h_750,c_fill/') : '' %>" 
+                                        alt="Category Image" 
+                                        class="img-thumbnail" 
+                                        style="width: 80px; height: 80px; object-fit: cover;">
+                                    
+                                    <td>
                                         <form action="/api/v1/categories/edit/<%= category._id %>" method="POST" class="edit-form">
                                             <input type="text" name="categoryName" class="form-control category-name" value="<%= category.categoryName %>" readonly>
                                             <input type="hidden" name="categoryId" value="<%= category._id %>">

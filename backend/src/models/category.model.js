@@ -13,6 +13,11 @@ const categorySchema = new Schema(
         owner :{
             type: Schema.Types.ObjectId,
             ref: 'User',
+        },
+
+        image:{
+            type:String
+            
         }
     },
     {

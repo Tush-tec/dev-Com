@@ -132,9 +132,9 @@ const HeaderPage = () => {
       <div
         id="collapseMenu"
         className={`lg:sticky  lg:top-0 lg:z-50 bg-white shadow-md transition-all duration-300 ${
-          scrolled ? "py-6" : "py-3"
+          scrolled ? "py-2 text-white" : "py-3 text-black"
         }`}
-        style={{ backgroundColor: scrolled ? "#c0c0c6" : "#E5E5E5" }}
+        style={{ backgroundColor: scrolled ? "#111721" : "#c0c0c6" } }
       >
         <ul className="nav gap-4 flex flex-wrap items-center justify-center px-15 py-6">
           <li className="px-5">

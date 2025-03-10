@@ -157,6 +157,7 @@ const addToCart = asyncHandler(async (req, res) => {
 
 
 const getCart = asyncHandler(async (req, res) => {
+
     const user = req.user?._id;
     console.log(user);
     

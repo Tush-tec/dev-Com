@@ -14,7 +14,7 @@ const Cart = () => {
 
   useEffect(() => {
     dispatch(fetchCartItem());
-  }, [dispatch]);
+  }, []);
 
   const handleRemove = (id) => {
     dispatch(removeCartItem({ userId, productId: id }));

@@ -222,18 +222,18 @@ const deleteCategory = asyncHandler(async(req,res) =>{
             )
         }
 
-        // res.redirect('/categories'); // Redirect to category list after deletion
+        res.redirect('/api/v1/categories/get-categaory')
 
 
-        return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                {deleteCategory: category},
-                'Category deleted',
-            )
-        )
+        // return res
+        // .status(200)
+        // .json(
+        //     new ApiResponse(
+        //         200,
+        //         {deleteCategory: category},
+        //         'Category deleted',
+        //     )
+        // )
 })
 
 export{

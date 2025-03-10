@@ -23,7 +23,7 @@ router.route('/order/get/:type?').get(
 
 
 
-router.route('/get-order/:id').get(
+router.route('/get-order/:orderId').get(
     authMiddleware,
     getOrderById
 )

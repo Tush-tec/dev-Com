@@ -17,75 +17,108 @@
 
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f3f4f6;
+            font-family: 'Arial', sans-serif;
         }
-        .container {
-            max-width: 95%;
+        .sidebar {
+            min-height: 100vh;
+            background: #343a40;
+            color: white;
+            padding: 15px;
         }
-        table.dataTable tbody tr {
-            vertical-align: middle;
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
         }
-        .table th, .table td {
-            text-align: center;
+        .sidebar a:hover {
+            background: #495057;
         }
-        .btn {
-            font-size: 14px;
-            padding: 5px 10px;
+        .content {
+            padding: 20px;
+        }
+        .btn-inline {
+            display: flex;
+            gap: 5px;
         }
         .status-select {
-            min-width: 120px;
+            min-width: 130px;
+        }
+        .card-header {
+            background-color: #49494c;
+            color: #fff;
+            text-align: center;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <div class="container mt-5">
-        <h2 class="mb-4 text-center">Admin Order Management</h2>
+    <%- include('includes/header.ejs') %>
 
-        <div class="card shadow p-3">
-            <table id="ordersTable" class="table table-bordered table-striped">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Items</th>
-                        <th>Address</th>
-                        <th>Total Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% orders.forEach(order => { %>
-                        <tr>
-                            <td><%= order._id %></td>
-                            <td><%= order.owner ? order.owner.username : 'N/A' %></td>
-                            <td>
-                                <ul class="list-unstyled">
-                                    <% order.cartItems.forEach(item => { %>
-                                        <li><%= item.name %> (x<%= item.quantity %>) - ₹<%= item.price %></li>
-                                    <% }); %>
-                                </ul>
-                            </td>
-                            <td><%= order.address ? `${order.address.street}, ${order.address.city}` : 'N/A' %></td>
-                            <td>₹<%= order.totalAmount %></td>
-                            <td>
-                                <select class="form-select status-select order-status" data-order-id="<%= order._id %>">
-                                    <option value="Pending" <%= order.status === "Pending" ? "selected" : "" %>>Pending</option>
-                                    <option value="Paid" <%= order.status === "Paid" ? "selected" : "" %>>Paid</option>
-                                    <option value="Shipped" <%= order.status === "Shipped" ? "selected" : "" %>>Shipped</option>
-                                    <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
-                                    <option value="Cancelled" <%= order.status === "Cancelled" ? "selected" : "" %>>Cancelled</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-success update-status" data-order-id="<%= order._id %>">Update</button>
-                                <a href="/admin/orders/<%= order._id %>" class="btn btn-info">View</a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-md-2 ">
+                <%- include('includes/sidebar.ejs') %>
+
+            </div>
+
+
+            <div class="col-md-10 content">
+                <div class="card shadow">
+                    <div class="card-header">Admin Order Management</div>
+                    <div class="card-body">
+                        <table id="ordersTable" class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Products</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% orders.forEach(order => { %>
+                                    <tr>
+                                        <td><%= order._id %></td>
+                                        <td><%= order.owner && order.owner[0] ? order.owner[0].username : 'N/A' %></td>
+                                        <td>
+                                            <% if (order.cartItems.length > 2) { %>
+                                                <%= order.cartItems.slice(0, 2).map(item => `${item.name} `)%> 
+                                                +<%= order.cartItems.length - 2 %> more
+                                            <% } else { %>
+                                                <%= order.cartItems.map(item => `${item.name}`) %>
+                                            <% } %>
+                                        </td>
+                                        <td>₹<%= order.totalAmount.toLocaleString("en-IN") %></td>
+                                        <td>
+                                            <select class="form-select status-select order-status" data-order-id="<%= order._id %>">
+                                                <option value="Pending" <%= order.status === "Pending" ? "selected" : "" %>>Pending</option>
+                                                <option value="Paid" <%= order.status === "Paid" ? "selected" : "" %>>Paid</option>
+                                                <option value="Shipped" <%= order.status === "Shipped" ? "selected" : "" %>>Shipped</option>
+                                                <option value="Delivered" <%= order.status === "Delivered" ? "selected" : "" %>>Delivered</option>
+                                                <option value="Cancelled" <%= order.status === "Cancelled" ? "selected" : "" %>>Cancelled</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="btn-inline">
+                                                <button type="button" class="btn btn-success update-status" data-order-id="<%= order._id %>">Update</button>
+                                                <a href="/api/v1/orders/get-order/<%= order._id ? order._id.toString() : '' %>" class="btn btn-info">View</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -94,10 +127,8 @@
             $('#ordersTable').DataTable({
                 "responsive": true,
                 "lengthMenu": [10, 25, 50, 100],
-                "order": [[0, "desc"]], // Sort by latest orders
-                "columnDefs": [
-                    { "orderable": false, "targets": [2, 5, 6] } // Disable sorting on Items, Status, Actions
-                ]
+                "order": [[0, "desc"]],
+                "columnDefs": [{ "orderable": false, "targets": [2, 4, 5] }]
             });
         });
 
@@ -129,4 +160,3 @@
 
 </body>
 </html>
-\end{code}

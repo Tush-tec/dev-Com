@@ -278,6 +278,8 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   const { orderId } = req.params;
   const { status } = req.body;
 
+  
+
   let order = await Order.findById(orderId);
   if (!order) throw new ApiError(404, "Order does not exist");
 
@@ -301,8 +303,10 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 const getOrderById = asyncHandler(async (req, res) => {
 
   const { orderId } = req.params;
+  console.log("Order ID", orderId);
 
-  if(isValidObjectId(orderId)){
+
+  if(!isValidObjectId(orderId)){
     throw new ApiError(
       400,
       "Invalid order id. Please provide a valid order id."
@@ -316,7 +320,9 @@ const getOrderById = asyncHandler(async (req, res) => {
 
   if (!order) throw new ApiError(404, "Order does not exist");
 
-  return res.status(200).json(new ApiResponse(200, order, "Order fetched successfully"));
+  res.render("allOrderDetail", {order})
+
+  // return res.status(200).json(new ApiResponse(200, order, "Order fetched successfully"));
 
 });
 

@@ -244,7 +244,7 @@ const getOrders = asyncHandler(async (req, res) => {
 
 
 const getOrderListAdmin = asyncHandler(async (req, res) => {
-  const { status, page = 1, limit = 50 } = req.query;
+  const { status, page = 1, limit = 100 } = req.query;
   const query = status ? { status } : {};
 
   const aggregateQuery = Order.aggregate([

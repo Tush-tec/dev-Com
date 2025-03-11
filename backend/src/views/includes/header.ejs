@@ -1,15 +1,21 @@
-<nav class="navbar navbar-expand-lg navgar-light  shadow-sm fixed-top" style="height: 70px; background: #f5f4fe;">
+<nav class="navbar navbar-expand-lg navbar-light shadow-sm fixed-top" style="height: 70px; background: #f5f4fe;">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold " href="#" >Devcom</a>
-    <form class="d-flex ms-auto">
+    <a class="navbar-brand fw-bold" href="#">Devcom</a>
+
+    <!-- Search Form -->
+    <form class="d-flex ms-auto" id="searchForm">
       <input
+        id="searchInput"
         class="form-control me-2"
         type="search"
-        placeholder="Search"
+        placeholder="Search products..."
         aria-label="Search"
+        autofocus
       />
       <button class="btn btn-outline-primary" type="submit">Search</button>
     </form>
+
+    <!-- Navbar Icons -->
     <ul class="navbar-nav ms-3">
       <li class="nav-item">
         <a class="nav-link" href="#"><i class="bi bi-bell"></i></a>
@@ -18,19 +24,39 @@
         <a class="nav-link" href="#"><i class="bi bi-cart"></i></a>
       </li>
       <li class="nav-item">
-        <button class="btn" style="background-color: #ff6e40; color: white; text-decoration: none;" >
-         <a class="text-decoration-none text-white" href="http://localhost:8080/api/v1/products/products">Add product</a>
+        <button class="btn" style="background-color: #ff6e40; color: white;">
+          <a class="text-decoration-none text-white" href="http://localhost:8080/api/v1/products/products">Add Product</a>
         </button>
-        <button class="btn" style="background-color: #ff6e40; color: white; text-decoration: none;" >
-          <a class="text-decoration-none text-white " href="/api/v1/admin/auth/logout
-          ">Log out</a>
+        <button class="btn" style="background-color: #ff6e40; color: white;">
+          <a class="text-decoration-none text-white" href="/api/v1/admin/auth/logout">Log Out</a>
         </button>
       </li>
     </ul>
   </div>
 </nav>
 
-<!-- Add padding-top to offset the fixed navbar -->
+
 <div class="container" style="padding-top: 70px;">
-  <!-- Your content here -->
+
 </div>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+
+    document.getElementById("searchInput").focus();
+
+
+    document.getElementById("searchForm").addEventListener("submit", function (e) {
+      e.preventDefault(); 
+      
+      const query = document.getElementById("searchInput").value.trim();
+
+      if (query) {
+        window.location.href = `/search?query=${encodeURIComponent(query)}`;
+      } else {
+        alert("Please enter a search term.");
+      }
+    });
+  });
+</script>

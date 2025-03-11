@@ -26,14 +26,23 @@ const AuthProvider = ({ children }) => {
 
     const register = async (data) => {
         setIsLoading(true);
-        try {
-            await requestHandler(async () => await registerUser(data));
-            alert("Account Created Successfully, Go Ahead and Login");
-            navigate("/login");
-        } catch (error) {
-            console.error("Registration failed", error);
-            setIsLoading(false);
-        }
+    
+        await requestHandler(
+            async () => await registerUser(data),
+            setIsLoading,
+            (res) => {
+                alert ("Registration successful", res);
+                navigate('/login')
+            },
+            (error) => {
+                setError(error)
+
+            }
+        
+        );
+
+          
+        
     };
 
     const login = async (data) => {

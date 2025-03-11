@@ -71,7 +71,10 @@ import addressRouter from './routes/address.routes.js'
 import cartRouter from "./routes/cart.routes.js"
 import adminRouter from "./routes/admin.routes.js"
 import contactRouter from "./routes/contactMe.routes.js"
+import dashboardRouter from './routes/dashboard.js'
 
+
+app.use('/api/v1/dashboard', dashboardRouter)
 app.use('/api/v1/admin', adminRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/products', productRouter)

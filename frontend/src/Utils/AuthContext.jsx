@@ -58,9 +58,11 @@ const AuthProvider = ({ children }) => {
                     const refreshToken = res.data.refreshToken;
 
                     if (user && accessToken) {
-                        setUser(user.username);
+                        setUser(user);
                         setToken(accessToken);
+                        setIsAuthenticated(true)
 
+                        LocalStorage.set("User", user)
                         LocalStorage.set("Token", accessToken);
                         LocalStorage.set("RefreshToken", refreshToken);
 

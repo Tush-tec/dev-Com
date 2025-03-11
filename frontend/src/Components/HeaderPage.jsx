@@ -97,7 +97,7 @@ const HeaderPage = () => {
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 1, ease: "easeOut" }}
 >
-  Wood You Believe It
+Timber Trend
 </motion.h1>
 
       {/* Navigation & Auth Buttons */}

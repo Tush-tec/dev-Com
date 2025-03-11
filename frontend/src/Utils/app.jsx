@@ -40,41 +40,6 @@ const requestHandler = async (api, setLoading, onSuccess, onError) => {
 
 
 
-
-const getMetaDataOfChatObject = (chat, loggedinUser) => {
-  const { lastMessage, participants,  isGroupChat, name } = chat; // Destructuring
-
-  // Generate last message content
-  const lastMessageContent = lastMessage?.content
-    ? lastMessage.content
-    : lastMessage?.attachments?.length
-    ? `${lastMessage.attachments.length} attachment${lastMessage.attachments.length > 1 ? 's' : ''}`
-    : "No message yet";
-
-  if (isGroupChat) {
-    // Group Chat Metadata
-    return {
-      avatar: "https://via.placeholder.com/100x100.png", // Placeholder avatar
-      title: name,
-      description: `${participants.length} members`,
-      lastMessage: `${lastMessage?.sender?.username || 'Unknown'}: ${lastMessageContent}`,
-    };
-  }
-
-  // Individual Chat Metadata
-  const participant = participants.find(p => p._id !== loggedinUser?._id);
-  return {
-    avatar: participant?.avatar?.url,
-    title: participant?.username,
-    description: participant?.email,
-    lastMessage: lastMessageContent,
-  };
-};
-
-const classNames = (...classNames) => {
-  return classNames.filter(Boolean).join(" "); // Clean and concise class names generator
-};
-
 class LocalStorage {
   static isBrowser = typeof window !== "undefined";
 
@@ -109,8 +74,5 @@ class LocalStorage {
 
 export {
   requestHandler,
-  getMetaDataOfChatObject,
-  classNames,
   LocalStorage,
-  isBrowser, // Exported for use in other parts of your code
 };

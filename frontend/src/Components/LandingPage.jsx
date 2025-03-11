@@ -15,15 +15,15 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import { LocalStorage } from "../Utils/app";
 import { Link } from "react-router-dom";
+import { useAuth } from "../Utils/AuthContext";
 
 const LandingPage = () => {
-  const [isLoggin, setLoggin] = useState(false);
 
-  useEffect(() => {
-    const token = LocalStorage.get("Token");
+  const {isAuthenticated} = useAuth()
+  console.log(isAuthenticated);
+  
 
-    if (token) setLoggin(true);
-  }, []);
+
 
   return (
     <div className="font-sans bg-gray-100">
@@ -31,7 +31,7 @@ const LandingPage = () => {
 
       
 
-      {isLoggin ? (
+      {isAuthenticated  ? (
         <>
           {/* Loggin true Section */}
           <section className="mt-8 mb-10">

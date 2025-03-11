@@ -23,6 +23,7 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     const [error, setError] = useState(null)
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const register = async (data) => {
         setIsLoading(true);
@@ -86,26 +87,44 @@ const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         setIsLoading(true);
-        try {
-            await requestHandler(
-                async () => await logOutUser(),
-                setIsLoading,
-                () => {
-                    setUser(null);
-                    setToken(null);
-                    LocalStorage.clear();
-                    navigate("/login");
-                },
-                (error) => {
-                    console.error("Logout failed", error.message || error);
-                    setIsLoading(false);
-                }
-            );
-        } catch (error) {
-            console.error("Logout error:", error.message || error);
-            setIsLoading(false);
-        }
+        setError(null); 
+    
+        await requestHandler(
+            async () => await logOutUser(),
+            setIsLoading,
+            () => {
+                setUser(null);
+                setToken(null);
+                LocalStorage.clear();
+                navigate("/login");
+            },
+            (error) => {
+                console.error("Logout failed", error.message || error);
+            }
+        );
     };
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const storedToken = LocalStorage.get("Token");
+            const storedUser = LocalStorage.get("User");
+    
+            if (storedToken && storedUser && storedUser._id) {
+                const isTokenValid = await validateToken(storedToken);  
+                if (isTokenValid) {
+                    setUser(storedUser);
+                    setToken(storedToken);
+                    setIsAuthenticated(true);
+                } else {
+                    logout();
+                }
+            }
+        };
+    
+        checkAuth();
+    }, []);
+    
+    
 
     useEffect(() => {
         const storedToken = LocalStorage.get("Token");
@@ -114,13 +133,14 @@ const AuthProvider = ({ children }) => {
         if (storedToken && storedUser && storedUser._id) {
             setUser(storedUser);
             setToken(storedToken);
+            setIsAuthenticated(true)
         }
     }, []);
 
     
 
     return (
-        <AuthContext.Provider value={{ user, token, error, register, login, logout }}>
+        <AuthContext.Provider value={{ user, token, error,isAuthenticated ,register, login, logout }}>
             {isLoading ? <Loader /> : children}
         </AuthContext.Provider>
     );

@@ -34,6 +34,10 @@ const logOutUser = (data) => {
     return apiClient.post('/users/auth/logout', data)
 }
 
+const  validateToken = (storedToken => {
+    return apiClient.post('/users/auth/validate-token')
+})
+
 const fetchProducts = ({ page = 1, limit = 20 }) => {
     return apiClient.get(`/products/product/all-product?page=${page}&limit=${limit}`);
 };
@@ -137,6 +141,7 @@ export {
     registerUser,
     loginUser,
     logOutUser,
+    validateToken,
     fetchProducts,
     fetchIndividualProduct,
     fetchCategory,

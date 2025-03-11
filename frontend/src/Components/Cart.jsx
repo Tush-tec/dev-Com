@@ -6,15 +6,23 @@ import { LocalStorage } from "../Utils/app";
 import HeaderPage from "./HeaderPage";
 import Footer from "./Footer";
 import { Link } from "react-router-dom";
+import { useAuth } from "../Utils/AuthContext";
 
 const Cart = () => {
   const dispatch = useDispatch();
   const { cartItems = [], isLoading, error } = useSelector((state) => state.cart);
-  const userId = LocalStorage.get("Token");
+
+  const {isAuthenticated} = useAuth()
+  
+
+
+
+  
 
   useEffect(() => {
-    dispatch(fetchCartItem());
-  }, []);
+    if(isAuthenticated)     dispatch(fetchCartItem());
+
+  }, [isAuthenticated, fetchCartItem]);
 
   const handleRemove = (id) => {
     dispatch(removeCartItem({ userId, productId: id }));
@@ -34,13 +42,21 @@ const Cart = () => {
   if (isLoading) return <Loader />;
   if (error) return <p className="text-red-500">{error.message}</p>;
 
-  // Calculate subtotal
+
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <>
       <HeaderPage />
-      <div className="container mx-auto mt-10 mb-10 p-4">
+
+      {
+        isAuthenticated ? 
+
+
+        <>
+        {/* True Section */}
+        
+        <div className="container mx-auto mt-10 mb-10 p-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Section: Cart Items */}
           <div className="col-span-2 p-6 bg-white rounded-lg shadow-md h-[500px] overflow-y-auto">
@@ -164,6 +180,44 @@ const Cart = () => {
         </div>
       </div>
       <Footer />
+        </>
+
+        :
+
+        <>
+        {/* False Section */}
+
+    <section className="container flex items-center justify-center h-screen mx-auto bg-gradient-to-l from-[#162130] to-[#737982]">
+            <div className="w-full max-w-md p-8 bg-white text-center shadow-2xl rounded-2xl border border-gray-300">
+              <h2 className="text-3xl font-bold text-[#162130] mb-4">
+                Access Required
+              </h2>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Please log in to place an order and enjoy seamless shopping!
+              </p>
+              <div className="flex justify-center">
+                <Link to="/login">
+                  <button className="bg-[#162130] hover:bg-[#1E293B] text-white py-2 px-5 rounded-full transition-transform transform hover:scale-105 shadow-md">
+                    Redirect to Login
+                  </button>
+                </Link>
+              </div>
+              <div className="mt-6 text-sm text-gray-500">
+                Don't have an account?{" "}
+                <Link
+                  to="/register"
+                  className="text-[#162130] hover:text-[#1E293B] font-semibold hover:underline"
+                >
+                  Sign up here
+                </Link>
+                .
+              </div>
+            </div>
+          </section>
+
+        </>
+      }
+  
     </>
   );
 };

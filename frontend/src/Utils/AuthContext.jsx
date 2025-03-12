@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LocalStorage, requestHandler } from "./app";
-import { loginUser, logOutUser, registerUser } from "../Api/api";
+import { loginUser, logOutUser, registerUser, validateToken } from "../Api/api";
 import Loader from "../Components/Loader";
 
 const AuthContext = createContext({

@@ -12,7 +12,6 @@ import { MdLocationCity, MdMarkunreadMailbox } from "react-icons/md";
 
 const Address = () => {
   const { addressId } = useParams();
-  console.log("📌 Address ID:", addressId);
 
   const [saveAddress, setSaveAddress] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -55,6 +54,7 @@ const Address = () => {
       <div className="flex min-h-screen bg-gray-100">
 
         <SideBar />
+
 
 
         <div className="flex-1 p-6">

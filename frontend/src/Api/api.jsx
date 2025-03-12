@@ -75,6 +75,11 @@ const getAllSaveAddress = () => {
     return apiClient.get(`/address/get-all-address`)
 } 
 
+
+const deleteSaveAddress = (addressId) => {
+    return apiClient.delete(`address/delete-address/${addressId}`)
+}
+
 const createOrder = (addressId, paymentMethod) => {
     return apiClient.post("/orders/create-order", { addressId, paymentMethod });
 };
@@ -149,6 +154,7 @@ export {
     fetchProductForParticularCategory,
     getItemFromCart,
     createAddress,
+    deleteSaveAddress,
     createOrder,
     createOrderWithRazorPay,
     verifyRazorpayOrder,

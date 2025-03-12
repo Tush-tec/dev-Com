@@ -20,10 +20,13 @@ router.route('/get-address/:addressId').get(
     getAddressById
 )
 
-router.route('/delete-address/:addressId').get(
+router.route('/delete-address/:addressId').delete(
     authMiddleware,
     deleteAddressById
 )
+
+
+
 
 
 

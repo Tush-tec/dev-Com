@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Loader from "../Components/Loader";
 import { requestHandler } from "../Utils/app";
-import { getSaveAddress } from "../Api/api";
+import { getSaveAddress, deleteSaveAddress } from "../Api/api";
 import HeaderPage from "../Components/HeaderPage";
 import Footer from "../Components/Footer";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import SideBar from "../Components/Sidebar";
-import { FaBuilding, FaHome, FaLocationArrow, FaPhoneAlt } from "react-icons/fa";
+import { FaHome, FaLocationArrow, FaPhoneAlt } from "react-icons/fa";
 import { MdLocationCity, MdMarkunreadMailbox } from "react-icons/md";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const Address = () => {
   const [addresses, setAddresses] = useState([]);
@@ -34,6 +35,19 @@ const Address = () => {
         }
       },
       (error) => setError(error)
+    );
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    if (!window.confirm("Are you sure you want to delete this address?")) return;
+
+    await requestHandler(
+      () => deleteSaveAddress(addressId),
+      setLoading,
+      () => {
+        setAddresses((prev) => prev.filter((address) => address._id !== addressId));
+      },
+      (error) => alert("Failed to delete address: " + error)
     );
   };
 
@@ -67,7 +81,15 @@ const Address = () => {
           {/* Address List */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {addresses.map((address) => (
-              <div key={address._id} className="p-6 border rounded-lg bg-[#364153] shadow-md">
+              <div key={address._id} className="p-6 border rounded-lg bg-[#364153] shadow-md relative">
+                <button
+                  onClick={() => handleDeleteAddress(address._id)}
+                  className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition"
+                  title="Delete Address"
+                >
+                  <RiDeleteBin6Line className="w-5 h-5" />
+                </button>
+
                 <p className="flex items-center mb-2 gap-2">
                   <FaHome className="w-5 h-5" />
                   <span className="font-medium text-white">

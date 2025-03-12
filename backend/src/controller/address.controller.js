@@ -192,7 +192,7 @@ const deleteAddressById = asyncHandler(async(req,res) =>{
     const remove = await Address.findByIdAndDelete({ _id: addressId, owner : req.user?._id})
 
     if(!remove){
-        throw ApiError(
+        throw new ApiError(
             404,
             "Address not found, check your address id",
         )

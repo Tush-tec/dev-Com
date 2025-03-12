@@ -67,9 +67,10 @@ const createAddress = (address) => {
     return apiClient.post('/address/create-address', address)
 }
 
-const getSaveAddress = (addressId) => {    
-    return apiClient.get(`/address/get-address/${addressId}`)
-} 
+const getSaveAddress = (addressId, page = 1, limit = 10) => {    
+    return apiClient.get(`/address/get-address/${addressId}?page=${page}&limit=${limit}`);
+}
+
 const getAllSaveAddress = () => {    
     return apiClient.get(`/address/get-all-address`)
 } 

@@ -94,37 +94,44 @@ const getAllAddress = asyncHandler(async (req, res) => {
 
 
 const getAddressById = asyncHandler(async(req,res) =>{
-    const {addressId} = req.params
 
-    console.log("addressId validation",isValidObjectId(addressId));
-    
-
-    console.log("valid object id" ,isValidObjectId(req.user?._id));
-    
-
-    const address = await Address.findById(
-        {
-            _id: addressId,
-            owner : req.user?._id
-        }
-    )
-
-    if(!address){
-        throw new ApiError(
-            404,
-            "Address not found, check your address id",
-        )
+    if (!isValidObjectId(req.user?._id)) {
+        throw new ApiError(400, "Invalid user ID");
     }
 
-    return res 
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            address,
-            "Address retrieved successfully by id ",
-        )
-    )
+    let page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+
+    const options = {
+        page,
+        limit,
+    };
+
+    const addressMatch = Address.aggregate([
+        { $match: { owner: req.user._id } }, 
+        { $sort: { createdAt: -1 } }, 
+    ]);
+    
+
+    const result = await Address.aggregatePaginate(addressMatch, options);
+
+
+        if (result.docs.length === 0) {
+            throw new ApiError(404, "No addresses found for this user");
+        }
+
+
+
+        return res.status(200).json(
+            new ApiResponse(200, {
+                addresses: result.docs,
+                currentPage: result.page,
+                totalPages: result.totalPages,
+                totalAddresses: result.totalDocs,
+                hasNextPage: result.hasNextPage,
+                hasPrevPage: result.hasPrevPage,
+            }, "User addresses retrieved successfully")
+        );
 })
 
 const updateAddress = asyncHandler(async(req,res) =>{

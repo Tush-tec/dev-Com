@@ -16,7 +16,6 @@ import Orders from './Pages/Orders'
 import Home from './Pages/Home'
 import Products from './Components/Products'
 import Cart from './Components/Cart'
-import Product from './Components/product'
 import Personalnfo from './Pages/Personalnfo'
 import ChangePassword from './Pages/ChangePassword'
 import ProductDetails from './Pages/ProductDetails'
@@ -26,6 +25,7 @@ import CreateAddress from './Pages/CreateAddress'
 import AboutUs from './Pages/AboutUs'
 import Contact from './Pages/Contact'
 import ShowCartItem from './Pages/ShowCartItem'
+import Product from './Components/Product'
 
 function App() {
 

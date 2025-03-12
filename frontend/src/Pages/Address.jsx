@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Loader from "../Components/Loader";
 import { requestHandler } from "../Utils/app";
 import { getSaveAddress } from "../Api/api";
@@ -11,31 +11,33 @@ import { FaBuilding, FaHome, FaLocationArrow, FaPhoneAlt } from "react-icons/fa"
 import { MdLocationCity, MdMarkunreadMailbox } from "react-icons/md";
 
 const Address = () => {
-  const { addressId } = useParams();
-
-  const [saveAddress, setSaveAddress] = useState(null);
+  const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(true);
 
-  useEffect( () => {
-    const fetchSaveAddress = async () => {
-    if (!addressId) return;
+  useEffect(() => {
+    fetchAddresses(currentPage);
+  }, []);
+
+  const fetchAddresses = async (page) => {
+    setLoading(true);
     await requestHandler(
-      () => getSaveAddress(addressId),
+      () => getSaveAddress(page),
       setLoading,
       (data) => {
-        console.log("✅ API Response:", data.data);
-        setSaveAddress(data.data); 
+        if (data.data && data.data.addresses) {
+          setAddresses((prev) => [...prev, ...data.data.addresses]);
+          setHasNextPage(data.data.hasNextPage);
+          setCurrentPage(page);
+        }
       },
-      (error) => {
-        console.error("❌ API Error:", error);
-        setError(error);
-      }
-    )}
-    fetchSaveAddress();
-  }, [addressId]);
+      (error) => setError(error)
+    );
+  };
 
-  if (loading)
+  if (loading && addresses.length === 0)
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader />
@@ -45,21 +47,15 @@ const Address = () => {
   if (error)
     return <div className="text-center text-xl text-red-500 p-6">{error}</div>;
 
-  if (!saveAddress)
-    return <div className="text-center text-xl p-6">No address found</div>;
-
   return (
     <>
       <HeaderPage />
       <div className="flex min-h-screen bg-gray-100">
-
         <SideBar />
-
-
 
         <div className="flex-1 p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-semibold text-black">Your Address</h2>
+            <h2 className="text-3xl font-semibold text-black">Your Addresses</h2>
             <Link
               to="/address/create-address"
               className="bg-black text-white px-5 py-2 rounded-lg flex items-center hover:bg-gray-800 transition"
@@ -68,44 +64,53 @@ const Address = () => {
             </Link>
           </div>
 
-          {/* Address Card */}
-          <div className="max-w-xl">
-            <div className="p-6 border rounded-lg bg-[#364153] shadow-md">
-              <div className="flex items-center mb-4">
-                <FaLocationArrow className="w-5 h-5  mr-3" />
-                <span className="text-lg font-medium text-white">
-                  {saveAddress.addressLine.street}, {saveAddress.addressLine.locality}, {saveAddress.addressLine.city}
-                </span>
+          {/* Address List */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {addresses.map((address) => (
+              <div key={address._id} className="p-6 border rounded-lg bg-[#364153] shadow-md">
+                <p className="flex items-center mb-2 gap-2">
+                  <FaHome className="w-5 h-5" />
+                  <span className="font-medium text-white">
+                    {address.addressLine.houseNumber}, {address.addressLine.apartmentNumber}, {address.addressLine.street}
+                  </span>
+                </p>
+
+                <p className="flex items-center mb-2 gap-2">
+                  <FaLocationArrow className="w-5 h-5" />
+                  <span className="font-medium text-white">
+                    {address.addressLine.locality}, {address.addressLine.district}, {address.addressLine.city}
+                  </span>
+                </p>
+
+                <p className="flex items-center mb-2 gap-2">
+                  <MdLocationCity className="w-5 h-5" />
+                  <span className="font-medium text-white">{address.state}</span>
+                </p>
+
+                <p className="flex items-center mb-2 gap-2">
+                  <MdMarkunreadMailbox className="w-5 h-5" />
+                  <span className="font-medium text-white">{address.addressLine.pincode}</span>
+                </p>
+
+                <p className="flex items-center mt-4 gap-2">
+                  <FaPhoneAlt className="w-5 h-5" />
+                  <span className="font-medium text-white">{address.phoneNumber}</span>
+                </p>
               </div>
-
-              <p className="flex items-center mb-5 gap-2">
-                <FaHome className="w-5 h-5 " />
-                <span className="font-medium text-white">
-                  {saveAddress.addressLine.houseNumber}, Apartment: {saveAddress.addressLine.apartmentNumber}
-                </span>
-              </p>
-
-              <p className="flex items-center mb-2 gap-2">
-                <FaBuilding className="w-5 h-5" />
-                <span className="font-medium text-white">{saveAddress.addressLine.district}</span>
-              </p>
-
-              <p className="flex items-center mb-2 gap-2">
-                <MdLocationCity className="w-5 h-5 " />
-                <span className="font-medium text-white">{saveAddress.state}</span>
-              </p>
-
-              <p className="flex items-center mb-2 gap-2">
-                <MdMarkunreadMailbox className="w-5 h-5 " />
-                <span className="font-medium text-white">{saveAddress.addressLine.pincode}</span>
-              </p>
-
-              <p className="flex items-center mt-4 gap-2">
-                <FaPhoneAlt className="w-5 h-5 " />
-                <span className="font-medium text-white">{saveAddress.phoneNumber}</span>
-              </p>
-            </div>
+            ))}
           </div>
+
+          {/* Load More Button */}
+          {hasNextPage && (
+            <div className="text-center mt-6">
+              <button
+                onClick={() => fetchAddresses(currentPage + 1)}
+                className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition"
+              >
+                Load More
+              </button>
+            </div>
+          )}
         </div>
       </div>
       <Footer />

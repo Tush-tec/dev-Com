@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { useDispatch } from "react-redux";
 import { useProducts } from "../Utils/ProductContext";
 import Loader from "./Loader";

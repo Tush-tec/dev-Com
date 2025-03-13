@@ -57,16 +57,17 @@ const SideBar = ({ setActivePage, activePage }) => {
               <FaUser className="mr-2" /> Account Details
             </Link>
             <Link
-              to={`/profile/address/${userAddressId}`}
-              className={`flex items-center p-2 rounded cursor-pointer ${
-                activePage === "address"
-                  ? "bg-gray-300 text-gray-900"
-                  : "text-white hover:bg-gray-300 hover:text-gray-900"
-              }`}
-              onClick={() => setActivePage("address")}
-            >
-              <FaMapMarkerAlt className="mr-2" /> Addresses
-            </Link>
+  to="/profile/addresses"
+  className={`flex items-center p-2 rounded cursor-pointer ${
+    activePage === "address"
+      ? "bg-gray-300 text-gray-900"
+      : "text-white hover:bg-gray-300 hover:text-gray-900"
+  }`}
+  onClick={() => setActivePage("address")}
+>
+  <FaMapMarkerAlt className="mr-2" /> Addresses
+</Link>
+
             <Link
               to="/profile/order"
               className={`flex items-center p-2 rounded cursor-pointer ${

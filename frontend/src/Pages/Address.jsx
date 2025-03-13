@@ -22,10 +22,10 @@ const Address = () => {
     fetchAddresses(currentPage);
   }, []);
 
-  const fetchAddresses = async (page) => {
+  const fetchAddresses = async (addressId,page) => {
     setLoading(true);
     await requestHandler(
-      () => getSaveAddress(page),
+      () => getSaveAddress(addressId, page),
       setLoading,
       (data) => {
         if (data.data && data.data.addresses) {

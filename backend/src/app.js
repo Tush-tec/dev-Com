@@ -61,6 +61,10 @@ app.get("/", (req, res) =>{
     res.redirect("/api/v1/admin/auth/login")
 })
 
+app.get('/register', (req,res) => {
+    res.redirect('api/v1/admin/auth/register')
+})
+
 
 
 import userRouter from "./routes/user.routes.js"

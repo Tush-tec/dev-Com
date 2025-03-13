@@ -34,9 +34,12 @@ const logOutUser = (data) => {
     return apiClient.post('/users/auth/logout', data)
 }
 
-const  validateToken = (storedToken => {
+const  validateToken = (storedToken )=> {
     return apiClient.post('/users/auth/validate-token')
-})
+}
+
+
+
 
 const fetchProducts = ({ page = 1, limit = 20 }) => {
     return apiClient.get(`/products/product/all-product?page=${page}&limit=${limit}`);
@@ -79,6 +82,9 @@ const getAllSaveAddress = () => {
 const deleteSaveAddress = (addressId) => {
     return apiClient.delete(`address/delete-address/${addressId}`)
 }
+
+
+
 
 const createOrder = (addressId, paymentMethod) => {
     return apiClient.post("/orders/create-order", { addressId, paymentMethod });

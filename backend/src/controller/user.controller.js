@@ -35,34 +35,39 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please fill all fields");
   }
 
+
   const existUser = await User.findOne({ username });
+
+  console.log(existUser);
+  
   if (existUser) {
     throw new ApiError(400, "Username already exists");
   }
 
+  // Check if the email already exists
   const existEmail = await User.findOne({ email });
   if (existEmail) {
     throw new ApiError(400, "Email already exists");
   }
 
-  const avatarLocalPath = req.files?.avatar[0]?.path;
-
+  // Check if avatar is uploaded
+  const avatarLocalPath = req.files?.avatar?.[0]?.path;
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is required");
   }
 
+  // Upload avatar
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-
   if (!avatar) {
     throw new ApiError(400, "Failed to upload avatar");
   }
 
-
+  // Generate a unique stored username
   let storedUserName;
   let isUnique = false;
 
   while (!isUnique) {
-    const assignRandomLetters = Math.random().toString(36).substring(2, 5).toUpperCase().padEnd(2, 'X');
+    const assignRandomLetters = Math.random().toString(36).substring(2, 5).toUpperCase();
     const assignRandomNumber = Math.floor(100 + Math.random() * 9000);
 
     const usernameVariations = [
@@ -74,25 +79,26 @@ const registerUser = asyncHandler(async (req, res) => {
     ];
 
     storedUserName = usernameVariations[Math.floor(Math.random() * usernameVariations.length)];
-    
 
-    const existingStoredUser = await User.findOne({ storedUserName });
+    // ✅ Fix: Properly check in database for storedUserName
+    const existingStoredUser = await User.findOne({ username: storedUserName });
     if (!existingStoredUser) {
-      isUnique = true; 
+      isUnique = true;
     }
   }
 
   try {
+    // ✅ Fix: Save using storedUserName instead of username
     const createUser = await User.create({
       username,
-      storedUserName,  
+      storedUserName, // Use stored username
       email,
       fullname,
       password,
       avatar: avatar.url,
     });
 
-
+    // Ensure user is properly stored
     const checkUserCreatedorNot = await User.findById(createUser._id).select(
       "-password -refreshToken"
     );
@@ -106,7 +112,7 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 
   } catch (error) {
-    if (error.code === 11000) {  // MongoDB duplicate key error
+    if (error.code === 11000) {
       return res.status(400).json(
         new ApiResponse(400, null, "Username is already taken. Please try again.")
       );
@@ -114,6 +120,7 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong during registration");
   }
 });
+
 
 
 
@@ -296,11 +303,17 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
+
   const avatarLocalPath = req.file?.path;
 
+  console.log(avatarLocalPath)
+  
+
   if (!avatarLocalPath) {
-    throw new ApiError(404, "We Cannot Fetch Your Avatar Request");
-  }
+    throw new ApiError(404, "We Cannot proceed with your update Avatar request")
+   }
+
+       
 
   const user = await User.findById(req.user?._id);
   const currentAvatarUrl = user?.path;

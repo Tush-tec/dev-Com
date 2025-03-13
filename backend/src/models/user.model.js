@@ -10,20 +10,21 @@ const userSchema =  new Schema(
     {
         googleId: { 
             type: String, 
-            unique: true 
+            unique: true,
+            sparse: true,  
         },
         username:{
             type: String,
-            unique: true,
-            lowercase: true,
+            index: true,
             trim: true,
-            required: true,
-            index: true
+            unique: true,
+            lowercase: true
+
         },
-        storedUserName:{
-            type:String,
-            // required: true,
-            // unique: true 
+        storedUserName: {
+            type: String,
+            unique: true,
+            trim: true,
         },
         email:{
             type: String,
@@ -40,16 +41,10 @@ const userSchema =  new Schema(
             type:String,
             required:true
         },
-        role: {
-            type: String,
-            enum: AvailableUserRoles,
-            default: UserRolesEnum.USER,
-            required: true,
-          },
         password:{
             type:String,
             required:true,
-            // function() { return !this.isGoogleUser; } 
+            required: function() { return !this.googleId; }
         },
         refreshToken:{
             type:String
@@ -63,8 +58,11 @@ const userSchema =  new Schema(
 // hash  password
 
 userSchema.pre("save", async function(next) {
+
     if (!this.isModified("password")) return next();
+
     console.log("Password before hashing:", this.password);
+
     if (!this.password) throw new Error("Password is undefined before hashing");
     this.password = await bcrypt.hash(this.password, 10);
     next();

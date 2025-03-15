@@ -1,23 +1,22 @@
-import Razorpay from 'razorpay';
-import { nanoid } from 'nanoid'
-import { ApiError } from '../utils/ApiError.js';
-import { ApiResponse } from '../utils/ApiResponse.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
-import crypto from "crypto"
-import { Order } from '../models/order.model.js';
-import { Address } from '../models/address.model.js';
-import { Cart } from '../models/cart.model.js';
-import { error } from 'console';
-import { Product } from '../models/product.model.js';
-import { isValidObjectId } from 'mongoose';
-import { totalmem } from 'os';
+import Razorpay from "razorpay";
+import { nanoid } from "nanoid";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import crypto from "crypto";
+import { Order } from "../models/order.model.js";
+import { Address } from "../models/address.model.js";
+import { Cart } from "../models/cart.model.js";
+import { error } from "console";
+import { Product } from "../models/product.model.js";
+import { isValidObjectId } from "mongoose";
+import { totalmem } from "os";
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-// console.log(process.env.RAZORPAY_KEY_ID);
 
 
 const orderFulfillmentHelper = async (orderPaymentId, req) => {
@@ -31,21 +30,20 @@ const orderFulfillmentHelper = async (orderPaymentId, req) => {
     throw new ApiError(404, "Order does not exist");
   }
 
-  // Prepare bulk updates for reducing stock
   const bulkStockUpdates = order.cartItems.map((item) => ({
     updateOne: {
-      filter: { _id: item.productId }, // Find product by ID
-      update: { $inc: { stock: -item.quantity } }, // Reduce stock
+      filter: { _id: item.productId },
+      update: { $inc: { stock: -item.quantity } },
     },
   }));
 
   await Product.bulkWrite(bulkStockUpdates, { skipValidation: true });
 
-  // Delete cart after order completion
   await Cart.deleteOne({ owner: req.user._id });
 
   return order;
 };
+
 
 
 const generateRazorpayOrder = asyncHandler(async (req, res) => {
@@ -73,13 +71,11 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
   ]);
 
   const cart = cartAggregation[0];
-
   if (!cart || !cart.items.length) throw new ApiError(400, "User cart is empty");
 
   // Format cart items into order schema structure
   const cartItems = cart.items.map((item) => {
     const product = cart.cartItemsDetails.find(p => p._id.toString() === item.productId.toString());
-
     return {
       productId: item.productId,
       quantity: item.quantity,
@@ -97,13 +93,32 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
     Online: "Razorpay",
     UPI: "UPI",
     Razorpay: "Razorpay",
-"Cash on Delivery": "Cash on Delivery",
+    "Cash on Delivery": "Cash on Delivery",
   };
 
   const formattedPaymentMethod = validPaymentMethods[paymentMethod];
   if (!formattedPaymentMethod) throw new ApiError(400, "Invalid payment method");
 
-  // Create Razorpay order
+  if (formattedPaymentMethod === "Cash on Delivery") {
+    // Directly create order for COD
+    const newOrder = await Order.create({
+      owner: req.user._id,
+      cartItems,
+      address: address._id,
+      paymentMethod: formattedPaymentMethod,
+      totalAmount,
+      status: "Pending", // Update status based on your logic
+    });
+
+    if (!newOrder) throw new ApiError(500, "Order not created!");
+
+    // Delete the cart after successful order creation
+    await Cart.deleteOne({ owner: req.user._id });
+
+    return res.status(200).json(new ApiResponse(200, newOrder, "Order placed successfully with Cash on Delivery"));
+  }
+
+  // Online Payment Flow (Razorpay)
   const orderOptions = {
     amount: totalAmount * 100,
     currency: "INR",
@@ -116,10 +131,9 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
       return res.status(500).json(new ApiResponse(500, err.error.description, err.error.description));
     }
 
-    // Create order in DB
     const newOrder = await Order.create({
       owner: req.user._id,
-      cartItems, // Now contains actual product details
+      cartItems,
       address: address._id,
       paymentMethod: formattedPaymentMethod,
       razorpayPaymentId: razorpayOrder.id,
@@ -133,9 +147,13 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
   });
 });
 
-const verifyRazorpayPayment = asyncHandler(async (req, res) => {
 
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+
+
+const verifyRazorpayPayment = asyncHandler(async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =  
+    req.body;
 
   let expectedSignature = crypto
     .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -143,24 +161,25 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
     .digest("hex");
 
   if (expectedSignature === razorpay_signature) {
-
     const order = await orderFulfillmentHelper(razorpay_order_id, req);
 
-    return res.status(201).json(new ApiResponse(201, order, "Order placed successfully"));
+    return res
+      .status(201)
+      .json(new ApiResponse(201, order, "Order placed successfully"));
   }
   throw new ApiError(400, "Invalid Razorpay signature");
 });
 
 
 
+
 const getOrders = asyncHandler(async (req, res) => {
-  const { type } = req.params; 
+  const { type } = req.params;
   const { page = 1, limit = 10 } = req.query;
 
   const matchQuery = { owner: req.user._id };
   let sortStage = null;
   let limitStage = [];
-
 
   if (type === "latest") {
     sortStage = { $sort: { createdAt: -1 } };
@@ -173,8 +192,8 @@ const getOrders = asyncHandler(async (req, res) => {
 
   const pipeline = [
     { $match: matchQuery },
-    ...(sortStage ? [sortStage] : []), 
-    ...limitStage, 
+    ...(sortStage ? [sortStage] : []),
+    ...limitStage,
     {
       $lookup: {
         from: "addresses",
@@ -202,7 +221,12 @@ const getOrders = asyncHandler(async (req, res) => {
         as: "cartItems.productDetails",
       },
     },
-    { $unwind: { path: "$cartItems.productDetails", preserveNullAndEmptyArrays: true } },
+    {
+      $unwind: {
+        path: "$cartItems.productDetails",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     {
       $group: {
         _id: "$_id",
@@ -211,18 +235,16 @@ const getOrders = asyncHandler(async (req, res) => {
         createdAt: { $first: "$createdAt" },
         ownerDetails: { $first: "$ownerDetails" },
         addressDetails: { $first: "$addressDetails" },
-        paymentMethod: {$first: "$paymentMethod"},
+        paymentMethod: { $first: "$paymentMethod" },
         cartItems: {
           $push: {
             productId: "$cartItems.productId",
             quantity: "$cartItems.quantity",
             name: "$cartItems.productDetails.name",
             price: "$cartItems.productDetails.price",
-            paymentMethod :"$cartItems.productDetails.paymentMethod",
+            paymentMethod: "$cartItems.productDetails.paymentMethod",
             image: "$cartItems.productDetails.mainImage",
-            createdAt : "$cartItems.productDetails.createdAt",
-
-
+            createdAt: "$cartItems.productDetails.createdAt",
           },
         },
       },
@@ -235,11 +257,10 @@ const getOrders = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No orders found");
   }
 
-  return res.status(200).json(new ApiResponse(200, orders, "Orders retrieved successfully"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, orders, "Orders retrieved successfully"));
 });
-
-
-
 
 
 
@@ -248,37 +269,51 @@ const getOrderListAdmin = asyncHandler(async (req, res) => {
   const query = status ? { status } : {};
 
   const aggregateQuery = Order.aggregate([
-      { $match: query },
-      { $lookup: { from: "users", localField: "owner", foreignField: "_id", as: "owner" } },
-      { $lookup: { from: "addresses", localField: "address", foreignField: "_id", as: "address" } },
-      { $lookup: { from: "products", localField: "cartItems.productId", foreignField: "_id", as: "cartItems" } }
+    { $match: query },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "owner",
+      },
+    },
+    {
+      $lookup: {
+        from: "addresses",
+        localField: "address",
+        foreignField: "_id",
+        as: "address",
+      },
+    },
+    {
+      $lookup: {
+        from: "products",
+        localField: "cartItems.productId",
+        foreignField: "_id",
+        as: "cartItems",
+      },
+    },
   ]);
 
   const result = await Order.aggregatePaginate(aggregateQuery, {
-      page,
-      limit,
-      customLabels: { totalDocs: "totalOrders", docs: "orders" }
+    page,
+    limit,
+    customLabels: { totalDocs: "totalOrders", docs: "orders" },
   });
 
-  res.render("adminOrders", { orders: result.orders }); 
-  
-    // return res.status(200).json(new ApiResponse(200, 
-    //   result
-    //   , "Orders retrieved successfully"));
+  res.render("adminOrders", { orders: result.orders });
 
+  // return res.status(200).json(new ApiResponse(200,
+  //   result
+  //   , "Orders retrieved successfully"));
 });
 
-
-  // return res.status(200).json(new ApiResponse(200, orders, "Orders retrieved successfully"));
-
-
+// return res.status(200).json(new ApiResponse(200, orders, "Orders retrieved successfully"));
 
 const updateOrderStatus = asyncHandler(async (req, res) => {
-
   const { orderId } = req.params;
   const { status } = req.body;
-
-  
 
   let order = await Order.findById(orderId);
   if (!order) throw new ApiError(404, "Order does not exist");
@@ -286,44 +321,42 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   // console.log("here is ORder", order)
   // console.log("Number of cart items:", order.cartItems.length);
 
-  
-
   if (order.status === "Delivered") {
     throw new ApiError(400, "Order is already delivered");
   }
 
   order.status = status;
 
-  console.log(status)
-  
+  console.log(status);
+
   await order.save();
-  return res.status(200).json(new ApiResponse(200, { status }, "Order status updated"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { status }, "Order status updated"));
 });
 
 const getOrderById = asyncHandler(async (req, res) => {
-
   const { orderId } = req.params;
   console.log("Order ID", orderId);
 
-
-  if(!isValidObjectId(orderId)){
+  if (!isValidObjectId(orderId)) {
     throw new ApiError(
       400,
       "Invalid order id. Please provide a valid order id."
-    )
+    );
   }
   console.log(isValidObjectId(orderId));
   console.log(orderId);
-  
 
-  const order = await Order.findById(orderId).populate("owner cartItems address");
+  const order = await Order.findById(orderId).populate(
+    "owner cartItems address"
+  );
 
   if (!order) throw new ApiError(404, "Order does not exist");
 
-  res.render("allOrderDetail", {order})
+  res.render("allOrderDetail", { order });
 
   // return res.status(200).json(new ApiResponse(200, order, "Order fetched successfully"));
-
 });
 
 export {

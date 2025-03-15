@@ -18,7 +18,7 @@ const Cart = () => {
   useEffect(() => {
     if (!isAuthenticated) return
     dispatch(fetchCartItem());
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch, isAuthenticated, cartItems.length]);
 
   const handleRemove = (id) => {
     dispatch(removeCartItem({ userId, productId: id }));
@@ -28,7 +28,7 @@ const Cart = () => {
     if (quantity > 0) {
       try {
         await dispatch(addToCart({ userId, productId: id, quantity })).unwrap();
-        await dispatch(fetchCartItem());
+         dispatch(fetchCartItem());
       } catch (error) {
         console.error("Failed to update cart:", error);
       }

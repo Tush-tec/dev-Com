@@ -166,7 +166,6 @@ const CheckOut = () => {
 
   return (
     <>
-      {errors && <p>{errors}</p>}
       {isProcessing && <Loader />}
       <HeaderPage />
       <div className="max-w-6xl shadow mx-auto  bg-gray-100 min-h-screen">
@@ -178,6 +177,8 @@ const CheckOut = () => {
           {/* Address & Payment Section - Left Side */}
           {/* Address & Payment Section - Left Side */}
           <div className="flex flex-col bg-white rounded-lg space-y-5 h-[90vh] p-10 space-y-1">
+          {errors && <p className="text-center text-xl text-red-500 p-6">{errors}</p>}
+
             <h2 className="text-2xl font-semibold mb-4">Select Address</h2>
 
             {/* Scrollable Address List */}

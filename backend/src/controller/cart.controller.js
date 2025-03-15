@@ -296,29 +296,31 @@ const updateCartItems = asyncHandler(async (req, res) => {
     const itemIndex = cart.items.findIndex((item) => item.productId.toString() === productId);
 
     if (itemIndex !== -1) {
-        // If item exists, update the quantity or remove it
+
         if (quantity === 0) {
-            cart.items.splice(itemIndex, 1);  // Remove the item if quantity is 0
+            cart.items.splice(itemIndex, 1);  
+            
         } else {
-            cart.items[itemIndex].quantity = quantity;  // Update the quantity
+            cart.items[itemIndex].quantity = quantity;  
         }
     } else {
-        // If item doesn't exist, add a new item
+
         if (quantity > 0) {
             cart.items.push({
                 productId: productId,
                 quantity,
-                price: product.price,  // Store the product price in the cart
+                price: product.price,  
+                
             });
         } else {
             throw new ApiError(400, "Quantity must be greater than 0 for new items.");
         }
     }
 
-    // Recalculate total price
+
     cart.totalPrice = cart.items.reduce(
-        (acc, item) => acc + (item.quantity * item.price),  // Ensure price exists
-        0
+        (acc, item) => acc + (item.quantity * item.price),  
+        
     );
 
     await cart.save({ validateBeforeSave: true });

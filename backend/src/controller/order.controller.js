@@ -44,6 +44,8 @@ const orderFulfillmentHelper = async (orderPaymentId, req) => {
   return order;
 };
 
+
+
 const generateRazorpayOrder = asyncHandler(async (req, res) => {
   const { addressId, paymentMethod } = req.body;
 
@@ -260,8 +262,18 @@ const getOrders = asyncHandler(async (req, res) => {
 });
 
 const getOrderListAdmin = asyncHandler(async (req, res) => {
-  const { status, page = 1, limit = 100 } = req.query;
+  const { status,today , page = 1, limit = 100 } = req.query;
+
   const query = status ? { status } : {};
+
+  if(today === " true"){
+    query.createdAt = {
+      $gte: new Date().setHours(0, 0, 0, 0), 
+      $lt: new Date().setHours(23, 59, 59, 999) 
+    }
+  }
+
+
 
   const aggregateQuery = Order.aggregate([
     { $match: query },
@@ -297,14 +309,57 @@ const getOrderListAdmin = asyncHandler(async (req, res) => {
     customLabels: { totalDocs: "totalOrders", docs: "orders" },
   });
 
-  res.render("adminOrders", { orders: result.orders });
 
-  // return res.status(200).json(new ApiResponse(200,
-  //   result
-  //   , "Orders retrieved successfully"));
+  
+  if (req.xhr || req.headers.accept.includes("json")) {
+
+    return res.status(200).json(new ApiResponse(200, result, "Orders retrieved successfully"));
+  } else {
+
+    return res.render("adminOrders", { orders: result.orders });
+  }
 });
 
-// return res.status(200).json(new ApiResponse(200, orders, "Orders retrieved successfully"));
+
+const getTodayOrders = asyncHandler(async (req, res) => {
+  const todayStart = new Date().setHours(0, 0, 0, 0);
+  const todayEnd = new Date().setHours(23, 59, 59, 999);
+
+  const todayOrders = await Order.aggregate([
+      { $match: { createdAt: { $gte: todayStart, $lt: todayEnd } } },
+      {
+          $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+          },
+      },
+      {
+          $lookup: {
+              from: "addresses",
+              localField: "address",
+              foreignField: "_id",
+              as: "address",
+          },
+      },
+      {
+          $lookup: {
+              from: "products",
+              localField: "cartItems.productId",
+              foreignField: "_id",
+              as: "cartItems",
+          },
+      },
+  ]);
+
+  res.render("getTodayOrder", { orders: todayOrders });
+});
+
+
+
+
+
 
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { orderId } = req.params;
@@ -360,5 +415,6 @@ export {
   getOrderById,
   getOrders,
   getOrderListAdmin,
+  getTodayOrders,
   updateOrderStatus,
 };

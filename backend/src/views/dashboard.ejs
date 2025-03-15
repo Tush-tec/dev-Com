@@ -128,29 +128,30 @@
           // Stats Section
           document.getElementById(
             "totalUsers"
-          ).innerHTML = `<strong>Total Users:</strong> ${data.totalUsers}`;
+          ).innerHTML = `<strong>Total Users:</strong> ${data.totalUsers.toLocaleString("en-IN")}`;
           document.getElementById(
             "newUsersToday"
-          ).innerHTML = `<strong>New Users Today:</strong> ${data.newUsersToday}`;
+          ).innerHTML = `<strong>New Users Today:</strong> ${data.newUsersToday.toLocaleString("en-IN")}`;
           document.getElementById("totalOrders").innerHTML = `
                     <a href="/api/v1/orders/order/get-order" style="color: black; text-decoration: none;">
-                        <strong>Total Orders:</strong> ${data.totalOrders}
+                        <strong>Total Orders:</strong> ${data.totalOrders.toLocaleString("en-IN")}
                     </a>`;
           document.getElementById(
             "ordersToday"
-          ).innerHTML = `<strong>Orders Today:</strong> ${data.ordersToday}`;
+          ).innerHTML = `<strong>
+            Orders Today:</strong> ${data.ordersToday.toLocaleString("en-IN")}`;
           document.getElementById(
             "weeklyOrders"
-          ).innerHTML = `<strong>Weekly Orders:</strong> ${data.weeklyOrders}`;
+          ).innerHTML = `<strong>Weekly Orders:</strong> ${data.weeklyOrders.toLocaleString("en-IN")}`;
           document.getElementById(
             "monthlyOrders"
-          ).innerHTML = `<strong>Monthly Orders:</strong> ${data.monthlyOrders}`;
+          ).innerHTML = `<strong>Monthly Orders:</strong> ${data.monthlyOrders.toLocaleString("en-IN")}`;
           document.getElementById(
             "totalRevenue"
-          ).innerHTML = `<strong>Total Revenue:</strong> ₹${data.totalRevenue}`;
+          ).innerHTML = `<strong>Total Revenue:</strong> ₹${data.totalRevenue.toLocaleString("en-IN")}`;
           document.getElementById(
             "todayRevenue"
-          ).innerHTML = `<strong>Today's Revenue:</strong> ₹${data.todayRevenue}`;
+          ).innerHTML = `<strong>Today's Revenue:</strong> ₹${data.todayRevenue.toLocaleString("en-IN")}`;
 
           // Order Status Chart
           new Chart(document.getElementById("orderStatusChart"), {

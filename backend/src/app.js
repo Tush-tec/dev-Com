@@ -21,7 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
     cors(
         {
-            origin:process.env.CORS_ORIGIN || process.env.CORS_ORIGIN_FROM_PRODUCTION ,
+       
+            origin: process.env.NODE_ENV === 'production' ? process.env.CORS_ORIGIN_FROM_PRODUCTION : process.env.CORS_ORIGIN,
             credentials:true,   
         }
     )

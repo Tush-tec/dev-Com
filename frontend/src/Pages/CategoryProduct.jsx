@@ -6,9 +6,8 @@ import { addToCart } from "../Utils/Store/CartSlice";
 import Loader from "../Components/Loader";
 import Footer from "../Components/Footer";
 import HeaderPage from "../Components/HeaderPage";
-import Cart from "../Components/Cart";
 import { useDispatch, useSelector } from "react-redux";
-import { ShoppingCartIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ShoppingCartIcon, } from "@heroicons/react/24/outline";
 
 const CategoryProduct = () => {
   const { categoryId } = useParams();
@@ -17,8 +16,7 @@ const CategoryProduct = () => {
   const [error, setError] = useState("");
   const [selectedQuantities, setSelectedQuantities] = useState({});
   const dispatch = useDispatch();
-  const { cartItems } = useSelector((state) => state.cart);
-  const [showCart, setShowCart] = useState(false);
+
 
   useEffect(() => {
     if (!categoryId) return;
@@ -109,7 +107,10 @@ const CategoryProduct = () => {
                         <div className="p-4 flex flex-col text-center">
                           <h3 className="text-lg font-serif">{product.name}</h3>
                           <p className="text-gray-700">
-                            Price: <span className="font-bold">&#8377;{product.price.toLocaleString("en-IN")}</span>
+                            Price:{" "}
+                            <span className="font-bold">
+                              &#8377;{product.price.toLocaleString("en-IN")}
+                            </span>
                           </p>
                         </div>
                       </Link>
@@ -148,38 +149,9 @@ const CategoryProduct = () => {
             )}
 
             {/* Floating Cart Button */}
-            <button
-              onClick={() => setShowCart(!showCart)}
-              className="fixed bottom-6 right-6 bg-[#898989] text-white p-3 rounded-full shadow-lg z-50 flex items-center"
-            >
-              <ShoppingCartIcon className="w-8 h-8" />
-              {cartItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {cartItems.length}
-                </span>
-              )}
-            </button>
 
             {/* Cart Sidebar */}
-            <div
-  className={`fixed inset-y-0 right-0 w-80 bg-gray-100 shadow-lg transform transition-transform ${
-    showCart ? "translate-x-0" : "translate-x-full"
-  } p-4 border-l border-gray-300 z-40 h-full overflow-y-auto`} // Added h-full and overflow-y-auto
->
-  <button
-    onClick={() => setShowCart(false)}
-    className="absolute top-2 right-2"
-  >
-    <XMarkIcon className="w-6 h-6 text-gray-600" />
-  </button>
-  <Cart />
-  {cartItems.length > 0 && (
-    <button className="mt-4 w-full bg-[#292928] hover:bg-[#363539] text-white py-2 rounded text-lg font-semibold">
-      <Link to="/checkout">Proceed to Checkout</Link>
-    </button>
-  )}
-</div>
-
+         
           </div>
         </div>
       </div>

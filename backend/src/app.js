@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
     cors(
         {
-            origin:process.env.CORS_ORIGIN,
+            origin:process.env.CORS_ORIGIN || process.env.CORS_ORIGIN_FROM_PRODUCTION ,
             credentials:true,   
         }
     )
@@ -30,13 +30,14 @@ app.use(
 app.use(
     session(
         {
-            secret: process.env.SESSION_SECRET ,
+            secret: process.env.SESSION_SECRET  ,
             resave: false,
             saveUninitialized:false,
             cookie:{
                 secure: process.env.NODE_ENV === "production", 
                 httpOnly:true,
                 maxAge: 1000 * 60 * 60, 
+                sameSite: "Strict",
             }
         }
     )

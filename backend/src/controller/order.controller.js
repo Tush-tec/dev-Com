@@ -321,46 +321,6 @@ const getOrderListAdmin = asyncHandler(async (req, res) => {
 });
 
 
-const getTodayOrders = asyncHandler(async (req, res) => {
-  const todayStart = new Date().setHours(0, 0, 0, 0);
-  const todayEnd = new Date().setHours(23, 59, 59, 999);
-
-  const todayOrders = await Order.aggregate([
-      { $match: { createdAt: { $gte: todayStart, $lt: todayEnd } } },
-      {
-          $lookup: {
-              from: "users",
-              localField: "owner",
-              foreignField: "_id",
-              as: "owner",
-          },
-      },
-      {
-          $lookup: {
-              from: "addresses",
-              localField: "address",
-              foreignField: "_id",
-              as: "address",
-          },
-      },
-      {
-          $lookup: {
-              from: "products",
-              localField: "cartItems.productId",
-              foreignField: "_id",
-              as: "cartItems",
-          },
-      },
-  ]);
-
-  res.render("getTodayOrder", { orders: todayOrders });
-});
-
-
-
-
-
-
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { orderId } = req.params;
   const { status } = req.body;
@@ -415,6 +375,5 @@ export {
   getOrderById,
   getOrders,
   getOrderListAdmin,
-  getTodayOrders,
   updateOrderStatus,
 };

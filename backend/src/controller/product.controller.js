@@ -53,6 +53,8 @@ const createProduct = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Failed to create product");
     }
 
+    console.log("Product is add", product)
+
      
     res.redirect('/api/v1/products/products');
 

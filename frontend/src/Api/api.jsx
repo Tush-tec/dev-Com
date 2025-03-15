@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const apiClient = axios.create({
-    baseURL:"http://localhost:8080/api/v1/",    //import.meta.env.BASE_URL,
+    baseURL:"https://timber-trend-backend.onrender.com/api/v1/",    //import.meta.env.BASE_URL,
     withCredentials:true,
     timeout:120000
 })

@@ -68,7 +68,8 @@ const Orders = () => {
                     {/* Order Status with Scaling */}
                     <span
                       className={`px-3 py-1 text-white text-sm font-semibold rounded-full inline-block transform transition-transform scale-95 hover:scale-105 duration-200 ${
-                        order.status === "In Progress"
+                        order.status === "In Progress" || 
+                        order.status === "Shipped"
                           ? "bg-blue-500"
                           : order.status === "Delivered" ||
                             order.status === "Paid"

@@ -44,8 +44,6 @@ const orderFulfillmentHelper = async (orderPaymentId, req) => {
   return order;
 };
 
-
-
 const generateRazorpayOrder = asyncHandler(async (req, res) => {
   const { addressId, paymentMethod } = req.body;
 
@@ -53,11 +51,15 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Razorpay instance not initialized");
   }
 
-  // Fetch the address
-  const address = await Address.findOne({ _id: addressId, owner: req.user._id });
+
+  const address = await Address.findOne({
+    _id: addressId,
+    owner: req.user._id,
+  });
+
   if (!address) throw new ApiError(404, "Address not found");
 
-  // Fetch user's cart
+
   const cartAggregation = await Cart.aggregate([
     { $match: { owner: req.user._id } },
     {
@@ -71,11 +73,16 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
   ]);
 
   const cart = cartAggregation[0];
-  if (!cart || !cart.items.length) throw new ApiError(400, "User cart is empty");
 
-  // Format cart items into order schema structure
+  if (!cart || !cart.items.length)
+    throw new ApiError(400, "User cart is empty");
+
+
   const cartItems = cart.items.map((item) => {
-    const product = cart.cartItemsDetails.find(p => p._id.toString() === item.productId.toString());
+    const product = cart.cartItemsDetails.find(
+      (p) => p._id.toString() === item.productId.toString()
+    );
+
     return {
       productId: item.productId,
       quantity: item.quantity,
@@ -85,10 +92,13 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
     };
   });
 
-  // Calculate total amount
-  const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // Validate Payment Method
+  const totalAmount = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+
   const validPaymentMethods = {
     Online: "Razorpay",
     UPI: "UPI",
@@ -97,39 +107,30 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
   };
 
   const formattedPaymentMethod = validPaymentMethods[paymentMethod];
-  if (!formattedPaymentMethod) throw new ApiError(400, "Invalid payment method");
 
-  if (formattedPaymentMethod === "Cash on Delivery") {
-    // Directly create order for COD
-    const newOrder = await Order.create({
-      owner: req.user._id,
-      cartItems,
-      address: address._id,
-      paymentMethod: formattedPaymentMethod,
-      totalAmount,
-      status: "Pending", // Update status based on your logic
-    });
+  if (!formattedPaymentMethod)
+    throw new ApiError(400, "Invalid payment method");
 
-    if (!newOrder) throw new ApiError(500, "Order not created!");
 
-    // Delete the cart after successful order creation
-    await Cart.deleteOne({ owner: req.user._id });
-
-    return res.status(200).json(new ApiResponse(200, newOrder, "Order placed successfully with Cash on Delivery"));
-  }
-
-  // Online Payment Flow (Razorpay)
   const orderOptions = {
+
     amount: totalAmount * 100,
     currency: "INR",
     receipt: nanoid(10),
+
   };
 
   razorpayInstance.orders.create(orderOptions, async (err, razorpayOrder) => {
+
     if (err || !razorpayOrder) {
       console.log(err.error.description);
-      return res.status(500).json(new ApiResponse(500, err.error.description, err.error.description));
+      return res
+        .status(500)
+        .json(
+          new ApiResponse(500, err.error.description, err.error.description)
+        );
     }
+
 
     const newOrder = await Order.create({
       owner: req.user._id,
@@ -143,17 +144,16 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
 
     if (!newOrder) throw new ApiError(500, "Order not created!");
 
-    return res.status(200).json(new ApiResponse(200, newOrder, "Razorpay order created"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, newOrder, "Razorpay order created"));
   });
 });
 
 
 
 
-
 const verifyRazorpayPayment = asyncHandler(async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =  
-    req.body;
 
   let expectedSignature = crypto
     .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -169,9 +169,6 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
   }
   throw new ApiError(400, "Invalid Razorpay signature");
 });
-
-
-
 
 const getOrders = asyncHandler(async (req, res) => {
   const { type } = req.params;
@@ -261,8 +258,6 @@ const getOrders = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, orders, "Orders retrieved successfully"));
 });
-
-
 
 const getOrderListAdmin = asyncHandler(async (req, res) => {
   const { status, page = 1, limit = 100 } = req.query;

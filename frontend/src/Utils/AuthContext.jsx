@@ -61,15 +61,20 @@ const AuthProvider = ({ children }) => {
     
                     if (user && accessToken) {
 
-                        console.log("Storing token:", accessToken);
-                        LocalStorage.set("Token", accessToken);
-                        LocalStorage.set("RefreshToken", refreshToken);
-
                         setUser(user);
                         setToken(accessToken);
                         setIsAuthenticated(true);
-                        navigate('/');
+
+                        console.log("Storing token:", accessToken);
                         
+                        LocalStorage.set("Token", accessToken);
+                        LocalStorage.set("AccessToken", accessToken);
+                        LocalStorage.set("RefreshToken", refreshToken)
+
+
+
+                        navigate('/');
+
                     } else {
                         console.error("User or token missing!");
                     }

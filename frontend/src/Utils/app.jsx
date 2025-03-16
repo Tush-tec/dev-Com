@@ -1,27 +1,35 @@
-const isBrowser = typeof window !== "undefined"; // Move this outside the class
+
 
 const requestHandler = async (api, setLoading, onSuccess, onError) => {
   try {
-    if (typeof api !== 'function') {
-      throw new Error('API function is not defined');
+    if (typeof api !== "function") {
+      throw new Error("API function is not defined");
     }
 
     setLoading && setLoading(true);
     console.log("Sending API request...");
 
-    const { data } = await api();
+    const response = await api();
+    const { data, status } = response || {};
+
     console.log("API Response:", data);
 
-    if (data?.success) {
-      onSuccess(data);
+    if (status >= 200 && status < 300) {
+      // Success status codes (200-299)
+      if (data?.success) {
+        onSuccess(data);
+      } else {
+        console.error("Unexpected API Response:", data);
+        onError("Something went wrong with the API response");
+      }
     } else {
-      console.error("Unexpected API Response:", data);
-      onError('Something went wrong with the API response');
+      console.error("API Request Failed:", response);
+      onError(data?.message || `Error: ${status}`);
     }
   } catch (error) {
     console.error("API Error:", error);
 
-    let errorMessage = 'Something went wrong.';
+    let errorMessage = "Something went wrong.";
     if (error?.response?.data?.message) {
       errorMessage = error.response.data.message;
     } else if (error?.message) {
@@ -29,15 +37,15 @@ const requestHandler = async (api, setLoading, onSuccess, onError) => {
     }
 
     onError(errorMessage);
+
     if (error?.response?.status === 401 || error?.response?.status === 403) {
-      console.log(error?.response?.status === 401 || error?.response?.status === 403)
-      localStorage.clear();
-      window.location.href = "/login";
+      console.log("Unauthorized! Token might be invalid or expired.");
     }
   } finally {
     setLoading && setLoading(false);
   }
 };
+
 
 
 

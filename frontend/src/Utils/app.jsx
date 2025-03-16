@@ -41,6 +41,7 @@ const requestHandler = async (api, setLoading, onSuccess, onError) => {
 
 
 class LocalStorage {
+  
   static isBrowser = typeof window !== "undefined";
 
   static get(key) {

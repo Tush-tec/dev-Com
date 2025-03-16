@@ -57,14 +57,23 @@ const AuthProvider = ({ children }) => {
                     const accessToken = res.data.accessToken;
                     const refreshToken = res.data.refreshToken;
 
+                    console.log("authenticated User", user)
+
                     if (user && accessToken) {
                         setUser(user);
                         setToken(accessToken);
                         setIsAuthenticated(true)
+                        
 
                         LocalStorage.set("User", user)
                         LocalStorage.set("Token", accessToken);
                         LocalStorage.set("RefreshToken", refreshToken);
+
+                        console.log("user in local storage"   , LocalStorage.set("User", user),
+                        console.log( "token in localstorage",LocalStorage.set("Token", accessToken)),
+                        console.log(LocalStorage.set("RefreshToken", refreshToken))
+                    );
+                        
 
                         navigate('/');
                         setError(null); 

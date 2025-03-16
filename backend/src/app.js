@@ -29,7 +29,6 @@ app.use(
     )
 )
 
-console.log("here is cors route in production",process.env.CORS_ORIGIN_FROM_PRODUCTION);
 
 
 // app.use(

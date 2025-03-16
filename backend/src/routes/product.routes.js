@@ -1,15 +1,12 @@
 import { Router } from "express";
-import { createProduct, getAllProduct, getProductById, getProductsByCategory, updateProductById, deleteProductById, getProducts, getIndividualProduct, } from "../controller/product.controller.js";
+import { createProduct, getAllProduct, getProductsByCategory, updateProductById, deleteProductById, getProducts, getIndividualProduct, } from "../controller/product.controller.js";
 import { authMiddleware } from "../middleware/auth.js";
 import upload from "../middleware/multer.middleware.js";
-import { UserRolesEnum } from "../constant.js";
-import { createProductValidator,updateProductValidator } from "../utils/extraValidation/product.validation.js";
+
 import { mongoIdPathVariableValidator, validate } from "../utils/validation.js"; 
-import { verifyPermission } from "../middleware/auth.js";   
 import { Product } from "../models/product.model.js";
 import { Category } from "../models/category.model.js";
 import { isValidObjectId } from "mongoose";
-import { ApiError } from "../utils/ApiError.js";
 
 const router = Router()
 

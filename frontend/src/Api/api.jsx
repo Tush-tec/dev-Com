@@ -12,7 +12,7 @@ apiClient.interceptors.request.use(
 
     function(config){
 
-        const token = LocalStorage.get("token")
+        const token = LocalStorage.get("Token")
         config.headers.Authorization = `Bearer ${token}`;
 
         console.log("token is saved?", token);

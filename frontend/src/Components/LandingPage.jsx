@@ -38,7 +38,7 @@ const LandingPage = () => {
         <Carausel />
       </section>
 
-          <section className="container bg-white mx-auto px-4 py-8 mt-10">
+          {/* <section className="container bg-white mx-auto px-4 py-8 mt-10">
             <h2
               className="text-2xl md:text-3xl font-bold text-center mb-6"
               style={{ fontFamily: "Merriweather, serif" }}
@@ -46,7 +46,7 @@ const LandingPage = () => {
               The Latest Excuse to Rearrange Your Living Room (Again)
             </h2>
             <Products />
-          </section>
+          </section> */}
 
           <section className="bg-white py-10 px-4">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6">

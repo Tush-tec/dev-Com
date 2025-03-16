@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LocalStorage, requestHandler } from "./app";
-import { loginUser, logOutUser, registerUser } from "../Api/api";
+import { loginUser, logOutUser, registerUser, validateToken } from "../Api/api";
 import Loader from "../Components/Loader";
 
 const AuthContext = createContext({
@@ -57,29 +57,14 @@ const AuthProvider = ({ children }) => {
                     const accessToken = res.data.accessToken;
                     const refreshToken = res.data.refreshToken;
 
-                    console.log("authenticated User", user)
-
                     if (user && accessToken) {
                         setUser(user);
                         setToken(accessToken);
                         setIsAuthenticated(true)
-                        
 
                         LocalStorage.set("User", user)
                         LocalStorage.set("Token", accessToken);
                         LocalStorage.set("RefreshToken", refreshToken);
-
-
-                        console.log("User saved in localStorage:", LocalStorage.get("User"));
-                        console.log("Token saved in localStorage:", LocalStorage.get("Token"));
-                        console.log("RefreshToken saved in localStorage:", LocalStorage.get("RefreshToken"));
-
-                        console.log("using through normal",localStorage.getItem("Token"));
-                        console.log(localStorage.getItem("User"));
-                        console.log(localStorage.getItem("RefreshToken"));
-
-                    
-                        
 
                         navigate('/');
                         setError(null); 
@@ -93,7 +78,6 @@ const AuthProvider = ({ children }) => {
                 }
             },
             (error) => {
-                console.error("Login error:", error);
                 setError(error );
                 setIsLoading(false);
             }
@@ -122,24 +106,38 @@ const AuthProvider = ({ children }) => {
         );
     };
 
-   
+    useEffect(() => {
+        const checkAuth = async () => {
+            const storedToken = LocalStorage.get("Token");
+            const storedUser = LocalStorage.get("User");
+    
+            if (storedToken && storedUser && storedUser._id) {
+                const isTokenValid = await validateToken(storedToken);  
+                if (isTokenValid) {
+                    setUser(storedUser);
+                    setToken(storedToken);
+                    setIsAuthenticated(true);
+                } else {
+                    logout();
+                }
+            }
+        };
+    
+        checkAuth();
+    }, []);
     
     
 
     useEffect(() => {
-        console.log("useEffect triggered: Checking stored token and user");
         const storedToken = LocalStorage.get("Token");
         const storedUser = LocalStorage.get("User");
-        console.log("Stored Token:", storedToken);
-        console.log("Stored User:", storedUser);
-        
+
         if (storedToken && storedUser && storedUser._id) {
             setUser(storedUser);
             setToken(storedToken);
-            setIsAuthenticated(true);
+            setIsAuthenticated(true)
         }
     }, []);
-    
 
     
 

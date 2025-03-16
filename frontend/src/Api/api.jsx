@@ -2,9 +2,7 @@ import axios from "axios"
 
 const apiClient = axios.create({
     baseURL:"https://timber-trend-backend.onrender.com/api/v1",
-    withCredentials:true,
-
-    
+    withCredentials: true,    
 })
 
 apiClient.interceptors.request.use(
@@ -13,11 +11,10 @@ apiClient.interceptors.request.use(
     function(config){
 
         const token = localStorage.getItem("token")
-        config.headers.Authorization = `Bearer ${token}`;
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
 
-        console.log("token is saved?", token);
-        console.log("Get token in configured file", localStorage.getItem("Token"))
-        
 
         return config
     },

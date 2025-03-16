@@ -50,9 +50,10 @@ const AuthProvider = ({ children }) => {
         setIsLoading(true);
         await requestHandler(
             async () => await loginUser(data), 
+            
             setIsLoading,
             (res) => {
-                if (res.statusCode === 200 && res.success === 200) {
+                if (res.statusCode === 200 && res.success) {
                     const user = res.data.loggedInUser;
                     const accessToken = res.data.accessToken;
                     const refreshToken = res.data.refreshToken;
@@ -63,13 +64,9 @@ const AuthProvider = ({ children }) => {
                         setIsAuthenticated(true)
 
 
-                        localStorage.setItem("User", user)
-                        localStorage.setItem("Token", accessToken)
-                        localStorage.setItem("RefreshToken", refreshToken)
-
-                        // LocalStorage.set("User", user)
-                        // LocalStorage.set("Token", accessToken);
-                        // LocalStorage.set("RefreshToken", refreshToken);
+                        LocalStorage.set("User", user)
+                        LocalStorage.set("Token", accessToken);
+                        LocalStorage.set("RefreshToken", refreshToken);
 
                         navigate('/');
                         setError(null); 
@@ -77,10 +74,7 @@ const AuthProvider = ({ children }) => {
                         console.error("User or token is missing");
                         setError("User or token is missing.");
                     }
-                } else {
-                    console.error("Unexpected response format", res);
-                    setError("Unexpected response from the server.");
-                }
+                } 
             },
             (error) => {
                 setError(error );
@@ -116,8 +110,8 @@ const AuthProvider = ({ children }) => {
     
 
     useEffect(() => {
-        const storedToken = localStorage.getItem("Token")
-        const storedUser = localStorage.getItem("User")
+        const storedToken = LocalStorage.get("Token")
+        const storedUser = LocalStorage.get("User")
 
         if (storedToken && storedUser && storedUser._id) {
             setUser(storedUser);

@@ -30,9 +30,15 @@ const requestHandler = async (api, setLoading, onSuccess, onError) => {
 
     onError(errorMessage);
     if (error?.response?.status === 401 || error?.response?.status === 403) {
-      localStorage.clear();
-      window.location.href = "/login";
-    }
+      console.warn("Unauthorized request. Clearing local storage...");
+      
+      localStorage.removeItem("Token");  // Remove token instead of clearing everything
+      localStorage.removeItem("RefreshToken");
+  
+      setUser(null);
+      setToken(null);
+      navigate("/login"); // Redirect user properly
+  }
   } finally {
     setLoading && setLoading(false);
   }

@@ -78,6 +78,7 @@ const AuthProvider = ({ children }) => {
                 }
             },
             (error) => {
+                console.error("Login error:", error);
                 setError(error );
                 setIsLoading(false);
             }

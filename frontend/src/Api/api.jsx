@@ -1,13 +1,10 @@
 import axios from "axios"
 
 const apiClient = axios.create({
-    baseURL: window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-    ? "http://localhost:8080/api/v1"
-    : "https://timber-trend-backend.onrender.com/api/v1",
-    withCredentials: true,
-    timeout: 120000
-});
-
+    baseURL:"https://timber-trend-backend.onrender.com/api/v1",
+    withCredentials:true,
+    timeout:120000
+})
 
 apiClient.interceptors.request.use(
    
@@ -18,6 +15,8 @@ apiClient.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }   
+        console.log(token);
+        
 
         return config
     },

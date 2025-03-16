@@ -22,16 +22,12 @@ app.use(
         {
        
             origin: process.env.NODE_ENV === 'production' 
-            ? 'https://timber-trend.onrender.com'
+            ? 'https://timber-trend.onrender.com' 
             : 'http://localhost:5173',
             credentials:true,   
         }
     )
 )
-
-console.log("cors origin", process.env.CORS_ORIGIN_FROM_PRODUCTION);
-
-
 
 app.use(
     session(
@@ -40,10 +36,10 @@ app.use(
             resave: false,
             saveUninitialized:false,
             cookie:{
-                secure: process.env.CORS_ORIGIN_FROM_PRODUCTION, 
+                secure: process.env.NODE_ENV === "production", 
                 httpOnly:true,
                 maxAge: 1000 * 60 * 60, 
-                sameSite: "Strict",
+                sameSite: "None",
             }
         }
     )

@@ -3,7 +3,7 @@ import axios from "axios"
 const apiClient = axios.create({
     baseURL:window.location.hostname === "localhost"
     ? "http://localhost:8080/api/v1/"
-    : "https://timber-trend-backend.onrender.com/api/v1/",
+    : "https://timber-trend-backend.onrender.com/api/v1",
     withCredentials:true,
     timeout:120000
 })

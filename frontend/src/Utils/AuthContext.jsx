@@ -48,12 +48,11 @@ const AuthProvider = ({ children }) => {
 
     const login = async (data) => {
         setIsLoading(true);
-    
         await requestHandler(
-            async () => await loginUser(data),
+            async () => await loginUser(data), 
             setIsLoading,
             (res) => {
-                console.log("Login API Response:", res);
+                console.log("Login API Response:", res); 
     
                 if (res.statusCode === 200 && res.success) {
                     const user = res.data.loggedInUser;
@@ -61,18 +60,21 @@ const AuthProvider = ({ children }) => {
                     const refreshToken = res.data.refreshToken;
     
                     if (user && accessToken) {
+
                         setUser(user);
                         setToken(accessToken);
                         setIsAuthenticated(true);
-    
+
                         console.log("Storing token:", accessToken);
                         
-
                         LocalStorage.set("Token", accessToken);
                         LocalStorage.set("AccessToken", accessToken);
-                        LocalStorage.set("RefreshToken", refreshToken);
-    
-                        navigate("/");
+                        LocalStorage.set("RefreshToken", refreshToken)
+
+
+
+                        navigate('/');
+
                     } else {
                         console.error("User or token missing!");
                     }
@@ -84,7 +86,6 @@ const AuthProvider = ({ children }) => {
             }
         );
     };
-    
     
 
     

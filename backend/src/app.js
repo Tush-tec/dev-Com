@@ -17,19 +17,15 @@ app.locals.cache = false;
 app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }));
-
-
 app.use(
-    cors({
-        origin: "https://timber-trend.onrender.com", 
-        credentials: true, 
-        allowedHeaders: ["Content-Type", "Authorization"], 
-    })
-);
-
-
-
-
+    cors(
+        {
+       
+            origin: 'https://timber-trend.onrender.com',
+            credentials:true,   
+        }
+    )
+)
 // app.use(
 //     cors(
 //         {

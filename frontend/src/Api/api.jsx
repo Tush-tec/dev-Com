@@ -2,30 +2,31 @@ import axios from "axios"
 import { LocalStorage } from "../Utils/app";
 
 const apiClient = axios.create({
-    baseURL: "https://timber-trend-backend.onrender.com/api/v1",
-    withCredentials: true, 
-});
+    baseURL:"https://timber-trend-backend.onrender.com/api/v1",
+    withCredentials: true,
+        
+})
 // const apiClient = axios.create({
 //     baseURL:"http://localhost:8080/api/v1/",
 //     withCredentials: true,
         
 // })
 
-
-
 apiClient.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("Token"); 
 
+    function (config) {
+        const token = LocalStorage.get("token"); 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+        } else {
+            console.error("No token found in LocalStorage");
         }
-
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        return Promise.reject(error.message || error);
+    }
 );
-
 
 
 

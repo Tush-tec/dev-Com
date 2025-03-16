@@ -40,17 +40,6 @@ const authMiddleware = asyncHandler(async (req, _, next) => {
     }
 });
 
-// Optional: Role-Based Access Control
-const verifyPermission = (roles = []) =>
-    asyncHandler(async (req, res, next) => {
-        if (!req.user?._id) {
-            throw new ApiError(401, "Unauthorized request");
-        }
-        if (roles.includes(req.user?.role)) {
-            next();
-        } else {
-            throw new ApiError(403, "You do not have permission to perform this action.");
-        }
-    });
+
     
-export { authMiddleware, verifyPermission };
+export { authMiddleware };

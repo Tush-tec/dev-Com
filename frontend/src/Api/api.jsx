@@ -16,7 +16,7 @@ apiClient.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
 
         console.log("token is saved?", token);
-        console.log("Get token in configured file", LocalStorage.get("token"))
+        console.log("Get token in configured file", LocalStorage.get("Token"))
         
 
         return config

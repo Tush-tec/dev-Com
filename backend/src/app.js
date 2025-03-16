@@ -5,7 +5,6 @@ import dotenv from "dotenv"
 import path from "path"
 import { fileURLToPath } from "url"
 import session from "express-session"
-import passport  from "../src/middleware/passport.config.js"
 
 dotenv.config()
 
@@ -22,11 +21,16 @@ app.use(
     cors(
         {
        
-            origin: process.env.NODE_ENV === 'production' ? process.env.CORS_ORIGIN_FROM_PRODUCTION : process.env.CORS_ORIGIN,
+            origin: process.env.NODE_ENV === 'production' 
+            ? 'https://timber-trend.onrender.com/'
+            : 'http://localhost:5173',
             credentials:true,   
         }
     )
 )
+
+
+
 
 app.use(
     session(

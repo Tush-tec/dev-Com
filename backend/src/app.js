@@ -23,7 +23,7 @@ app.use(
     cors(
         {
        
-            origin: process.env.CORS_ORIGIN_FROM_PRODUCTION ,
+            origin: "*" ,
             credentials: true,   
         }
     )

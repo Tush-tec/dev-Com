@@ -21,9 +21,7 @@ app.use(
     cors(
         {
        
-            origin: process.env.NODE_ENV === 'production' 
-            ? 'https://timber-trend.onrender.com' 
-            : 'http://localhost:5173',
+            origin: 'https://timber-trend.onrender.com',
             credentials:true,   
         }
     )

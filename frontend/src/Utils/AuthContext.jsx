@@ -127,15 +127,19 @@ const AuthProvider = ({ children }) => {
     
 
     useEffect(() => {
+        console.log("useEffect triggered: Checking stored token and user");
         const storedToken = LocalStorage.get("Token");
         const storedUser = LocalStorage.get("User");
-
+        console.log("Stored Token:", storedToken);
+        console.log("Stored User:", storedUser);
+        
         if (storedToken && storedUser && storedUser._id) {
             setUser(storedUser);
             setToken(storedToken);
-            setIsAuthenticated(true)
+            setIsAuthenticated(true);
         }
     }, []);
+    
 
     
 

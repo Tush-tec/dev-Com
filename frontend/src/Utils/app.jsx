@@ -30,8 +30,8 @@ const requestHandler = async (api, setLoading, onSuccess, onError) => {
 
     onError(errorMessage);
     if (error?.response?.status === 401 || error?.response?.status === 403) {
-      localStorage.clear();
-      window.location.href = "/login";
+      console.log(error)
+
     }
   } finally {
     setLoading && setLoading(false);

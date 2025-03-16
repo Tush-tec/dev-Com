@@ -10,8 +10,8 @@ import { store } from './Utils/Store/CartSlice.jsx';
 createRoot(document.getElementById('root')).render(
     <BrowserRouter >
     <Provider store={store}>
-      <AuthProvider value= {AuthContext}> 
-        <ProductProvider value={ProductContext}>
+      <AuthProvider> 
+        <ProductProvider>
 
         <App />
         </ProductProvider>

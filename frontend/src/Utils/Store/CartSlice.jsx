@@ -1,11 +1,8 @@
     import { configureStore, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
     import axios from "axios";
 
-    axios.defaults.baseURL = window.location.hostname === "localhost"
-    ? "http://localhost:8080"
-    : "https://timber-trend-backend.onrender.com";
-
-axios.defaults.withCredentials = true;
+    axios.defaults.baseURL = "https://timber-trend-backend.onrender.com";
+    axios.defaults.withCredentials = true;
 
 
     const initialState = {

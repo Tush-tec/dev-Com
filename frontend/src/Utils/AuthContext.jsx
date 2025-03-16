@@ -50,7 +50,7 @@ const AuthProvider = ({ children }) => {
         setIsLoading(true);
         await requestHandler(
             async () => await loginUser(data), 
-            
+
             setIsLoading,
             (res) => {
                 if (res.statusCode === 200 && res.success) {
@@ -87,39 +87,42 @@ const AuthProvider = ({ children }) => {
     
 
     const logout = async () => {
-        setIsLoading(true);
-        setError(null); 
-    
-        await requestHandler(
-            async () => await logOutUser(),
-            setIsLoading,
-            () => {
-                setUser(null);
-                setToken(null);
-                LocalStorage.clear();
-                navigate("/login");
-            },
-            (error) => {
-                console.error("Logout failed", error.message || error);
-            }
-        );
-    };
+    console.log("Logout function triggered");
+    setIsLoading(true);
+    setError(null); 
+
+    await requestHandler(
+        async () => await logOutUser(),
+        setIsLoading,
+        () => {
+            setUser(null);
+            setToken(null);
+            LocalStorage.clear();
+            navigate("/login");
+        },
+        (error) => {
+            console.error("Logout failed", error.message || error);
+        }
+    );
+};
+
 
   
     
     
 
-    useEffect(() => {
-        const storedToken = LocalStorage.get("Token")
-        const storedUser = LocalStorage.get("User")
+useEffect(() => {
+    const storedToken = LocalStorage.get("Token");
+    const storedUser = LocalStorage.get("User");
 
-        if (storedToken && storedUser && storedUser._id) {
-            setUser(storedUser);
-            setToken(storedToken);
-            setIsAuthenticated(true)
-        }
-    }, []);
-
+    if (storedToken && storedUser && storedUser._id) {
+        setUser(storedUser);
+        setToken(storedToken);
+        setIsAuthenticated(true);
+    } else {
+        console.warn("Token not found or invalid user");
+    }
+}, []);
     
 
     return (

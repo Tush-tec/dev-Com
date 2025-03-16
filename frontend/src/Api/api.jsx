@@ -1,4 +1,5 @@
 import axios from "axios"
+import { LocalStorage } from "../Utils/app";
 
 const apiClient = axios.create({
     baseURL:"https://timber-trend-backend.onrender.com/api/v1",
@@ -10,9 +11,11 @@ apiClient.interceptors.request.use(
 
     function(config){
 
-        const token = localStorage.getItem("token")
+        const token = LocalStorage.get("Token")
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+        } else {
+            console.log("Something went wrong" , `Bearer ${token}`);
         }
 
 

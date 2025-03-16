@@ -22,7 +22,7 @@ app.use(
         {
        
             origin: process.env.NODE_ENV === 'production' 
-            ? 'https://timber-trend.onrender.com/'
+            ? 'https://timber-trend.onrender.com'
             : 'http://localhost:5173',
             credentials:true,   
         }

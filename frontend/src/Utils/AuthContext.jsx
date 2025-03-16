@@ -50,38 +50,38 @@ const AuthProvider = ({ children }) => {
         setIsLoading(true);
         await requestHandler(
             async () => await loginUser(data), 
-
             setIsLoading,
             (res) => {
+                console.log("Login API Response:", res); 
+    
                 if (res.statusCode === 200 && res.success) {
                     const user = res.data.loggedInUser;
                     const accessToken = res.data.accessToken;
                     const refreshToken = res.data.refreshToken;
-
+    
                     if (user && accessToken) {
-                        setUser(user);
-                        setToken(accessToken);
-                        setIsAuthenticated(true)
 
-
-                        LocalStorage.set("User", user)
+                        console.log("Storing token:", accessToken);
                         LocalStorage.set("Token", accessToken);
                         LocalStorage.set("RefreshToken", refreshToken);
 
+                        setUser(user);
+                        setToken(accessToken);
+                        setIsAuthenticated(true);
                         navigate('/');
-                        setError(null); 
+                        
                     } else {
-                        console.error("User or token is missing");
-                        setError("User or token is missing.");
+                        console.error("User or token missing!");
                     }
-                } 
+                }
             },
             (error) => {
-                setError(error );
+                console.error("Login error:", error);
                 setIsLoading(false);
             }
         );
     };
+    
 
     
     

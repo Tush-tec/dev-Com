@@ -21,8 +21,10 @@ app.use(
     cors(
         {
        
-            origin: 'https://timber-trend.onrender.com',
-            credentials:true,   
+            origin: process.env.CORS_ORIGIN_FROM_PRODUCTION,
+            credentials:true,
+            methods: ["GET", "POST", "PUT", "DELETE"],
+            allowedHeaders: ["Content-Type", "Authorization"],   
         }
     )
 )
@@ -34,10 +36,10 @@ app.use(
             resave: false,
             saveUninitialized:false,
             cookie:{
-                secure: process.env.NODE_ENV === "production" ? true : false,
+                secure: true,
                 httpOnly:true,
-                maxAge: 1000 * 60 * 60, 
-                sameSite: "None",
+                maxAge: 1000 * 60 * 60 * 24, 
+                sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
             }
         }
     )

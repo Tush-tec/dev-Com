@@ -3,41 +3,43 @@ import { LocalStorage } from "../Utils/app";
 
 const apiClient = axios.create({
     baseURL:"https://timber-trend-backend.onrender.com/api/v1",
-    withCredentials: true,    
+    withCredentials: true,
+        
 })
 
 apiClient.interceptors.request.use(
-   
 
-    function(config){
-
-        const token = LocalStorage.get("token")
+    function (config) {
+        const token = LocalStorage.get("Token"); 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         } else {
-            console.log("Something went wrong" , `Bearer ${token}`);
+            console.error("No token found in LocalStorage");
         }
-
-
-        return config
+        return config;
     },
-    (error)=>{
-        return Promise.reject(error.message || error)
+    (error) => {
+        return Promise.reject(error.message || error);
     }
-)
+);
+
 
 
 const registerUser = (data) =>{
     return apiClient.post('/users/auth/register', data)
 }
 
-const loginUser = (data)=>{
-    return apiClient.post('/users/auth/login',data)
-}
+const loginUser = (data) => {
+    return apiClient.post('/users/auth/login', data, {
+        withCredentials: true,
+    });
+};
 
-const logOutUser = (data) => {
-    return apiClient.post('/users/auth/logout', data)
-}
+
+const logOutUser = () => {
+    return apiClient.post('/users/auth/logout', {}, { withCredentials: true });
+};
+
 
 
 

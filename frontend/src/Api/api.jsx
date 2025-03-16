@@ -30,14 +30,12 @@ const registerUser = (data) =>{
 }
 
 const loginUser = (data) => {
-    return apiClient.post('/users/auth/login', data, {
-        withCredentials: true,
-    });
+    return apiClient.post('/users/auth/login', data,)
 };
 
 
 const logOutUser = () => {
-    return apiClient.post('/users/auth/logout', {}, { withCredentials: true });
+    return apiClient.post('/users/auth/logout', {},);
 };
 
 

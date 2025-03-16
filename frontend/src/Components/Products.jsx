@@ -36,7 +36,7 @@ const Products = () => {
 
   const handleAddToCart = async (product) => {
     const quantity = selectedQuantities[product._id] || 1;
-    await dispatch(
+     dispatch(
       addToCart({
         owner: LocalStorage.get("Token"),
         productId: product._id,

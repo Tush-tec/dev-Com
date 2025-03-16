@@ -29,6 +29,7 @@ app.use(
     )
 )
 
+console.log("cors origin", process.env.CORS_ORIGIN_FROM_PRODUCTION);
 
 
 
@@ -39,7 +40,7 @@ app.use(
             resave: false,
             saveUninitialized:false,
             cookie:{
-                secure: process.env.NODE_ENV === "production", 
+                secure: process.env.CORS_ORIGIN_FROM_PRODUCTION, 
                 httpOnly:true,
                 maxAge: 1000 * 60 * 60, 
                 sameSite: "Strict",

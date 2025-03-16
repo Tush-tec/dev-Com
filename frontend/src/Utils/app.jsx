@@ -30,8 +30,8 @@ const requestHandler = async (api, setLoading, onSuccess, onError) => {
 
     onError(errorMessage);
     if (error?.response?.status === 401 || error?.response?.status === 403) {
-      console.log(error)
-
+      localStorage.clear();
+      window.location.href = "/login";
     }
   } finally {
     setLoading && setLoading(false);
@@ -39,45 +39,38 @@ const requestHandler = async (api, setLoading, onSuccess, onError) => {
 };
 
 
+
 class LocalStorage {
   static isBrowser = typeof window !== "undefined";
 
   static get(key) {
-      if (!LocalStorage.isBrowser) return null;
-      const value = localStorage.getItem(key);
-      try {
-          return value ? JSON.parse(value) : null;
-      } catch (e) {
-          console.error("Error parsing value from localStorage:", e);
-          return null;
-      }
+    if (!LocalStorage.isBrowser) return null;
+    const value = localStorage.getItem(key);
+    try {
+      return value ? JSON.parse(value) : null;
+    } catch {
+      return null; 
+    }
   }
 
   static set(key, value) {
-      if (LocalStorage.isBrowser) {
-          try {
-              console.log(`Saving ${key} to localStorage:`, value);
-              localStorage.setItem(key, JSON.stringify(value));
-          } catch (e) {
-              console.error("Error saving to localStorage:", e);
-          }
-      }
+    if (LocalStorage.isBrowser) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
   }
 
   static remove(key) {
-      if (LocalStorage.isBrowser) {
-          localStorage.removeItem(key);
-      }
+    if (LocalStorage.isBrowser) {
+      localStorage.removeItem(key);
+    }
   }
 
   static clear() {
-      if (LocalStorage.isBrowser) {
-          localStorage.clear();
-      }
+    if (LocalStorage.isBrowser) {
+      localStorage.clear();
+    }
   }
 }
-
-
 
 export {
   requestHandler,

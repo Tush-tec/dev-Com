@@ -21,13 +21,11 @@ app.use(
     cors(
         {
        
-            origin: process.env.CORS_ORIGIN_FROM_PRODUCTION,
-            credentials:true,
-            
+            origin: 'https://timber-trend.onrender.com',
+            credentials:true,   
         }
     )
 )
-
 
 app.use(
     session(
@@ -38,8 +36,8 @@ app.use(
             cookie:{
                 secure: true,
                 httpOnly:true,
-                maxAge: 1000 * 60 * 60 * 24, 
-                sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+                maxAge: 1000 * 60 * 60, 
+                sameSite: "None",
             }
         }
     )
@@ -49,7 +47,6 @@ app.use(
 
 
 
-// Render EJS template
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

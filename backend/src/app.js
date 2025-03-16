@@ -23,8 +23,7 @@ app.use(
        
             origin: process.env.CORS_ORIGIN_FROM_PRODUCTION,
             credentials:true,
-            methods: ["GET", "POST", "PUT", "DELETE"],
-            allowedHeaders: ["Content-Type", "Authorization"],   
+            
         }
     )
 )

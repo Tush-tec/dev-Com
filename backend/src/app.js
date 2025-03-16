@@ -20,14 +20,13 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use(
-    cors(
-        {
-       
-            origin: "https://timber-trend.onrender.com" ,
-            credentials: true,   
-        }
-    )
-)
+    cors({
+        origin: "https://timber-trend.onrender.com", 
+        credentials: true, 
+        allowedHeaders: ["Content-Type", "Authorization"], 
+    })
+);
+
 
 
 

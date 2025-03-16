@@ -5,41 +5,38 @@ import jwt from "jsonwebtoken";
 
 const authMiddleware = asyncHandler(async (req, _, next) => {
     try {
-        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", ""); 
         
         console.log("Token from Cookies:", req.cookies?.accessToken);
-        console.log("Token from Authorization Header:", req.header("Authorization"));
+        console.log("Token from Authorization Header:", req.header("Authorization")?.replace("Bearer ", ""));
         console.log("Extracted Token:", token);
-        
+
         if (!token) {
             throw new ApiError(401, "Access token is missing. Please log in.");
         }
 
-        let verifyJwtTokenGetFromCookies;
+        let decodedToken;
         try {
-            verifyJwtTokenGetFromCookies = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         } catch (error) {
             console.error("JWT Verification Error:", error.message);
             throw new ApiError(401, "Invalid or expired access token.");
         }
 
-        const findUserByDecodedToken = await User.findById(verifyJwtTokenGetFromCookies._id).select(
-            "-password -refreshToken"
-        );
-
-        if (!findUserByDecodedToken) {
+        const user = await User.findById(decodedToken._id).select("-password -refreshToken");
+        if (!user) {
             throw new ApiError(401, "User not found. Token might be invalid or expired.");
         }
 
-        req.user = findUserByDecodedToken;
-        console.log("User successfully authenticated:", findUserByDecodedToken);
-
+        req.user = user;
+        console.log("User authenticated:", user);
         next();
     } catch (error) {
-        console.error(error?.message || error)
+        console.error(error?.message || error);
         next(new ApiError(401, error?.message || "Authentication failed"));
     }
 });
+
 
 
     

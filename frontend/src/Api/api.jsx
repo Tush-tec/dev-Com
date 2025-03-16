@@ -157,7 +157,6 @@ export {
     registerUser,
     loginUser,
     logOutUser,
-    validateToken,
     fetchProducts,
     fetchIndividualProduct,
     fetchCategory,

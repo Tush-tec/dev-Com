@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LocalStorage, requestHandler } from "./app";
-import { loginUser, logOutUser, registerUser, validateToken } from "../Api/api";
+import { loginUser, logOutUser, registerUser } from "../Api/api";
 import Loader from "../Components/Loader";
 
 const AuthContext = createContext({
@@ -122,25 +122,7 @@ const AuthProvider = ({ children }) => {
         );
     };
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            const storedToken = LocalStorage.get("Token");
-            const storedUser = LocalStorage.get("User");
-    
-            if (storedToken && storedUser && storedUser._id) {
-                const isTokenValid = await validateToken(storedToken);  
-                if (isTokenValid) {
-                    setUser(storedUser);
-                    setToken(storedToken);
-                    setIsAuthenticated(true);
-                } else {
-                    logout();
-                }
-            }
-        };
-    
-        checkAuth();
-    }, []);
+   
     
     
 

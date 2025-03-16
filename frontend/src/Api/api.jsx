@@ -4,7 +4,8 @@ import { LocalStorage } from "../Utils/app";
 const apiClient = axios.create({
     baseURL:"https://timber-trend-backend.onrender.com/api/v1",
     withCredentials:true,
-    timeout:120000
+
+    
 })
 
 apiClient.interceptors.request.use(
@@ -39,9 +40,7 @@ const logOutUser = (data) => {
     return apiClient.post('/users/auth/logout', data)
 }
 
-const  validateToken = (storedToken )=> {
-    return apiClient.post('/users/auth/validate-token')
-}
+
 
 
 

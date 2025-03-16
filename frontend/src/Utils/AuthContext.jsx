@@ -69,10 +69,16 @@ const AuthProvider = ({ children }) => {
                         LocalStorage.set("Token", accessToken);
                         LocalStorage.set("RefreshToken", refreshToken);
 
-                        console.log("user in local storage"   , LocalStorage.set("User", user),
-                        console.log( "token in localstorage",LocalStorage.set("Token", accessToken)),
-                        console.log(LocalStorage.set("RefreshToken", refreshToken))
-                    );
+
+                        console.log("User saved in localStorage:", LocalStorage.get("User"));
+                        console.log("Token saved in localStorage:", LocalStorage.get("Token"));
+                        console.log("RefreshToken saved in localStorage:", LocalStorage.get("RefreshToken"));
+
+                        console.log("using through normal",localStorage.getItem("Token"));
+                        console.log(localStorage.getItem("User"));
+                        console.log(localStorage.getItem("RefreshToken"));
+
+                    
                         
 
                         navigate('/');

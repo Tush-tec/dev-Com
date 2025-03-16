@@ -23,7 +23,7 @@ app.use(
     cors(
         {
        
-            origin: "*" ,
+            origin: "https://timber-trend.onrender.com/" ,
             credentials: true,   
         }
     )

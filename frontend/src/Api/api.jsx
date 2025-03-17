@@ -10,24 +10,20 @@ const apiClient = axios.create({
 // const apiClient = axios.create({
 //     baseURL:"http://localhost:8080/api/v1/",
 //     withCredentials: true,
+//     timeout:120000
         
 // })
 
 apiClient.interceptors.request.use(
-
     function (config) {
-        const token = LocalStorage.get("token"); 
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        } else {
-            console.error("No token found in LocalStorage");
-        }
-        return config;
+      const token = LocalStorage.get("Token");
+      config.headers.Authorization = `Bearer ${token}`;
+      return config;
     },
-    (error) => {
-        return Promise.reject(error.message || error);
+    function (error) {
+      return Promise.reject(error);
     }
-);
+  );
 
 
 

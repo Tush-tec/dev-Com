@@ -51,25 +51,31 @@ const AuthProvider = ({ children }) => {
         await requestHandler(
             async () => await loginUser(data), 
             setIsLoading,
+
             (res) => {
                 console.log("Login API Response:", res); 
     
-                if (res.statusCode === 200 && res.success) {
-                    const user = res.data.loggedInUser;
-                    const accessToken = res.data.accessToken;
-                    const refreshToken = res.data.refreshToken;
-    
-                    if (user && accessToken) {
+                if (res.statusCode === 200) {
+                  const {loggedInUser, accessToken, refreshToken} = res.data
+                  console.log(loggedInUser);
+                  
+                    console.log("Storing token:", accessToken);
 
-                        setUser(user);
+    
+                    if (loggedInUser && accessToken) {
+
+                        setUser(loggedInUser);
                         setToken(accessToken);
                         setIsAuthenticated(true);
 
-                        console.log("Storing token:", accessToken);
-                        
+                        LocalStorage.set("User", loggedInUser)
                         LocalStorage.set("Token", accessToken);
+                        console.log(LocalStorage.get("Token"));
+
                         LocalStorage.set("AccessToken", accessToken);
                         LocalStorage.set("RefreshToken", refreshToken)
+
+                        
 
 
 
@@ -83,7 +89,8 @@ const AuthProvider = ({ children }) => {
             (error) => {
                 console.error("Login error:", error);
                 setIsLoading(false);
-            }
+            },
+            " Login API"
         );
     };
     
@@ -115,19 +122,20 @@ const AuthProvider = ({ children }) => {
   
     
     
+useEffect(() => {
+    const storedToken = LocalStorage.get("Token");
+    const storedUser = LocalStorage.get("User");
 
-// useEffect(() => {
-//     const storedToken = LocalStorage.get("Token");
-//     const storedUser = LocalStorage.get("User");
+    if (storedToken && storedUser?._id) {
+        setUser(storedUser);
+        setToken(storedToken);
+        setIsAuthenticated(true); // Fix: Update isAuthenticated when data is found
+    } else {
+        console.warn("Token not found or invalid user");
+        setIsAuthenticated(false); // Ensures state consistency on page refresh
+    }
+}, []);
 
-//     if (storedToken && storedUser && storedUser._id) {
-//         setUser(storedUser);
-//         setToken(storedToken);
-//         setIsAuthenticated(true);
-//     } else {
-//         console.warn("Token not found or invalid user");
-//     }
-// }, []);
     
 
     return (

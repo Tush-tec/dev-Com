@@ -152,17 +152,16 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 
     const options = {
-      httpOnly: true,
+      httpOnly: false,
       secure: true, 
       sameSite: "None",
-      domain: "timber-trend-backend.onrender.com", 
-      path: "/"
+    
     };
 
     return res
       .status(200)
-      // .cookie("accessToken", accessToken,options )
-      // .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, options )
+      .cookie("refreshToken", refreshToken, options)
       .json(
         new ApiResponse(
           200,

@@ -116,18 +116,18 @@ const AuthProvider = ({ children }) => {
     
     
 
-useEffect(() => {
-    const storedToken = LocalStorage.get("Token");
-    const storedUser = LocalStorage.get("User");
+// useEffect(() => {
+//     const storedToken = LocalStorage.get("Token");
+//     const storedUser = LocalStorage.get("User");
 
-    if (storedToken && storedUser && storedUser._id) {
-        setUser(storedUser);
-        setToken(storedToken);
-        setIsAuthenticated(true);
-    } else {
-        console.warn("Token not found or invalid user");
-    }
-}, []);
+//     if (storedToken && storedUser && storedUser._id) {
+//         setUser(storedUser);
+//         setToken(storedToken);
+//         setIsAuthenticated(true);
+//     } else {
+//         console.warn("Token not found or invalid user");
+//     }
+// }, []);
     
 
     return (

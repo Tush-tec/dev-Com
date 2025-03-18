@@ -156,8 +156,13 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
 
 
 const verifyRazorpayPayment = asyncHandler(async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-  let expectedSignature = crypto
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    throw new ApiError(400, "Invalid payment details provided");
+  }
+
+  const expectedSignature = crypto
     .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
     .update(`${razorpay_order_id}|${razorpay_payment_id}`)
     .digest("hex");
@@ -169,6 +174,7 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
       .status(201)
       .json(new ApiResponse(201, order, "Order placed successfully"));
   }
+
   throw new ApiError(400, "Invalid Razorpay signature");
 });
 

@@ -17,15 +17,23 @@ app.locals.cache = false;
 app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }));
-app.use(
-    cors(
-        {
-       
-            origin: 'https://timber-trend.vercel.app',
-            credentials:true,   
+
+
+const allowedOrigins = [
+    "https://timber-trend.vercel.app",  
+    "https://timber-trend-bm1shah2x-tush-tecs-projects.vercel.app", 
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin) || /^https:\/\/timber-trend-.*\.vercel\.app$/.test(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
         }
-    )
-)
+    },
+    credentials: true
+}));
 
 
 // app.use(

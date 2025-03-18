@@ -95,10 +95,9 @@ const generateRazorpayOrder = asyncHandler(async (req, res) => {
   });
 
 
-  const totalAmount = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const totalAmount = Array.isArray(cartItems)
+  ? cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  : 0;
 
 
   const validPaymentMethods = {

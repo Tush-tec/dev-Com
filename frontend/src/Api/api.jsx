@@ -2,10 +2,9 @@ import axios from "axios"
 import { LocalStorage } from "../Utils/app";
 
 const apiClient = axios.create({
-    baseURL: "/api", 
+    baseURL: "https://timber-trend-backend-tush-tec-tush-tecs-projects.vercel.app/api/v1",
     withCredentials: true,
 });
-
 
 
 // const apiClient = axios.create({

@@ -21,7 +21,7 @@ app.use(
     cors(
         {
        
-            origin: 'https://timber-trend.onrender.com',
+            origin: 'https://timber-trend.vercel.app',
             credentials:true,   
         }
     )

@@ -38,19 +38,22 @@ const CheckOut = () => {
   const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
-    dispatch(fetchCartItem()); // Fetch cart items on load
+    dispatch(fetchCartItem()); 
     fetchAddresses();
   }, [dispatch]);
 
   useEffect(() => {
-    if (cartItems.length > 0) {
+    if (Array.isArray(cartItems) && cartItems.length > 0) {
       const total = cartItems.reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
       );
       setTotalPrice(total);
+    } else {
+      setTotalPrice(0); 
     }
   }, [cartItems]);
+  
 
   const fetchAddresses = () => {
     requestHandler(

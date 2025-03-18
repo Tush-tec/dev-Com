@@ -2,7 +2,7 @@ import axios from "axios"
 import { LocalStorage } from "../Utils/app";
 
 const apiClient = axios.create({
-    baseURL: "https://dev-com-backend.vercel.app/",
+    baseURL: "https://dev-com-backend.vercel.app/api/v1",
     withCredentials: true,
 });
 

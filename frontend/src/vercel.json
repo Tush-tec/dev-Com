@@ -2,15 +2,14 @@
     "version": 2,
     "builds": [
       {
-        "src": "index.html",
+        "src": "dist/**",
         "use": "@vercel/static"
       }
     ],
     "rewrites": [
       {
         "source": "/api/(.*)",
-        "destination": "https://dev-com-backend.vercel.app/api/$1"
+        "destination": "https://timber-trend-backend-tush-tec-tush-tecs-projects.vercel.app/api/$1"
       }
     ]
-  }
-  
+}

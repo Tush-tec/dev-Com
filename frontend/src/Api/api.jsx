@@ -2,10 +2,11 @@ import axios from "axios"
 import { LocalStorage } from "../Utils/app";
 
 const apiClient = axios.create({
-    baseURL:"https://timber-trend-backend.onrender.com/api/v1",
+    baseURL: "/api", 
     withCredentials: true,
-        
-})
+});
+
+
 
 // const apiClient = axios.create({
 //     baseURL:"http://localhost:8080/api/v1/",

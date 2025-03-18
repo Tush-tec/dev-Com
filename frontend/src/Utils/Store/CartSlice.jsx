@@ -1,7 +1,7 @@
     import { configureStore, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
     import axios from "axios";
 
-    axios.defaults.baseURL = "https://timber-trend-backend.onrender.com";
+    axios.defaults.baseURL = "https://dev-com-backend.vercel.app";
     axios.defaults.withCredentials = true;
 
 

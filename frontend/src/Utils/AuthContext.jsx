@@ -53,7 +53,7 @@ const AuthProvider = ({ children }) => {
             setIsLoading,
             (res) => {
                 if (res.statusCode === 200) {
-                    const { loggedInUser, accessToken, refreshToken } = res.data;
+                    const { loggedInUser, accessToken } = res.data;
 
                     if (loggedInUser && accessToken) {
                         setUser(loggedInUser);
@@ -62,7 +62,6 @@ const AuthProvider = ({ children }) => {
 
                         LocalStorage.set("User", loggedInUser);
                         LocalStorage.set("Token", accessToken);  
-                        LocalStorage.set("RefreshToken", refreshToken);
 
                         navigate('/');
                     } else {

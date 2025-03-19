@@ -155,7 +155,7 @@ const registerUser = asyncHandler(async (req, res) => {
       httpOnly: true,
       secure: true, 
       sameSite: "None", 
-      domain: ".vercel.app"
+      domain: ".vercel.app",
       path: '/' 
   };
   

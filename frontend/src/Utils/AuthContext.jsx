@@ -49,38 +49,22 @@ const AuthProvider = ({ children }) => {
     const login = async (data) => {
         setIsLoading(true);
         await requestHandler(
-            async () => await loginUser(data), 
+            async () => await loginUser(data),
             setIsLoading,
-
             (res) => {
-                console.log("Login API Response:", res); 
-    
                 if (res.statusCode === 200) {
-                  const {loggedInUser, accessToken, refreshToken} = res.data
-                  console.log(loggedInUser);
-                  
-                    console.log("Storing token:", accessToken);
+                    const { loggedInUser, accessToken, refreshToken } = res.data;
 
-    
                     if (loggedInUser && accessToken) {
-
                         setUser(loggedInUser);
                         setToken(accessToken);
                         setIsAuthenticated(true);
 
-                        LocalStorage.set("User", loggedInUser)
-                        LocalStorage.set("Token", accessToken);
-                        console.log(LocalStorage.get("Token"));
-
-                        LocalStorage.set("AccessToken", accessToken);
-                        LocalStorage.set("RefreshToken", refreshToken)
-
-                        
-
-
+                        LocalStorage.set("User", loggedInUser);
+                        LocalStorage.set("Token", accessToken);  
+                        LocalStorage.set("RefreshToken", refreshToken);
 
                         navigate('/');
-
                     } else {
                         console.error("User or token missing!");
                     }
@@ -88,9 +72,9 @@ const AuthProvider = ({ children }) => {
             },
             (error) => {
                 console.error("Login error:", error);
+                setError(error); 
                 setIsLoading(false);
-            },
-            " Login API"
+            }
         );
     };
     
@@ -99,42 +83,43 @@ const AuthProvider = ({ children }) => {
     
 
     const logout = async () => {
-    console.log("Logout function triggered");
-    setIsLoading(true);
-    setError(null); 
+        setIsLoading(true);
+        setError(null); 
 
-    await requestHandler(
-        async () => await logOutUser(),
-        setIsLoading,
-        () => {
-            setUser(null);
-            setToken(null);
-            LocalStorage.clear();
-            navigate("/login");
-        },
-        (error) => {
-            console.error("Logout failed", error.message || error);
-        }
-    );
-};
+        await requestHandler(
+            async () => await logOutUser(),
+            setIsLoading,
+            () => {
+                setUser(null);
+                setToken(null);
+                setIsAuthenticated(false);
+                LocalStorage.clear();
+                navigate("/login");
+            },
+            (error) => {
+                console.error("Logout failed", error.message || error);
+                setError("Logout failed. Please try again.");
+            }
+        );
+    };
 
 
   
     
     
-useEffect(() => {
-    const storedToken = LocalStorage.get("Token");
-    const storedUser = LocalStorage.get("User");
+    useEffect(() => {
+        const storedToken = LocalStorage.get("Token");
+        const storedUser = LocalStorage.get("User");
 
-    if (storedToken && storedUser?._id) {
-        setUser(storedUser);
-        setToken(storedToken);
-        setIsAuthenticated(true); // Fix: Update isAuthenticated when data is found
-    } else {
-        console.warn("Token not found or invalid user");
-        setIsAuthenticated(false); // Ensures state consistency on page refresh
-    }
-}, []);
+        if (storedToken && storedUser?._id) {
+            setUser(storedUser);
+            setToken(storedToken);
+            setIsAuthenticated(true);
+        } else {
+            console.warn("Token not found or invalid user");
+            setIsAuthenticated(false);
+        }
+    }, []);
 
     
 

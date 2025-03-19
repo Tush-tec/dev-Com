@@ -32,7 +32,9 @@ const registerUser = (data) =>{
 }
 
 const loginUser = (data) => {
-    return apiClient.post('/users/auth/login', data,)
+    return apiClient.post('/users/auth/login', data, {
+        withCredentials: true
+    })
 };
 
 

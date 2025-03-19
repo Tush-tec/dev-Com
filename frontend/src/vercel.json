@@ -1,18 +1,19 @@
 {
-  "version": 2,
-  "builds": [
+    "version": 2,
+    "builds": [
       {
-          "src": "dist/**",
-          "use": "@vercel/static"
+        "src": "dist/**",
+        "use": "@vercel/static"
       }
-  ],
-  "rewrites": [
+    ],
+    "rewrites": [
       {
-          "source": "/api/(.*)",
-          "destination": "https://timber-trend-backend-tush-tec-tush-tecs-projects.vercel.app/api/$1"
+        "source": "/api/(.*)",
+        "destination": "https://timber-trend-backend-git-main-tush-tecs-projects.vercel.app/api/v1/$1"
       }
-  ],
-  "routes": [
+    ],
+    "routes": [
       { "src": "/(.*)", "dest": "/index.html" }
-  ]
-}
+    ]
+  }
+  

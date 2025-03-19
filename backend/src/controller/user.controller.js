@@ -152,7 +152,7 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 
     const options = {
-      httpOnly: true,
+      httpOnly: false,
       secure: true, 
       sameSite: "None", 
       path: '/' 
@@ -161,7 +161,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken )
+      .cookie("accessToken", accessToken, options )
       .cookie("refreshToken", refreshToken)
       .json(
         new ApiResponse(

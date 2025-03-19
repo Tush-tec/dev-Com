@@ -44,7 +44,7 @@ const CheckOut = () => {
 
   useEffect(() => {
     if (Array.isArray(cartItems) && cartItems.length > 0) {
-      const total = cartItems.reduce(
+      const total = (cartItems || []).reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
       );

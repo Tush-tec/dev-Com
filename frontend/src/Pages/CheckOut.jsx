@@ -17,7 +17,7 @@ import Loader from "../Components/Loader";
 const CheckOut = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { cartItems, isLoading } = useSelector((state) => state.cart);
+  const { cartItems =[],  isLoading } = useSelector((state) => state.cart);
 
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);

@@ -18,7 +18,7 @@ const HeaderPage = () => {
   // Cart Item UI
 
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const cartCount = cartItems.reduce(
+  const cartCount = (cartItems|| []).reduce(
     (acc, item) => acc + (item.quantity || 1),
     0
   );

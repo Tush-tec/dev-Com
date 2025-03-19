@@ -4,6 +4,7 @@ import { LocalStorage } from "../Utils/app";
 const apiClient = axios.create({
     baseURL: "https://dev-com-backend.vercel.app/api/v1",
     withCredentials: true,
+    timeout:120000
 });
 
 

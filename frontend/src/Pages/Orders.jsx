@@ -19,7 +19,6 @@ const Orders = () => {
         setLoading,
         (data) => {
           console.log(data);
-
           setOrders(data?.data);
         },
         (error) => {
@@ -46,33 +45,28 @@ const Orders = () => {
   return (
     <>
       <HeaderPage />
-      <div className="flex min-h-screen">
-        <SideBar className="w-64" />
-        <div className="bg-gray-100 p-6 flex-1">
+      <div className="flex min-h-screen flex-col md:flex-row">
+        <SideBar className="w-full md:w-64" />
+        <div className="bg-gray-100 p-4 md:p-6 flex-1">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-gray-800 mb-6">Orders</h2>
             {error && <div className="text-red-500">{error}</div>}
 
-            <div className="space-y-6 h-[90vh] overflow-y-auto">
+            <div className="space-y-6 max-h-[90vh] overflow-y-auto">
               {orders.map((order) => (
                 <div
                   key={order._id}
-                  className="bg-white p-6 shadow-md rounded-lg"
+                  className="bg-white p-4 md:p-6 shadow-md rounded-lg"
                 >
-                  <div className="flex justify-between items-center border-b ">
-                    {/* Order ID with Scaling */}
-                    <p className="text-gray-600  font-semibold mb-5 inline-block transform transition-transform scale-95 hover:scale-105 duration-200">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-3">
+                    <p className="text-gray-600 font-semibold mb-2 md:mb-0">
                       Order ID: <span className="text-black">{order._id}</span>
                     </p>
-
-                    {/* Order Status with Scaling */}
                     <span
-                      className={`px-3 py-1 text-white text-sm font-semibold rounded-full inline-block transform transition-transform scale-95 hover:scale-105 duration-200 ${
-                        order.status === "In Progress" || 
-                        order.status === "Shipped"
+                      className={`px-3 py-1 text-white text-sm font-semibold rounded-full inline-block transform scale-95 hover:scale-105 duration-200 ${
+                        order.status === "In Progress" || order.status === "Shipped"
                           ? "bg-blue-500"
-                          : order.status === "Delivered" ||
-                            order.status === "Paid"
+                          : order.status === "Delivered" || order.status === "Paid"
                           ? "bg-green-500"
                           : "bg-red-500"
                       }`}
@@ -80,26 +74,23 @@ const Orders = () => {
                       {order.status}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center mt-4 gap-4">
-                    {/* Images */}
-                    <div className="flex gap-3">
+
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-4 gap-4">
+                    <div className="flex gap-2 md:gap-3 flex-wrap">
                       {order.cartItems.map((item, index) => (
                         <img
                           key={index}
                           src={item.image.replace(
                             "/upload/",
-                            "/upload/w_600,h_750,c_fill/"
+                            "/upload/w_300,h_375,c_fill/"
                           )}
                           alt={item.name}
-                          className="w-16 h-16 object-cover rounded-md border"
+                          className="w-14 h-14 md:w-16 md:h-16 object-cover rounded-md border"
                         />
                       ))}
                     </div>
 
-                    {/* Order Info */}
-                    {/* Order Info */}
-                    <div className="flex-1 flex justify-between items-center">
-                      {/* Order Placed */}
+                    <div className="flex-1 flex flex-col md:flex-row justify-between items-start md:items-center w-full">
                       <div>
                         <p className="text-gray-600">Order Placed</p>
                         <p className="font-semibold text-black">
@@ -115,7 +106,6 @@ const Orders = () => {
                         </p>
                       </div>
 
-                      {/* Order Value */}
                       <div>
                         <p className="text-gray-600">Order Value</p>
                         <p className="font-semibold text-black">
@@ -123,14 +113,15 @@ const Orders = () => {
                         </p>
                       </div>
 
-                      {/* Payment Method */}
                       <div>
                         <p className="text-gray-600">Payment Method</p>
-                        <p  className={`font-semibold ${
-      order.paymentMethod === "Razorpay"
-        ? "text-blue-500"
-        : "text-black"
-    }`}>
+                        <p
+                          className={`font-semibold ${
+                            order.paymentMethod === "Razorpay"
+                              ? "text-blue-500"
+                              : "text-black"
+                          }`}
+                        >
                           {order.paymentMethod}
                         </p>
                       </div>

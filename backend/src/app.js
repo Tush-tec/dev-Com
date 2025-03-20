@@ -22,7 +22,10 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = [
     "https://timber-trend.vercel.app",  
     "https://timber-trend-bm1shah2x-tush-tecs-projects.vercel.app", 
+    "https://dev-com-backend.vercel.app",  
+    "http://localhost:8080" 
 ];
+
 
 app.use(cors({
     origin: (origin, callback) => {

@@ -39,11 +39,13 @@
             try {
                 const res = await axios.get(`/api/v1/cart/get-cart`);
                 const cartItems = res.data?.data?.items;
-
+                
+                console.log(Array.isArray(cartItems) ? cartItems : []);
+                
             return Array.isArray(cartItems) ? cartItems : [];
                 
-                return res.data?.data?.items || [];
-            } catch (error) {
+
+        } catch (error) {
                 return rejectWithValue(error.response?.data || "Failed to fetch cart");
             }
         }

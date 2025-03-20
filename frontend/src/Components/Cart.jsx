@@ -38,7 +38,7 @@ const Cart = () => {
   if (isLoading) return <Loader />;
   if (error) return <p className="text-red-500">{error.message}</p>;
 
-  const subtotal   = Array.isArray(cartItems)
+  const subtotal   = Array.isArray(cartItems || [] )
   ? cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0)
   : 0;
 
@@ -52,7 +52,8 @@ const Cart = () => {
             <h2 className="text-xl font-semibold pb-3 border-b mb-4">Shopping Cart</h2>
 
             {cartItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-10 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-white rounded-lg shadow-lg">
+              <div className="flex flex-col items-center justify-center p-10 bg-gradient-to-r from-gray-400 via-black-900
+to-gray-900 text-white rounded-lg shadow-lg">
                 <h3 className="text-2xl font-bold mb-4">Oops! Your cart is empty. 😅</h3>
                 <p className="mb-6 text-center">Looks like you've been adding items to your wishlist instead of your cart! Let's fix that. 🛒</p>
                 <Link to="/products">

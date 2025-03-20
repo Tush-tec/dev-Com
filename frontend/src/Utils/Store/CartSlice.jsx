@@ -38,7 +38,7 @@
         async (_, { rejectWithValue }) => {
             try {
                 const res = await axios.get(`/api/v1/cart/get-cart`);
-                console.log( res.data?.data?.items);
+                console.log( res.data?.data?.items ||  []);
                 
                 return res.data?.data?.items || [];
             } catch (error) {

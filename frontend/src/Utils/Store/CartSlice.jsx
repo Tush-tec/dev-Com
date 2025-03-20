@@ -39,7 +39,7 @@
             try {
                 const res = await axios.get(`/api/v1/cart/get-cart`);
                 const cartItems = res.data?.data?.items;
-                
+
                 console.log(Array.isArray(cartItems) ? cartItems : []);
                 
             return Array.isArray(cartItems) ? cartItems : [];
@@ -50,7 +50,7 @@
             }
         }
     );
-    
+
 
     export const updateCart = createAsyncThunk(
         "cart/updateCart",

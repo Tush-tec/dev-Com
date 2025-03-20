@@ -79,12 +79,12 @@ const Orders = () => {
                     <div className="flex gap-2 md:gap-3 flex-wrap">
                       {order.cartItems.map((item, index) => (
                         <img
-                          key={index}
-                          src={item.image.replace(
-                            "/upload/",
-                            "/upload/w_300,h_375,c_fill/"
-                          )}
-                          alt={item.name}
+                        key={index}
+                        src={(item.image || "").replace(
+                          "/upload/",
+                          "/upload/w_300,h_375,c_fill/"
+                        )}
+                        alt={item.name || "Product Image"}
                           className="w-14 h-14 md:w-16 md:h-16 object-cover rounded-md border"
                         />
                       ))}

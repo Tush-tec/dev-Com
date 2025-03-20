@@ -1,18 +1,14 @@
 {
   "version": 2,
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "https://timber-trend-backend-git-main-tush-tecs-projects.vercel.app/api/v1/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/api/:path*",
+      "destination": "https://timber-trend-backend-git-main-tush-tecs-projects.vercel.app/api/v1/:path*"
     }
   ],
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/:path*",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "https://timber-trend.onrender.com" },
         { "key": "Access-Control-Allow-Credentials", "value": "true" }

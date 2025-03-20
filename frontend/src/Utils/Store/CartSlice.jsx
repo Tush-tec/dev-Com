@@ -38,7 +38,9 @@
         async (_, { rejectWithValue }) => {
             try {
                 const res = await axios.get(`/api/v1/cart/get-cart`);
-                console.log( res.data?.data?.items ||  []);
+                const cartItems = res.data?.data?.items;
+
+            return Array.isArray(cartItems) ? cartItems : [];
                 
                 return res.data?.data?.items || [];
             } catch (error) {
@@ -106,9 +108,7 @@
                 })
                 .addCase(fetchCartItem.fulfilled, (state, action) => {
                     state.isLoading = false;
-                    state.cartItems = action.payload || [];
-
-
+                    state.cartItems = action.payload.length > 0 ? action.payload : []; 
                 })
                 .addCase(fetchCartItem.rejected, (state, action) => {
                     state.isLoading = false;

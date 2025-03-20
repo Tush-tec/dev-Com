@@ -38,9 +38,10 @@ const Cart = () => {
   if (isLoading) return <Loader />;
   if (error) return <p className="text-red-500">{error.message}</p>;
 
-  const subtotal   = Array.isArray(cartItems || [] )
+  const subtotal = Array.isArray(cartItems)
   ? cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0)
   : 0;
+
 
   return (
     <>

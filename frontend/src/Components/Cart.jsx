@@ -39,7 +39,12 @@ const Cart = () => {
   if (error) return <p className="text-red-500">{error.message}</p>;
 
   // Calculate subtotal
-  const subtotal = (cartItems || []).reduce((acc, item) => acc + item.price * item.quantity, 0);
+  // const subtotal = (cartItems || []).reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  const subtotal   = Array.isArray(cartItems)
+  ? cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0)
+  : 0;
+
 
   return (
     <>

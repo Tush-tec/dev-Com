@@ -178,18 +178,16 @@ const registerUser = asyncHandler(async (req, res) => {
       "-password -refreshToken"
     );
 
-    const options = {
+    const cookieOptions = {
       httpOnly: true,
       secure: true, 
-      sameSite: "None", 
-      path: '/' 
   };
   
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options )
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, cookieOptions )
+      .cookie("refreshToken", refreshToken, cookieOptions)
       .json(
         new ApiResponse(
           200,

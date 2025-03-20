@@ -18,10 +18,9 @@ const HeaderPage = () => {
   // Cart Item UI
 
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const cartCount = (cartItems || []).reduce(
-    (acc, item) => acc + (item.quantity || 1),
-    0
-  );
+const cartCount = Array.isArray(cartItems)
+  ? cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0)
+  : 0;
 
   useEffect(() => {
     setTextColor(`#${Math.floor(Math.random() * 16777215).toString(16)}`);

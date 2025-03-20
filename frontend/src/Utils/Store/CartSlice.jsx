@@ -40,7 +40,7 @@
                 const res = await axios.get(`/api/v1/cart/get-cart`);
                 console.log( res.data?.data?.items);
                 
-                return res.data?.data?.items; 
+                return res.data?.data?.items || [];
             } catch (error) {
                 return rejectWithValue(error.response?.data || "Failed to fetch cart");
             }
@@ -106,7 +106,7 @@
                 })
                 .addCase(fetchCartItem.fulfilled, (state, action) => {
                     state.isLoading = false;
-                    state.cartItems = action.payload;
+                    state.cartItems = action.payload || [];
 
 
                 })

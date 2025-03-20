@@ -73,7 +73,7 @@
         "cart/removeCartItem",
         async ({ productId }) => {
 
-            // console.log("Removing from cart:", productId);  
+
             const res = await axios.delete(`/api/v1/cart/remove-from-cart/${productId}`);
             return res.data;
         }

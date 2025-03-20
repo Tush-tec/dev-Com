@@ -35,6 +35,33 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please fill all fields");
   }
 
+  const isValidUsername = (username) => /^[a-zA-Z][a-zA-Z0-9_]{3,29}[a-zA-Z0-9]$/.test(username);
+
+  if (!isValidUsername(username)) {
+    throw new ApiError(
+      400,
+      "Username must start with a letter, contain only letters, numbers, or underscores, and be 4-30 characters long."
+    );
+  }
+
+  const isValidMail = (email) =>  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+
+  if(!isValidMail(email)){
+    throw new ApiError(
+      400,
+      "Email is not valid. Please enter a valid email address."
+    )
+  }
+
+  const isValidPassword = (password) =>    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
+
+  if (!isValidPassword(password)) {
+    throw new ApiError(
+      400,
+      "Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character."
+    );
+  }
+
 
   const existUser = await User.findOne({ username });
 
@@ -44,25 +71,25 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Username already exists");
   }
 
-  // Check if the email already exists
+
   const existEmail = await User.findOne({ email });
   if (existEmail) {
     throw new ApiError(400, "Email already exists");
   }
 
-  // Check if avatar is uploaded
+
   const avatarLocalPath = req.files?.avatar?.[0]?.path;
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is required");
   }
 
-  // Upload avatar
+
   const avatar = await uploadOnCloudinary(avatarLocalPath);
   if (!avatar) {
     throw new ApiError(400, "Failed to upload avatar");
   }
 
-  // Generate a unique stored username
+
   let storedUserName;
   let isUnique = false;
 
@@ -80,7 +107,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     storedUserName = usernameVariations[Math.floor(Math.random() * usernameVariations.length)];
 
-    // ✅ Fix: Properly check in database for storedUserName
+
     const existingStoredUser = await User.findOne({ username: storedUserName });
     if (!existingStoredUser) {
       isUnique = true;
@@ -88,17 +115,17 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   try {
-    // ✅ Fix: Save using storedUserName instead of username
+
     const createUser = await User.create({
       username,
-      storedUserName, // Use stored username
+      storedUserName, 
       email,
       fullname,
       password,
       avatar: avatar.url,
     });
 
-    // Ensure user is properly stored
+
     const checkUserCreatedorNot = await User.findById(createUser._id).select(
       "-password -refreshToken"
     );
@@ -152,10 +179,9 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 
     const options = {
-      httpOnly: false,
+      httpOnly: true,
       secure: true, 
       sameSite: "None", 
-      domain: ".vercel.app",
       path: '/' 
   };
   

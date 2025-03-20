@@ -48,6 +48,22 @@ app.use(cors({
 
 
 
+app.use(
+    session({
+      secret: process.env.SESSION_SECRET, 
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,  
+        secure: true,      
+        sameSite: "None",  
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      },
+    })
+  );
+
+  app.use(passport.initialize());
+app.use(passport.session());
 
 
 
@@ -84,6 +100,7 @@ import cartRouter from "./routes/cart.routes.js"
 import adminRouter from "./routes/admin.routes.js"
 import contactRouter from "./routes/contactMe.routes.js"
 import dashboardRouter from './routes/dashboard.js'
+import passport from "passport"
 
 
 app.use('/api/v1/dashboard', dashboardRouter)

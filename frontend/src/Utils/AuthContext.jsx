@@ -36,7 +36,8 @@ const AuthProvider = ({ children }) => {
                 navigate('/login')
             },
             (error) => {
-                setError(error)
+                setError(error),
+                setIsLoading(false)
 
             }
         

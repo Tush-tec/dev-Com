@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { AvailableUserRoles } from "../constant.js";
+// import { AvailableUserRoles } from "../constant.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   
@@ -53,19 +53,28 @@ const registerUser = asyncHandler(async (req, res) => {
     )
   }
 
-  const isValidPassword = (password) =>    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
+  const validatePassword = (password) => {
+    let errors = [];
+  
+    if (password.length < 5) errors.push("Password must be at least 5 characters long.");
+    if (!/[a-zA-Z]/.test(password)) errors.push("Password must contain at least one letter (A-Z or a-z).");
+    if (!/\d/.test(password)) errors.push("Password must contain at least one number (0-9).");
+    if (!/[@$!%*?&]/.test(password)) errors.push("Password must contain at least one special character (@$!%*?&).");
+  
+    return errors;
+  };
+  
 
-  if (!isValidPassword(password)) {
-    throw new ApiError(
-      400,
-      "Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character."
-    );
+  const errors = validatePassword(password);
+
+  if (errors.length > 0) {
+    throw new ApiError(400, errors.join(" "));
   }
+  
 
 
   const existUser = await User.findOne({ username });
 
-  console.log(existUser);
   
   if (existUser) {
     throw new ApiError(400, "Username already exists");
@@ -188,8 +197,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, cookieOptions )
-      .cookie("refreshToken", refreshToken, cookieOptions)
+      .cookie("accessToken", accessToken,  )
+      .cookie("refreshToken", refreshToken, )
       .json(
         new ApiResponse(
           200,
@@ -463,37 +472,37 @@ if(!oldPassword ||  !newPassword || !confirmPassword){
     );
 });
 
-const updateUserRole = asyncHandler(async(req,res) => {
-  const {userId, role } = req.body
+// const updateUserRole = asyncHandler(async(req,res) => {
+//   const {userId, role } = req.body
 
-  if(!AvailableUserRoles.includes(role)){
-    throw new ApiError(
-      404,
-      "Role is not found for User"
-    )
-  }
+//   if(!AvailableUserRoles.includes(role)){
+//     throw new ApiError(
+//       404,
+//       "Role is not found for User"
+//     )
+//   }
 
-  const user = await User.findById(userId)
+//   const user = await User.findById(userId)
 
-  if(!user){
-    throw new ApiError(
-      404,
-      "User Not Found"
-    )
-  }
+//   if(!user){
+//     throw new ApiError(
+//       404,
+//       "User Not Found"
+//     )
+//   }
 
-  user.role = role
+//   user.role = role
 
-  await user.save()
+//   await user.save()
 
-  return res
-  .status(200)
-  .json(
-    new ApiResponse(200, user, "User Role is Successfully Assign!")
-  );
+//   return res
+//   .status(200)
+//   .json(
+//     new ApiResponse(200, user, "User Role is Successfully Assign!")
+//   );
   
 
-})
+// })
 
 export {
   generateAccessAndRefreshTokens,
@@ -505,6 +514,6 @@ export {
   updateUserAvatar,
   // refereshAccessToken,
   changeCurrentUserPassword,
-  updateUserRole,
+  // updateUserRole,
   getIndividualUser
 };

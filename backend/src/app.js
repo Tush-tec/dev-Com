@@ -5,6 +5,9 @@ import dotenv from "dotenv"
 import path from "path"
 import { fileURLToPath } from "url"
 import session from "express-session"
+import MongoStore from "connect-mongo"
+import passport from "passport"
+
 
 dotenv.config()
 
@@ -19,41 +22,59 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }));
 
 
-const allowedOrigins = [
-    "https://timber-trend.vercel.app",  
-    "https://timber-trend-bm1shah2x-tush-tecs-projects.vercel.app", 
-        "https://dev-com-backend.vercel.app",  
-    "http://localhost:8080" 
-];
+// const allowedOrigins = [
+//     "https://timber-trend.vercel.app",  
+//     "https://timber-trend-bm1shah2x-tush-tecs-projects.vercel.app", 
+//         "https://dev-com-backend.vercel.app",  
+//     "http://localhost:8080" 
+// ];
 
 
-app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin) || /^https:\/\/timber-trend-.*\.vercel\.app$/.test(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true
-}));
-
-
-
-// app.use(
-//     cors(
-//         {
-       
-//             origin: process.env.CORS_ORIGIN,
-//             credentials:true,   
+// app.use(cors({
+//     origin: (origin, callback) => {
+//         if (!origin || allowedOrigins.includes(origin) || /^https:\/\/timber-trend-.*\.vercel\.app$/.test(origin)) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error("Not allowed by CORS"));
 //         }
-//     )
-// )
+//     },
+//     credentials: true
+// }));
 
 
 
+app.use(
+    cors(
+        {
+       
+            origin: process.env.CORS_ORIGIN,
+            credentials:true,   
+        }
+    )
+)
 
 
+
+app.use(
+    session({
+      secret: process.env.SESSION_SECRET, 
+      resave: false,
+      saveUninitialized: false,
+      store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI, 
+        collectionName: "sessions",
+      }),
+      cookie: {
+        secure: process.env.NODE_ENV === "production", 
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000, 
+      },
+    })
+  );
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 
@@ -89,7 +110,6 @@ import cartRouter from "./routes/cart.routes.js"
 import adminRouter from "./routes/admin.routes.js"
 import contactRouter from "./routes/contactMe.routes.js"
 import dashboardRouter from './routes/dashboard.js'
-import passport from "passport"
 
 
 app.use('/api/v1/dashboard', dashboardRouter)

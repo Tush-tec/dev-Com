@@ -19,7 +19,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center flex-col min-h-screen p-4 bg-gray-900 text-white">
+    <div className="flex justify-center items-center flex-col min-h-screen p-4  text-white">
       <h1 className="text-3xl font-bold text-center mb-6">We Welcome You!</h1>
       <div
         className="w-full max-w-md p-8 flex flex-col gap-5 bg-gray-800 shadow-md rounded-2xl border border-secondary"

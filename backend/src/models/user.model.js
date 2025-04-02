@@ -3,7 +3,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { EcomProfile } from "./profile.model.js";
 import { Cart } from "./cart.model.js";
-import { UserRolesEnum,AvailableUserRoles } from "../constant.js";
+// import { UserRolesEnum,AvailableUserRoles } from "../constant.js";
 
 
 const userSchema =  new Schema(
@@ -23,7 +23,6 @@ const userSchema =  new Schema(
         },
         storedUserName: {
             type: String,
-            unique: true,
             trim: true,
         },
         email:{

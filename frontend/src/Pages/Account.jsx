@@ -144,14 +144,7 @@ const Account = () => {
                           Change Password
                         </button>
                       </li>
-                      <li>
-                        <button
-                          onClick={() => navigate("/profile/change-avatar")}
-                          className="block w-full px-4 py-2 text-left hover:bg-gray-100"
-                        >
-                          Change Avatar
-                        </button>
-                      </li>
+                     
                     </ul>
                   </div>
                 )}

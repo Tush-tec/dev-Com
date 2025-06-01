@@ -8,7 +8,7 @@ const router  = Router()
 
 
 router.route('/dashboard').get(
-    authMiddleware,
+    
     dashBoardStats
 )
 

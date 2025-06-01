@@ -82,6 +82,7 @@ const getAllAddress = asyncHandler(async (req, res) => {
     };
 
     const aggregatePaginate = await Address.aggregatePaginate(aggregate, paginationOptions);
+    
 
     if (!aggregatePaginate.addresses.length) {
         throw new ApiError(404, "No address found.");

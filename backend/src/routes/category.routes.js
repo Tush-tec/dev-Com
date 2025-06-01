@@ -11,7 +11,7 @@ router.get('/category', async (req, res) => {
     res.render('category', { categories });
   });
 
-router.route("/create-category").post(authMiddleware,
+router.route("/create-category").post(
   
   upload.fields(
     [
@@ -32,12 +32,12 @@ router.route('/get-categaory').get(getCategoryForAdmin);
 router.route('/get-categories').get(getCategory); 
 
 router.route('/get-product-with-category/:categoryId').get(
-  authMiddleware,
+  
   getProductsByCategory
 )
 
-router.route('/edit/:categoryId').post(authMiddleware, updateCategory); 
+router.route('/edit/:categoryId').post( updateCategory); 
 
-router.route('/delete/:categoryId').post(authMiddleware, deleteCategory); 
+router.route('/delete/:categoryId').post( deleteCategory); 
 
 export default router;

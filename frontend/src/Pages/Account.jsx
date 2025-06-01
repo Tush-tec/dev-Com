@@ -18,7 +18,11 @@ const Account = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const token = LocalStorage.get("Token");
+      // const token = LocalStorage.get("Token");
+      const token = LocalStorage.get("User");
+      console.log("token", token );
+      
+      
       if (!token) {
         setError("Token not found");
         setLoading(false);
@@ -26,8 +30,12 @@ const Account = () => {
       }
 
       try {
-        const decoded = jwtDecode(token);
+        const decoded = jwtDecode(token);        
         const userId = decoded.id || decoded._id;
+        console.log("userID",userId);
+        console.log("decoded",decoded.id);
+        console.log("decodedID",decoded._id);
+        
         if (!userId) throw new Error("User ID not found");
 
         const response = await getALLUserInfo(userId);

@@ -49,63 +49,63 @@ function App() {
         />
         <Route
           path="/profile"
-          element={<PrivateRoute element={<Profile />} />}
+           element={<Profile />} 
         />
         <Route
           path="/profile/dashboard"
-          element={<PrivateRoute element={<DashBoard />} />}
+          element={<DashBoard />} 
         />
         <Route
           path="/profile/account"
-          element={<PrivateRoute element={<Account />} />}
+           element={<Account />}
         />
         <Route
           path="/profile/addresses"
-          element={<PrivateRoute element={<Address />} />}
+           element={<Address />} 
         />
         <Route
           path="/profile/UserDashboard"
-          element={<PrivateRoute element={<UserDashboard />} />}
+          element={<UserDashboard />} 
         />
         <Route
           path="/profile/order"
-          element={<PrivateRoute element={<Orders />} />}
+           element={<Orders />} 
         />
         <Route
           path="/profile/wishlist"
-          element={<PrivateRoute element={<WishList />} />}
+           element={<WishList />} 
         />
         <Route
           path="/profile/userDashboard"
-          element={<PrivateRoute element={<UserDashboard />} />}
+          element={<UserDashboard />} 
         />
         <Route
           path="/profile/personal-info"
-          element={<PrivateRoute element={<Personalnfo />} />}
+          element={<Personalnfo />} 
         />
         <Route
           path="/profile/change-password"
-          element={<PrivateRoute element={<ChangePassword />} />}
+           element={<ChangePassword />} 
         />
         <Route
           path="/profile/address/:addressId"
-          element={<PrivateRoute element={<Address />} />}
+           element={<Address />} 
         />
         <Route
           path="/product/:productId"
-          element={<PrivateRoute element={<ProductDetails />} />}
+          element={<ProductDetails />} 
         />
         <Route
           path="/categories"
-          element={<PrivateRoute element={<Category />} />}
+         element={<Category />}
         />
         <Route
           path="/categories/get-product-with-category/:categoryId"
-          element={<PrivateRoute element={<CategoryProduct />} />}
+          element={<CategoryProduct />} 
         />
         <Route
           path="/address/create-address"
-          element={<PrivateRoute element={<CreateAddress />} />}
+          element={<CreateAddress />} 
         />
 
       <Route path="/about" element={<AboutUs />} />

@@ -23,7 +23,7 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     const [error, setError] = useState(null)
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
 
     const register = async (data) => {
         setIsLoading(true);
@@ -36,6 +36,8 @@ const AuthProvider = ({ children }) => {
                 navigate('/login')
             },
             (error) => {
+                console.log("registerERrror" , error);
+                
                 setError(error),
                 setIsLoading(false)
 
@@ -53,7 +55,8 @@ const AuthProvider = ({ children }) => {
             async () => await loginUser(data),
             setIsLoading,
             (res) => {
-                if (res.statusCode === 200) {
+                console.log("res", res);
+                
                     const { loggedInUser, accessToken, refreshToken } = res.data;
 
                     if (loggedInUser && accessToken) {
@@ -69,12 +72,12 @@ const AuthProvider = ({ children }) => {
                     } else {
                         console.error("User or token missing!");
                     }
-                }
+                
             },
             (error) => {
-                console.error("Login error:", error);
-                setError(error); 
-                setIsLoading(false);
+                    console.error("Login error:", error);
+                    setError(error); 
+                    setIsLoading(false);
             }
         );
     };

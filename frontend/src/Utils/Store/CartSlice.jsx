@@ -1,12 +1,12 @@
     import { configureStore, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
     import axios from "axios";
 
-    // axios.defaults.baseURL = "https://dev-com-backend.vercel.app";
-    // axios.defaults.withCredentials = true;
-
-
-    axios.defaults.baseURL = "http://localhost:8080";
+    axios.defaults.baseURL = "https://dev-com-backend.vercel.app";
     axios.defaults.withCredentials = true;
+
+
+    // axios.defaults.baseURL = "http://localhost:8080";
+    // axios.defaults.withCredentials = true;
 
 
     const initialState = {

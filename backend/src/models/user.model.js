@@ -95,7 +95,7 @@ userSchema.pre("save", async function(next) {
 userSchema.methods.isPasswordCorrect = async function(password) {
     console.log("Password to compare:", password);
     console.log("Stored password:", this.password);
-    if (!this.password) throw new Error("Password hash is missing");
+        if (!this.password) throw new Error("Password hash is missing");
     return await bcrypt.compare(password, this.password);
 };
 

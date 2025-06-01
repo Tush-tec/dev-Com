@@ -47,33 +47,33 @@ router.route('/auth/register').post(
 router.route('/auth/login').post(loginUser)
 
 router.route('/account-details').get(
-    authMiddleware,
+    
     getUser
 )
 
 router.route('/auth/logout').post(
-    authMiddleware,
+    
     loggedOutUser
 )
 
 router.route('/user/:id').get(
-    authMiddleware,
+    
     getIndividualUser
 )
 
 router.route('/update-account-details').patch(
-    authMiddleware,
+    
     updateAccountDetails
 )
 
 router.route('/update-avatar').patch(
-    authMiddleware,
+    
     upload.single("avatar"),
     updateUserAvatar
 )
 
 router.route('/auth/change-user-password').patch(
-    authMiddleware,
+    
     changeCurrentUserPassword
 )
 

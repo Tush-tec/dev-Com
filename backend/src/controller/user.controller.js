@@ -44,14 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
     );
   }
 
-  const isValidMail = (email) =>  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 
-  if(!isValidMail(email)){
-    throw new ApiError(
-      400,
-      "Email is not valid. Please enter a valid email address."
-    )
-  }
 
   const validatePassword = (password) => {
     let errors = [];
@@ -188,7 +181,7 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 
     const cookieOptions = {
-      httpOnly: true,
+      httpOnly: false,
       secure: true, 
       sameSite: "None", 
       path: '/' 
@@ -197,7 +190,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken,  )
+      .cookie("accessToken", accessToken,  cookieOptions
+       )
       .cookie("refreshToken", refreshToken, )
       .json(
         new ApiResponse(
@@ -311,8 +305,8 @@ const loggedOutUser = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
+    .clearCookie("accessToken")
+    .clearCookie("refreshToken")
     .json(new ApiResponse(200, {}, "User Logged-Out"));
 });
 

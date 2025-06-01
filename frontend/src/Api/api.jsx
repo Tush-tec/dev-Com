@@ -1,19 +1,19 @@
 import axios from "axios"
 import { LocalStorage } from "../Utils/app";
 
-// const apiClient = axios.create({
-//     baseURL: "https://dev-com-backend.vercel.app/api/v1",
-//     withCredentials: true,
-//     timeout:120000
-// });
-
-
 const apiClient = axios.create({
-    baseURL:"http://localhost:8080/api/v1/",
+    baseURL: "https://dev-com-backend.vercel.app/api/v1",
     withCredentials: true,
     timeout:120000
+});
+
+
+// const apiClient = axios.create({
+//     baseURL:"http://localhost:8080/api/v1/",
+//     withCredentials: true,
+//     timeout:120000
         
-})
+// })
 
 apiClient.interceptors.request.use(
     function (config) {

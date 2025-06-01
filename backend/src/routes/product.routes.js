@@ -11,7 +11,7 @@ import { isValidObjectId } from "mongoose";
 const router = Router()
 
 router.route('/product-creation').post(
-    authMiddleware,
+    
     upload.fields([
         {
           name: "mainImage",
@@ -60,24 +60,24 @@ router.get('/:id', async (req, res, next) => {
 
 
 router.route("/product/all-product").get(
-    authMiddleware,
+    
     getAllProduct,
 )
 
 router.route('/item/:productId').get(
-  authMiddleware,
+  
   getIndividualProduct
 )
 
 router.route("/product/get-products").get(
-    authMiddleware,
+    
     getProducts,
 )
 
 
 
   router.route('/product/:id').post(
-      authMiddleware,
+      
       upload.single("mainImage"),
       updateProductById
 
@@ -86,7 +86,7 @@ router.route("/product/get-products").get(
   
 
   router.route('/delete/:id').post(
-    authMiddleware,
+    
     deleteProductById
   );
 

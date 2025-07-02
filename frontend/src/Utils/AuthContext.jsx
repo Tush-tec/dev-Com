@@ -58,6 +58,8 @@ const AuthProvider = ({ children }) => {
                 console.log("res", res);
                 
                     const { loggedInUser, accessToken, refreshToken } = res.data;
+                    
+                    // console.log("user logger", { loggedInUser, accessToken, refreshToken }= res.data );
 
                     if (loggedInUser && accessToken) {
                         setUser(loggedInUser);
@@ -97,7 +99,7 @@ const AuthProvider = ({ children }) => {
                 setUser(null);
                 setToken(null);
                 setIsAuthenticated(false);
-                LocalStorage.clear();
+                // LocalStorage.clear();
                 navigate("/login");
             },
             (error) => {

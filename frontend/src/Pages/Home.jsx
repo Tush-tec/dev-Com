@@ -9,12 +9,12 @@ const Home = () => {
 
   return (
     <>
-    {isAuthenticated !== true ? 
+    {/* {isAuthenticated !== true ?  */}
     
-    <LandingPage /> : 
+    <LandingPage /> 
     
     
-    <section className="container flex items-center justify-center h-screen mx-auto bg-gradient-to-l from-[#162130] to-[#737982]">
+    {/* <section className="container flex items-center justify-center h-screen mx-auto bg-gradient-to-l from-[#162130] to-[#737982]">
             <div className="w-full max-w-md p-8 bg-white text-center shadow-2xl rounded-2xl border border-gray-300">
               <h2 className="text-3xl font-bold text-[#162130] mb-4">
                 Access Required
@@ -40,7 +40,7 @@ const Home = () => {
                 .
               </div>
             </div>
-          </section> }
+          </section> } */}
     </>
   )
 }

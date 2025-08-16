@@ -25,7 +25,8 @@ const allowedOrigins = [
   "http://localhost:8080",
   "http://localhost:5173",
   "http://localhost:5174",
-  "http://localhost:3000"
+  "http://localhost:3000",
+  "https://takshliving-tc64.vercel.app",
 ];
 
 // app.use(cors({
@@ -100,6 +101,7 @@ import cartRouter from "./routes/cart.routes.js";
 import adminRouter from "./routes/admin.routes.js";
 import contactRouter from "./routes/contactMe.routes.js";
 import dashboardRouter from "./routes/dashboard.js";
+import media from "./routes/media.routes.js";
 
 app.use("/api/v1/dashboard", dashboardRouter);
 app.use("/api/v1/admin", adminRouter);
@@ -110,5 +112,6 @@ app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/address", addressRouter);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/contact", contactRouter);
+app.use("/api/v1/media", media);
 
 export { app };

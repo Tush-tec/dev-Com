@@ -8,10 +8,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
-
-
 const createProduct = asyncHandler(async (req, res) => {
-
   const { name, description, category, price, stock } = req.body;
 
   const categoryToBeAdded = await Category.findById(category);
@@ -20,24 +17,21 @@ const createProduct = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Category does not exist");
   }
 
- 
+  const mainImageUrl = req.files?.mainImage[0]?.path;
 
-  const mainImageUrl =  req.files?.mainImage[0]?.path
-
-  if(!mainImageUrl){
-    throw new ApiError(400, "Main image is required")
+  if (!mainImageUrl) {
+    throw new ApiError(400, "Main image is required");
   }
 
   const uploadToCloudinary = await uploadOnCloudinary(mainImageUrl);
 
-  if(!uploadToCloudinary){
-    throw new ApiError(400, "Failed to upload image to cloudinary")
+  if (!uploadToCloudinary) {
+    throw new ApiError(400, "Failed to upload image to cloudinary");
   }
-  
-  let product
+
+  let product;
   try {
     const product = await Product.create({
-
       name,
       description,
       stock,
@@ -45,65 +39,62 @@ const createProduct = asyncHandler(async (req, res) => {
       category,
       owner: req.user?._id,
       mainImage: uploadToCloudinary.url,
-
     });
 
-    
     if (!product) {
       throw new ApiError(400, "Failed to create product");
     }
 
-    console.log("Product is add", product)
+    console.log("Product is add", product);
 
-     
-    res.redirect('/api/v1/products/products');
-
+    res.redirect("/api/v1/products/products");
   } catch (error) {
-
     console.error("Error creating product:", error);
     return res.status(500).json({ message: "Internal Server Error", error });
-
   }
 });
 
 const getAllProduct = asyncHandler(async (req, res) => {
-  const { page = 1, limit =20 } = req.query;
+  const { page = 1, limit = 20 } = req.query;
 
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);
 
-  if (isNaN(pageNumber) || isNaN(limitNumber) || pageNumber < 1 || limitNumber < 1) {
+  if (
+    isNaN(pageNumber) ||
+    isNaN(limitNumber) ||
+    pageNumber < 1 ||
+    limitNumber < 1
+  ) {
     throw new ApiError(400, "Invalid page or limit values.");
   }
 
+  const productsitem = await Product.find();
+
+  console.log("check products Items", productsitem);
+
   const products = await Product.find()
-    .skip((pageNumber - 1) * limitNumber) 
-    .limit(limitNumber) 
-    .populate('category');  
+    .skip((pageNumber - 1) * limitNumber)
+    .limit(limitNumber)
+    .populate("category");
 
   const totalProducts = await Product.countDocuments();
   const totalPages = Math.ceil(totalProducts / limitNumber);
 
-  console.log(`Page: ${pageNumber}, Limit: ${limitNumber}, Products Fetched: ${products.length}`);
-  console.log( pageNumber < totalPages,  );
-  
+  console.log(
+    `Page: ${pageNumber}, Limit: ${limitNumber}, Products Fetched: ${products.length}`
+  );
+  console.log(pageNumber < totalPages);
 
   return res.status(200).json(
-    new ApiResponse(
-      200,
-      products,
-      `Here are your products`,
-      {
-        totalProducts,
-        totalPages,
-        currentPage: pageNumber,
-        hasMore: pageNumber < totalPages, 
-      }
-    )
+    new ApiResponse(200, products, `Here are your products`, {
+      totalProducts,
+      totalPages,
+      currentPage: pageNumber,
+      hasMore: pageNumber < totalPages,
+    })
   );
 });
-
-
 
 const getProducts = asyncHandler(async (req, res) => {
   const { page = 1, limit = 15 } = req.query;
@@ -111,29 +102,34 @@ const getProducts = asyncHandler(async (req, res) => {
   const pageNumber = parseInt(page, 10);
   const limitNumber = parseInt(limit, 10);
 
-  if (isNaN(pageNumber) || isNaN(limitNumber) || pageNumber < 1 || limitNumber < 1) {
+  if (
+    isNaN(pageNumber) ||
+    isNaN(limitNumber) ||
+    pageNumber < 1 ||
+    limitNumber < 1
+  ) {
     throw new ApiError(400, "Invalid page or limit values.");
   }
 
   const products = await Product.find()
-    .skip((pageNumber - 1) * limitNumber) 
-    .limit(limitNumber) 
-    .populate('category');  
+    .skip((pageNumber - 1) * limitNumber)
+    .limit(limitNumber)
+    .populate("category");
 
   const totalProducts = await Product.countDocuments();
 
-  console.log(`Page: ${pageNumber}, Limit: ${limitNumber}, Products Fetched: ${products.length}`);
+  console.log(
+    `Page: ${pageNumber}, Limit: ${limitNumber}, Products Fetched: ${products.length}`
+  );
 
   console.log(products);
-  
-
 
   res.render("ProductsList", {
     products,
     totalProducts,
     totalPages: Math.ceil(totalProducts / limitNumber),
-    currentPage: pageNumber
-  })
+    currentPage: pageNumber,
+  });
 
   // return res.status(200).json(
   //   new ApiResponse(
@@ -162,65 +158,47 @@ const getProductById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product not found");
   }
 
-  const categories =  await Category.findById(product.category);
+  const categories = await Category.findById(product.category);
 
-   res.render("productEdit", { product, categories });
-
+  res.render("productEdit", { product, categories });
 });
 
-const getIndividualProduct= asyncHandler(async (req,res) =>{
-
-  const {productId} = req.params
+const getIndividualProduct = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
   console.log(productId);
-  
 
   if (!isValidObjectId(productId)) {
-    throw new ApiError
-    (
-      400, 
-      "Invalid product ID"
-    )
+    throw new ApiError(400, "Invalid product ID");
   }
 
   const product = await Product.aggregate([
     {
-      $match :{
-        _id: new mongoose.Types.ObjectId(productId)
-      }
+      $match: {
+        _id: new mongoose.Types.ObjectId(productId),
+      },
     },
     {
-      $lookup:{
+      $lookup: {
         from: "categories",
-        localField:"category",
-        foreignField:"_id",
-        as: "categoryDetails"
-      }
-    }
-  ])
+        localField: "category",
+        foreignField: "_id",
+        as: "categoryDetails",
+      },
+    },
+  ]);
   console.log(product);
   console.log(product.length);
-  
 
-  if(!product.length){
-    throw  new ApiError(
-      404,
-      "Product not found"
-    )
+  if (!product.length) {
+    throw new ApiError(404, "Product not found");
   }
 
   return res
-  .status(201)
-  .json(
-    new ApiResponse(
-      201,
-      product[0],
-      "Here's you Product"
-    )
-  )
-})
+    .status(201)
+    .json(new ApiResponse(201, product[0], "Here's you Product"));
+});
 
 const updateProductById = asyncHandler(async (req, res) => {
-
   const { id } = req.params;
 
   if (!isValidObjectId(id)) {
@@ -241,23 +219,19 @@ const updateProductById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Category not found");
   }
 
-  const productImagePath =  req.file?.path
-  let newImageUrl = product.mainImage
+  const productImagePath = req.file?.path;
+  let newImageUrl = product.mainImage;
 
   if (productImagePath) {
-    
     if (product.mainImage) {
-
-      const publicId = product.mainImage.split("/").pop().split(".")[0]; 
+      const publicId = product.mainImage.split("/").pop().split(".")[0];
       const deleteResult = await cloudinary.uploader.destroy(publicId);
 
       if (deleteResult.result !== "ok") {
-
         throw new ApiError(500, "Failed to upload new image on  Cloudinary");
       }
     }
 
-   
     const uploadedImage = await uploadOnCloudinary(productImagePath);
 
     if (!uploadedImage?.url) {
@@ -265,17 +239,15 @@ const updateProductById = asyncHandler(async (req, res) => {
     }
 
     newImageUrl = uploadedImage.url;
-
   }
- 
 
   const updatedProduct = await Product.findByIdAndUpdate(
     id,
     {
       $set: {
-        ...req.body, 
-        mainImage: newImageUrl
-      } 
+        ...req.body,
+        mainImage: newImageUrl,
+      },
     },
     { new: true }
   );
@@ -284,9 +256,7 @@ const updateProductById = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Failed to update the product");
   }
 
-  res.redirect('/api/v1/products/products');
-
-
+  res.redirect("/api/v1/products/products");
 });
 
 const deleteProductById = asyncHandler(async (req, res) => {
@@ -302,9 +272,7 @@ const deleteProductById = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product not found in Delete Product by Id");
   }
 
-  const categories =  await Category.findById(product.category);
-
-
+  const categories = await Category.findById(product.category);
 
   return res
     .status(200)
@@ -349,18 +317,19 @@ const incrementProductViews = asyncHandler(async (req, res) => {
     }
   );
 
-  if(!product){
-    throw new ApiError(
-      404,
-      "Product not found in Increment Product Views"
-    )
+  if (!product) {
+    throw new ApiError(404, "Product not found in Increment Product Views");
   }
 
-  return res 
-  .status(200)
-  .json(
-    new ApiResponse(200, product, "Product views incremented successfully in Increment Product Views")
-  )
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        product,
+        "Product views incremented successfully in Increment Product Views"
+      )
+    );
 });
 
 const getProductsByCategory = asyncHandler(async (req, res) => {
@@ -375,7 +344,6 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
 
   const productAggregate = Product.aggregate([
     {
-
       $match: {
         category: new mongoose.Types.ObjectId(categoryId),
       },
@@ -405,7 +373,6 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
     );
 });
 
-
 export {
   createProduct,
   getAllProduct,
@@ -416,5 +383,5 @@ export {
   getIndividualProduct,
   incrementProductViews,
   getProductsByCategory,
-  getProducts
+  getProducts,
 };

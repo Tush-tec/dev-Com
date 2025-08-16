@@ -78,11 +78,11 @@ const getCategoryForAdmin = asyncHandler(async (req, res) => {
     });
 });
 
-const getCategory = asyncHandler(async (req, res) => {
+const getAllCategory = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
     // Convert query params to numbers and ensure they are valid
-    const currentPage = Math.max(parseInt(page), 1);
+    const currentPage = Math.   max(parseInt(page), 1);
     const itemsPerPage = Math.max(parseInt(limit), 1);
 
     try {
@@ -239,7 +239,7 @@ const deleteCategory = asyncHandler(async(req,res) =>{
 export{
     createCategory,
     getCategoryForAdmin,
-    getCategory,
+    getAllCategory,
     getProductsByCategory,
     updateCategory,
     deleteCategory

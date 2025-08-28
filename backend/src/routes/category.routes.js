@@ -6,6 +6,7 @@ import {
   getProductsByCategory,
   updateCategory,
   deleteCategory,
+  getParticularCategory,
 } from "../controller/category.controller.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { Category } from "../models/category.model.js";
@@ -28,6 +29,8 @@ router.route("/create-category").post(
 
   createCategory
 );
+
+router.route("/category/:categoryId", getParticularCategory);
 
 router.route("/get-categaory").get(getCategoryForAdmin);
 

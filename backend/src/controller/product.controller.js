@@ -7,6 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { response } from "express";
 
 const createProduct = asyncHandler(async (req, res) => {
   const { name, description, category, price, stock } = req.body;
@@ -161,6 +162,26 @@ const getProductById = asyncHandler(async (req, res) => {
   const categories = await Category.findById(product.category);
 
   res.render("productEdit", { product, categories });
+});
+
+const getProductByCategory = asyncHandler(async (req, res) => {
+  const { categoryId } = req.params;
+
+  if (!isValidObjectId(categoryId)) {
+    throw new ApiError(404, "Category not found");
+  }
+
+  const findProduct = await Product.findById({
+    category: categoryId,
+  });
+
+  if (!findProduct || !findProduct.length > 0) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, findProduct, "Product by category"));
 });
 
 const getIndividualProduct = asyncHandler(async (req, res) => {
